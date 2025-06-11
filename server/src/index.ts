@@ -39,6 +39,15 @@ app.use(sanitizeInputs);
 /* ---- Security (helmet, hpp, xss-clean, rate-limit) ---- */
 app.use('/api', security);
 
+/* ---- Health Check Endpoint ---- */
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 /* ---- CSRF Token Endpoint (always available) ---- */
 app.get('/api/csrf-token', (req, res) => {
     if (process.env.DISABLE_CSRF === 'true') {
@@ -84,6 +93,8 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 /* ---- Start Server ---- */
-app.listen(port, () => {
-    console.log(`🚀 Server running at http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 Server running on 0.0.0.0:${port}`);
+    console.log(`🌐 Health check available at: http://0.0.0.0:${port}/health`);
+    console.log(`📚 API documentation: http://0.0.0.0:${port}/api-docs`);
 });
