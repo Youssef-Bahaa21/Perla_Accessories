@@ -6,6 +6,9 @@ import { isPlatformBrowser } from '@angular/common';
 
 import { User, AuthResult } from '../../models';
 
+// Re-export types for convenience
+export type { User, AuthResult } from '../../models';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   readonly currentUser$ = new BehaviorSubject<User | null>(null);
@@ -90,11 +93,10 @@ export class AuthService {
     );
   }
 
-  register(email: string, password: string, name: string): Observable<{ message: string; user: User }> {
+  register(email: string, password: string): Observable<{ message: string; user: User }> {
     return this.http.post<{ message: string; user: User }>(`${env.api}/api/auth/register`, {
       email,
       password,
-      name,
     }).pipe(
       catchError(err => {
         console.error('Registration error:', err);
