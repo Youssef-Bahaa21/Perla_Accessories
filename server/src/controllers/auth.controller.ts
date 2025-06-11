@@ -11,13 +11,15 @@ const accessOpts = {
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 15 * 60 * 1000,
+    path: '/',
 };
 
 const refreshOpts = {
     httpOnly: true,
-    sameSite: 'strict' as const,
+    sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 30 * 24 * 60 * 60 * 1000,
+    path: '/',
 };
 
 const registerHandler: RequestHandler = async (req, res, next) => {
@@ -53,19 +55,33 @@ const loginHandler: RequestHandler = async (req, res, next) => {
 export const login = [validateBody(RegisterDto), loginHandler];
 
 export const refresh: RequestHandler = async (req, res) => {
-    const refreshToken = req.cookies.refresh_token;
-    if (!refreshToken) {
-        res.sendStatus(401);
-        return;
-    }
+    try {
+        const refreshToken = req.cookies.refresh_token;
+        console.log('🔄 Refresh token request:', {
+            hasRefreshToken: !!refreshToken,
+            cookies: Object.keys(req.cookies),
+            userAgent: req.get('User-Agent')?.substring(0, 50)
+        });
 
-    const newAccess = await svc.refreshAccessToken(refreshToken);
-    if (!newAccess) {
-        res.sendStatus(403);
-        return;
-    }
+        if (!refreshToken) {
+            console.log('❌ No refresh token provided');
+            res.status(401).json({ error: 'No refresh token provided' });
+            return;
+        }
 
-    res.cookie('token', newAccess, accessOpts).json({ message: 'Token refreshed' });
+        const newAccess = await svc.refreshAccessToken(refreshToken);
+        if (!newAccess) {
+            console.log('❌ Invalid or expired refresh token');
+            res.status(403).json({ error: 'Invalid or expired refresh token' });
+            return;
+        }
+
+        console.log('✅ Token refresh successful');
+        res.cookie('token', newAccess, accessOpts).json({ message: 'Token refreshed' });
+    } catch (error) {
+        console.error('❌ Token refresh error:', error);
+        res.status(500).json({ error: 'Token refresh failed' });
+    }
 };
 
 export const forgotPassword: RequestHandler = async (req, res, next) => {
