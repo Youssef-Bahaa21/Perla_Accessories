@@ -39,6 +39,20 @@ app.use(sanitizeInputs);
 /* ---- Security (helmet, hpp, xss-clean, rate-limit) ---- */
 app.use('/api', security);
 
+/* ---- CSRF Token Endpoint (always available) ---- */
+app.get('/api/csrf-token', (req, res) => {
+    if (process.env.DISABLE_CSRF === 'true') {
+        // Return dummy token when CSRF is disabled
+        res.json({
+            message: 'CSRF disabled for testing',
+            token: 'dummy-token'
+        });
+    } else {
+        // This will be handled by CSRF middleware if enabled
+        res.json({ message: 'CSRF middleware should handle this' });
+    }
+});
+
 /* ---- CSRF Protection ---- */
 // Conditional CSRF - can be disabled via environment variable for testing
 if (process.env.DISABLE_CSRF !== 'true') {
