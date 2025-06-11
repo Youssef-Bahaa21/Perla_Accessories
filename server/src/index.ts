@@ -24,7 +24,7 @@ const app = express();
 const port = Number(process.env.PORT) || 3000;
 
 /* ---- Trust Proxy for Railway ---- */
-app.set('trust proxy', true);
+app.set('trust proxy', 1); // Trust first proxy (Railway)
 
 /* ---- CORS ---- */
 // Use the CORS middleware from ./middlewares/cors which reads from environment
