@@ -72,4 +72,8 @@ server/uploads/*
 
 # Database
 *.sql
-!schema.sql 
+!schema.sql *.rar
+*.zip
+*.tar.gz
+node_modules/
+dist/
