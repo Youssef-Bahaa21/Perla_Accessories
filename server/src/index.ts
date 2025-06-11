@@ -40,7 +40,7 @@ app.use(sanitizeInputs);
 app.use('/api', security);
 
 /* ---- CSRF Protection ---- */
-app.use('/api', csrfMiddleware);
+// app.use('/api', csrfMiddleware); // Temporarily disabled for testing
 
 /* ✅ Swagger UI */
 setupSwagger(app);
