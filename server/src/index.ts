@@ -40,7 +40,13 @@ app.use(sanitizeInputs);
 app.use('/api', security);
 
 /* ---- CSRF Protection ---- */
-app.use('/api', csrfMiddleware); // Re-enabled with proper configuration
+// Conditional CSRF - can be disabled via environment variable for testing
+if (process.env.DISABLE_CSRF !== 'true') {
+    app.use('/api', csrfMiddleware); // CSRF enabled
+    console.log('🔒 CSRF Protection: ENABLED');
+} else {
+    console.log('⚠️ CSRF Protection: DISABLED (for testing only)');
+}
 
 /* ✅ Swagger UI */
 setupSwagger(app);

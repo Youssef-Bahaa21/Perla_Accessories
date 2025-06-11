@@ -48,8 +48,17 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Only fetch CSRF token in browser environment
     if (isPlatformBrowser(this.platformId)) {
-      // Only fetch CSRF token, authentication is handled by the AuthService
-      this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe();
+      // Fetch CSRF token with debugging
+      console.log('Fetching CSRF token from:', `${environment.api}/api/csrf-token`);
+
+      this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe({
+        next: (response) => {
+          console.log('CSRF token fetched successfully:', response);
+        },
+        error: (error) => {
+          console.error('Failed to fetch CSRF token:', error);
+        }
+      });
 
       this.authService.currentUser$.subscribe((user: any) => {
         this.user = user;
