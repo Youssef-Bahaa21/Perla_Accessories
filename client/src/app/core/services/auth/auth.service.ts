@@ -75,10 +75,10 @@ export class AuthService {
     return this.http.post<void>(`${env.api}/api/auth/logout`, {}).pipe(
       map(() => {
         this.currentUser$.next(null);
-        // Clear any remaining cookies
+        // Clear any remaining cookies with correct attributes for cross-origin
         if (isPlatformBrowser(this.platformId) && typeof document !== 'undefined') {
-          document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
-          document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
+          document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
+          document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
         }
       }),
       catchError(err => {

@@ -20,7 +20,15 @@ router.post('/reset-password', resetPassword);
 router.get('/me', authMeLimiter, (req, res) => {
     const token = req.cookies.token;
 
+    console.log('👤 /me request:', {
+        hasToken: !!token,
+        tokenPreview: token ? token.substring(0, 20) + '...' : 'none',
+        cookies: Object.keys(req.cookies),
+        origin: req.get('Origin')
+    });
+
     if (!token) {
+        console.log('👤 No token provided, returning null user');
         // Return null user with 200 status instead of 401
         res.status(200).json(null);
         return;
@@ -28,8 +36,10 @@ router.get('/me', authMeLimiter, (req, res) => {
 
     try {
         const payload = authService.verifyToken(token);
+        console.log('👤 Token verified successfully for user:', payload.id);
         res.json(payload);
     } catch (err) {
+        console.log('👤 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         // Return null user with 200 status instead of 401
         res.status(200).json(null);
     }

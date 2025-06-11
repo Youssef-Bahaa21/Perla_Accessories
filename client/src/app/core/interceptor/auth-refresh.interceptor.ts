@@ -57,9 +57,9 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
 
                         // Clear any remaining cookies and redirect to login for critical pages
                         if (typeof document !== 'undefined') {
-                            // Clear auth cookies
-                            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
-                            document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
+                            // Clear auth cookies with correct attributes for cross-origin
+                            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
+                            document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
                         }
 
                         // If this is a protected route (orders, account), redirect to login

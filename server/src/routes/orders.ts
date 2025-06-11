@@ -11,7 +11,7 @@ import { isAdmin } from '../middlewares/admin.middleware';
 
 const router = Router();
 
-// Admin-only
+// Get all orders - requires authentication for both admin and users
 router.get('/', authenticate, getOrders);
 router.put('/:id', authenticate, updateOrder);
 router.delete('/:id', authenticate, deleteOrder);

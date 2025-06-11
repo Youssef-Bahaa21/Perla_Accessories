@@ -8,18 +8,20 @@ const svc = new AuthService();
 
 const accessOpts = {
     httpOnly: true,
-    sameSite: 'lax' as const,
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none' as const, // Changed to 'none' for cross-origin
+    secure: true, // Always true for production (Railway/Vercel)
     maxAge: 15 * 60 * 1000,
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? undefined : undefined, // Let browser handle domain
 };
 
 const refreshOpts = {
     httpOnly: true,
-    sameSite: 'lax' as const,
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none' as const, // Changed to 'none' for cross-origin
+    secure: true, // Always true for production (Railway/Vercel)
     maxAge: 30 * 24 * 60 * 60 * 1000,
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? undefined : undefined, // Let browser handle domain
 };
 
 const registerHandler: RequestHandler = async (req, res, next) => {
@@ -59,24 +61,27 @@ export const refresh: RequestHandler = async (req, res) => {
         const refreshToken = req.cookies.refresh_token;
         console.log('🔄 Refresh token request:', {
             hasRefreshToken: !!refreshToken,
+            refreshTokenPreview: refreshToken ? refreshToken.substring(0, 10) + '...' : 'none',
             cookies: Object.keys(req.cookies),
+            cookieHeader: req.get('Cookie')?.substring(0, 100),
+            origin: req.get('Origin'),
             userAgent: req.get('User-Agent')?.substring(0, 50)
         });
 
         if (!refreshToken) {
-            console.log('❌ No refresh token provided');
+            console.log('❌ No refresh token provided, all cookies:', req.cookies);
             res.status(401).json({ error: 'No refresh token provided' });
             return;
         }
 
         const newAccess = await svc.refreshAccessToken(refreshToken);
         if (!newAccess) {
-            console.log('❌ Invalid or expired refresh token');
+            console.log('❌ Invalid or expired refresh token:', refreshToken.substring(0, 10) + '...');
             res.status(403).json({ error: 'Invalid or expired refresh token' });
             return;
         }
 
-        console.log('✅ Token refresh successful');
+        console.log('✅ Token refresh successful, setting new access token');
         res.cookie('token', newAccess, accessOpts).json({ message: 'Token refreshed' });
     } catch (error) {
         console.error('❌ Token refresh error:', error);
@@ -116,7 +121,18 @@ export const logout: RequestHandler = async (req, res) => {
     const token = req.cookies.refresh_token;
     if (token) await svc.revokeRefreshToken(token);
 
-    res.clearCookie('token', accessOpts);
-    res.clearCookie('refresh_token', refreshOpts);
+    // Clear cookies with same options used to set them
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'none' as const,
+        secure: true,
+        path: '/',
+    });
+    res.clearCookie('refresh_token', {
+        httpOnly: true,
+        sameSite: 'none' as const,
+        secure: true,
+        path: '/',
+    });
     res.sendStatus(204);
 };
