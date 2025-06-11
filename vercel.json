@@ -6,9 +6,9 @@
             "NODE_ENV": "production"
         }
     },
-    "buildCommand": "cd client && npm ci && npm run build",
-    "outputDirectory": "client/dist/client",
-    "installCommand": "cd client && npm install",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist/client",
+    "installCommand": "npm install",
     "framework": "angular",
     "rewrites": [
         {
