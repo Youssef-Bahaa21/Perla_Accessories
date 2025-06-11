@@ -3,6 +3,7 @@ import { PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { catchError, switchMap, throwError, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment as env } from '../../../environments/environment';
 
 // Flag to prevent multiple concurrent refresh attempts
@@ -15,13 +16,15 @@ let isRefreshing = false;
 export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
     const http = inject(HttpClient);
     const platformId = inject(PLATFORM_ID);
+    const router = inject(Router);
 
     // Skip refresh attempts for these endpoints to prevent infinite loops
     const skipUrls = [
         '/api/auth/refresh',
         '/api/auth/logout',
         '/api/auth/login',
-        '/api/auth/register'
+        '/api/auth/register',
+        '/api/auth/me'
     ];
 
     // Skip token refresh on server-side rendering or for auth endpoints
@@ -32,11 +35,10 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
             // Only attempt refresh on 401 errors, in browser environment, 
-            // when we're not already refreshing, and when it's not the /me endpoint initially failing
+            // when we're not already refreshing
             if (error.status === 401 &&
                 isPlatformBrowser(platformId) &&
-                !isRefreshing &&
-                !req.url.includes('/api/auth/me')) {
+                !isRefreshing) {
 
                 isRefreshing = true;
                 console.log('Token expired. Attempting refresh...');
@@ -52,8 +54,30 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
                     catchError((refreshError) => {
                         console.log('Token refresh failed', refreshError);
                         isRefreshing = false;
-                        // If refresh fails, pass through the original error
-                        return throwError(() => error);
+
+                        // Clear any remaining cookies and redirect to login for critical pages
+                        if (typeof document !== 'undefined') {
+                            // Clear auth cookies
+                            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
+                            document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=lax';
+                        }
+
+                        // If this is a protected route (orders, account), redirect to login
+                        const currentUrl = router.url;
+                        if (currentUrl.includes('/account') || currentUrl.includes('/admin')) {
+                            router.navigate(['/login'], {
+                                queryParams: { returnUrl: currentUrl }
+                            });
+                        }
+
+                        // Return a more user-friendly error
+                        const userFriendlyError = new HttpErrorResponse({
+                            error: { message: 'Session expired. Please log in again.' },
+                            status: 401,
+                            statusText: 'Unauthorized'
+                        });
+
+                        return throwError(() => userFriendlyError);
                     })
                 );
             }

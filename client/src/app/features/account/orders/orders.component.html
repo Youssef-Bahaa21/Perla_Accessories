@@ -12,153 +12,153 @@
       <p class="text-gray-600 mt-4">Loading your orders...</p>
     </div>
 
-    <!-- Error State -->
-    <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4 text-red-600">
-      <p class="font-medium">{{ error }}</p>
-      <p class="text-sm mt-1">Please try refreshing the page or try again later.</p>
+    <!-- Enhanced Error State with Actions -->
+    <div *ngIf="error && !loading" class="text-center py-16">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-w-md mx-auto p-8">
+        <!-- Error Icon -->
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
+             [ngClass]="error.includes('Session expired') || error.includes('log in') ? 'bg-yellow-100' : error.includes('no orders') ? 'bg-blue-100' : 'bg-red-100'">
+          <svg *ngIf="error.includes('Session expired') || error.includes('log in')" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 15.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <svg *ngIf="error.includes('no orders')" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <svg *ngIf="!error.includes('Session expired') && !error.includes('log in') && !error.includes('no orders')" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+
+        <!-- Error Title and Message -->
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          <span *ngIf="error.includes('Session expired') || error.includes('log in')">Authentication Required</span>
+          <span *ngIf="error.includes('no orders')">No Orders Yet</span>
+          <span *ngIf="!error.includes('Session expired') && !error.includes('log in') && !error.includes('no orders')">Something Went Wrong</span>
+        </h3>
+        
+        <p class="text-gray-600 mb-6">{{ error }}</p>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3">
+          <button *ngIf="error.includes('Session expired') || error.includes('log in')"
+                  (click)="goToLogin()"
+                  class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Sign In
+          </button>
+          
+          <button *ngIf="error.includes('no orders')"
+                  (click)="goToShop()"
+                  class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Start Shopping
+          </button>
+          
+          <button *ngIf="!error.includes('Session expired') && !error.includes('log in') && !error.includes('no orders')"
+                  (click)="retryLoadOrders()"
+                  class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Try Again
+          </button>
+
+          <!-- Secondary Actions -->
+          <div class="pt-3 border-t border-gray-200">
+            <a routerLink="/" class="text-pink-600 hover:text-pink-700 text-sm font-medium">
+              ← Back to Home
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Orders List -->
-    <ng-container *ngIf="!loading && !error">
-      <ng-container *ngIf="orders.length; else none">
-        <div *ngFor="let o of orders" class="mb-8 bg-white rounded-lg shadow p-6 space-y-6">
-          <!-- Order Header -->
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-4 border-b border-gray-200">
-            <div>
-              <p class="text-xl font-medium text-gray-900">Order #{{ o.id }}</p>
-              <p class="text-sm text-gray-500">{{ o.created_at | date:'medium' }}</p>
-            </div>
-            <span
-              class="mt-3 md:mt-0 px-3 py-1 rounded-full text-xs font-medium"
-              [ngClass]="{
-                'bg-yellow-100 text-yellow-800': o.status === 'pending',
-                'bg-blue-100 text-blue-800': o.status === 'paid',
-                'bg-gray-100 text-gray-800': o.status === 'shipped',
-                'bg-green-100 text-green-800': o.status === 'completed',
-                'bg-red-100 text-red-800': o.status === 'cancelled'
-              }"
-            >
-              {{ o.status ? (o.status | titlecase) : 'Unknown' }}
-            </span>
+    <ng-container *ngIf="!loading && !error && orders.length > 0">
+      <div *ngFor="let o of orders" class="mb-8 bg-white rounded-lg shadow p-6 space-y-6">
+        <!-- Order Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-4 border-b border-gray-200">
+          <div>
+            <p class="text-xl font-medium text-gray-900">Order #{{ o.id }}</p>
+            <p class="text-sm text-gray-500">{{ o.created_at | date:'medium' }}</p>
           </div>
+          <span
+            class="mt-3 md:mt-0 px-3 py-1 rounded-full text-xs font-medium"
+            [ngClass]="getStatusColor(o.status)"
+          >
+            {{ getStatusDisplayText(o.status) }}
+          </span>
+        </div>
 
-          <!-- Payment Method Information -->
-          <div *ngIf="o.payment_method" class="flex flex-col md:flex-row justify-between pb-4 border-b border-gray-200">
-            <div>
-              <p class="text-sm text-gray-500">Payment Method</p>
-              <p class="font-medium">
-                <span *ngIf="o.payment_method === 'cod'" class="text-gray-800">Cash on Delivery</span>
-                <span *ngIf="o.payment_method === 'vodafone_cash'" class="text-red-600">Vodafone Cash</span>
-                <span *ngIf="o.payment_method === 'instapay'" class="text-blue-600">InstaPay</span>
-              </p>
-            </div>
-            <div *ngIf="o.payment_method !== 'cod'" class="mt-2 md:mt-0">
-              <p class="text-sm text-gray-500">Contact</p>
-              <p class="font-medium">
-                <span *ngIf="o.payment_method === 'vodafone_cash'">{{ paymentDetails.vodafone_cash.whatsapp }}</span>
-                <span *ngIf="o.payment_method === 'instapay'">{{ paymentDetails.instapay.whatsapp }}</span>
-              </p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Payment Status</p>
-              <p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Pending
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <!-- Payment Instructions -->
-          <div *ngIf="o.payment_method === 'vodafone_cash'" class="bg-red-50 rounded-md p-4 border border-red-100">
-            <div class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <h3 class="font-medium text-gray-900 mb-1">Vodafone Cash Payment Instructions</h3>
-                <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
-                  <li>Send <span class="font-semibold">{{ getGrandTotal(o) | currency:'EGP ':'symbol':'1.2-2' }}</span> to wallet number: <span class="font-semibold">{{ paymentDetails.vodafone_cash.phone }}</span></li>
-                  <li>Take a screenshot of the transaction</li>
-                  <li>Send the screenshot along with your order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.vodafone_cash.whatsapp }}</span></li>
-                </ul>
-              </div>
-            </div>
+        <!-- Payment Method Information -->
+        <div *ngIf="o.payment_method && o.payment_method !== 'cod'" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 class="font-medium text-blue-900 mb-3 flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Payment Instructions
+          </h4>
+          
+          <div *ngIf="o.payment_method === 'vodafone_cash'" class="space-y-2">
+            <p class="text-blue-800"><strong>Vodafone Cash Payment</strong></p>
+            <p class="text-sm text-blue-700">Please send the total amount to: <strong>{{ paymentDetails.vodafone_cash.phone }}</strong></p>
+            <p class="text-sm text-blue-700">WhatsApp confirmation: <strong>{{ paymentDetails.vodafone_cash.whatsapp }}</strong></p>
           </div>
           
-          <div *ngIf="o.payment_method === 'instapay'" class="bg-blue-50 rounded-md p-4 border border-blue-100">
-            <div class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <h3 class="font-medium text-gray-900 mb-1">InstaPay Payment Instructions</h3>
-                <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
-                  <li>Send <span class="font-semibold">{{ getGrandTotal(o) | currency:'EGP ':'symbol':'1.2-2' }}</span> to InstaPay account: <span class="font-semibold">{{ paymentDetails.instapay.account }}</span></li>
-                  <li>Or use this link to pay directly: <a [href]="paymentDetails.instapay.link" target="_blank" class="text-blue-600 hover:underline">Click here to pay</a></li>
-                  <li>Take a screenshot of the transaction</li>
-                  <li>Send the screenshot along with your order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.instapay.whatsapp }}</span></li>
-                </ul>
-              </div>
-            </div>
+          <div *ngIf="o.payment_method === 'instapay'" class="space-y-2">
+            <p class="text-blue-800"><strong>InstaPay Payment</strong></p>
+            <p class="text-sm text-blue-700">Send to: <strong>{{ paymentDetails.instapay.account }}</strong></p>
+            <p class="text-sm text-blue-700">Or use this link: 
+              <a [href]="paymentDetails.instapay.link" target="_blank" class="text-blue-600 underline hover:text-blue-800">Pay Now</a>
+            </p>
+            <p class="text-sm text-blue-700">WhatsApp confirmation: <strong>{{ paymentDetails.instapay.whatsapp }}</strong></p>
           </div>
+        </div>
 
-          <!-- Shipping Information -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b border-gray-200">
-            <div>
-              <h3 class="font-medium text-gray-900 mb-1">Shipping Address</h3>
-              <p class="text-gray-600">{{ o.shipping_name }}</p>
-              <p class="text-gray-600">{{ o.shipping_address }}</p>
-              <p class="text-gray-600">{{ o.shipping_city }}</p>
-              <p class="text-gray-600">{{ o.shipping_phone }}</p>
-            </div>
-          </div>
-
-          <!-- Order Items -->
-          <div>
-            <h3 class="font-medium text-gray-900 mb-3">Order Items</h3>
-            <div class="overflow-hidden rounded-lg border border-gray-200">
-              <div class="block md:hidden space-y-4 p-4">
-                <div *ngFor="let item of o.items" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0">
-                      <img 
-                        [src]="item.product_image || fallbackImage" 
-                        [alt]="item.product_name || 'Product'"
-                        (error)="onImageError($event)"
-                        class="h-20 w-20 rounded-lg object-cover border border-gray-200 shadow-sm"
-                      />
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-gray-900">
-                        {{ item.product_name || 'Product #' + item.product_id }}
-                      </p>
-                      <p class="text-xs text-gray-500 mt-1">ID: {{ item.product_id }}</p>
-                      <div class="mt-2 grid grid-cols-3 gap-2 text-sm">
-                        <div>
-                          <span class="text-gray-500">Qty:</span>
-                          <span class="ml-1 font-medium">{{ item.quantity }}</span>
-                        </div>
-                        <div>
-                          <span class="text-gray-500">Price:</span>
-                          <span class="ml-1 font-medium">{{ item.unit_price | currency:'EGP ':'symbol':'1.2-2' }}</span>
-                        </div>
-                        <div>
-                          <span class="text-gray-500">Total:</span>
-                          <span class="ml-1 font-medium">{{ (item.unit_price * item.quantity) | currency:'EGP ':'symbol':'1.2-2' }}</span>
-                        </div>
+        <!-- Order Items -->
+        <div>
+          <h3 class="font-medium text-gray-900 mb-3">Order Items</h3>
+          <div class="overflow-hidden rounded-lg border border-gray-200">
+            <!-- Mobile View -->
+            <div class="block md:hidden space-y-4 p-4">
+              <div *ngFor="let item of o.items" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div class="flex items-start space-x-4">
+                  <div class="flex-shrink-0">
+                    <img 
+                      [src]="item.product_image || fallbackImage" 
+                      [alt]="item.product_name || 'Product'"
+                      (error)="onImageError($event)"
+                      class="h-20 w-20 rounded-lg object-cover border border-gray-200 shadow-sm"
+                    />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ item.product_name || 'Product #' + item.product_id }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">ID: {{ item.product_id }}</p>
+                    <div class="mt-2 grid grid-cols-3 gap-2 text-sm">
+                      <div>
+                        <span class="text-gray-500">Qty:</span>
+                        <span class="ml-1 font-medium">{{ item.quantity }}</span>
+                      </div>
+                      <div>
+                        <span class="text-gray-500">Price:</span>
+                        <span class="ml-1 font-medium">{{ item.unit_price | currency:'EGP ':'symbol':'1.2-2' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-gray-500">Total:</span>
+                        <span class="ml-1 font-medium">{{ (item.unit_price * item.quantity) | currency:'EGP ':'symbol':'1.2-2' }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <table class="hidden md:table min-w-full divide-y divide-gray-200">
+            </div>
+
+            <!-- Desktop View -->
+            <div class="hidden md:block">
+              <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -198,44 +198,65 @@
             </div>
             
             <!-- Order Summary -->
-            <div class="mt-4 space-y-2">
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Subtotal</span>
-                <span class="font-medium text-gray-900">{{ o.total | currency:'EGP ':'symbol':'1.2-2' }}</span>
+                <span class="text-gray-600">Subtotal:</span>
+                <span class="font-medium">{{ o.total | currency:'EGP ':'symbol':'1.2-2' }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Shipping</span>
-                <span class="font-medium text-gray-900">{{ getDeliveryFee(o) | currency:'EGP ':'symbol':'1.2-2' }}</span>
+              <div class="flex justify-between text-sm mt-1">
+                <span class="text-gray-600">Delivery Fee:</span>
+                <span class="font-medium">{{ getDeliveryFee(o) | currency:'EGP ':'symbol':'1.2-2' }}</span>
               </div>
-              <div *ngIf="getDiscount(o) > 0" class="flex justify-between text-sm">
-                <span class="text-green-600">Discount</span>
-                <span class="text-green-600">− {{ getDiscount(o) | currency:'EGP ':'symbol':'1.2-2' }}</span>
-              </div>
-              <div class="flex justify-between pt-2 border-t border-gray-200">
-                <span class="font-medium">Total</span>
-                <span class="text-lg font-bold text-gray-900">{{ getGrandTotal(o) | currency:'EGP ':'symbol':'1.2-2' }}</span>
+              <div class="flex justify-between text-lg font-semibold mt-2 pt-2 border-t border-gray-300">
+                <span>Total:</span>
+                <span class="text-pink-600">{{ getGrandTotal(o) | currency:'EGP ':'symbol':'1.2-2' }}</span>
               </div>
             </div>
           </div>
         </div>
-      </ng-container>
-      
-      <!-- No Orders State -->
-      <ng-template #none>
-        <div class="text-center py-16 bg-white rounded-lg shadow">
-          <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <h2 class="mt-2 text-lg font-medium text-gray-900">No orders yet</h2>
-          <p class="mt-1 text-gray-500">When you place an order, it will appear here.</p>
-          <div class="mt-6">
-            <a routerLink="/products" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700">
-              Browse products
-            </a>
+
+        <!-- Shipping Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-medium text-gray-900 mb-2">Shipping Address</h4>
+            <div class="text-sm text-gray-600 space-y-1">
+              <p><strong>{{ o.shipping_name }}</strong></p>
+              <p>{{ o.shipping_address }}</p>
+              <p>{{ o.shipping_city }}</p>
+              <p>{{ o.shipping_phone }}</p>
+              <p *ngIf="o.shipping_email">{{ o.shipping_email }}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-gray-900 mb-2">Order Status</h4>
+            <div class="text-sm text-gray-600">
+              <p>Status: <span [ngClass]="getStatusColor(o.status)" class="inline-block px-2 py-1 rounded-full text-xs font-medium">{{ getStatusDisplayText(o.status) }}</span></p>
+              <p class="mt-1">Order Date: {{ o.created_at | date:'mediumDate' }}</p>
+              <p *ngIf="o.updated_at !== o.created_at" class="mt-1">Last Updated: {{ o.updated_at | date:'medium' }}</p>
+            </div>
           </div>
         </div>
-      </ng-template>
+      </div>
     </ng-container>
+
+    <!-- Empty State Template (kept for reference but won't show due to error handling above) -->
+    <ng-template #none>
+      <div class="text-center py-16">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-w-md mx-auto p-8">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+            <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No Orders Yet</h3>
+          <p class="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+          <button (click)="goToShop()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Start Shopping
+          </button>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </div>
 

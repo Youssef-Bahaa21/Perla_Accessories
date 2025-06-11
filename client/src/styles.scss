@@ -2,13 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-
 html,
 body {
     height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
-
+body {
+    padding-top: 0 !important;
+    /* Ensure no body padding interferes */
+}
 
 app-root {
     display: flex;
@@ -18,13 +24,23 @@ app-root {
 
 main {
     flex: 1;
+    position: relative;
+    min-height: calc(100vh - 64px);
+    /* Account for navbar height */
 }
 
+/* Ensure first sections in pages start properly under navbar */
+section:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
 
-
-
-
-
+/* Ensure hero sections work with fixed navbar */
+.hero-section,
+.min-h-screen {
+    min-height: 100vh;
+    padding-top: 0;
+}
 
 #toast-container {
     top: 80px !important;
@@ -51,7 +67,6 @@ main {
     font-weight: 600;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
-
 
 /* Specific Toast types */
 .toast-success {
