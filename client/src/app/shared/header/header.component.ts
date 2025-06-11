@@ -5,12 +5,11 @@ import { PLATFORM_ID } from '@angular/core';
 
 import { CartService } from '../../core/services/cart/cart.service';
 import { AuthService } from '../../core/services/auth/auth.service';
-import { PromoBarComponent } from "../promo-bar/promo-bar.component";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, PromoBarComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
