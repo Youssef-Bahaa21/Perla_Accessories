@@ -1,0 +1,556 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header Section - Mobile Responsive -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-4 sm:py-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Orders</h1>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">Manage your store orders</p>
+          </div>
+          <div class="flex space-x-3">
+            <button (click)="exportToExcel()"
+                    class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-md shadow-sm text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats Cards - Mobile Responsive -->
+        <div class="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-3 sm:p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-md flex items-center justify-center">
+                    <svg class="w-3 h-3 sm:w-5 sm:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-3 sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                    <dd class="text-sm sm:text-lg font-medium text-gray-900">EGP {{ totalRevenue | number:'1.2-2' }}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Average Order Value</dt>
+                    <dd class="text-lg font-medium text-gray-900">EGP {{ averageOrderValue | number:'1.2-2' }}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Completed Orders</dt>
+                    <dd class="text-lg font-medium text-gray-900">{{ completedOrdersCount }}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Pending Orders</dt>
+                    <dd class="text-lg font-medium text-gray-900">{{ pendingOrdersCount }}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content - Mobile Responsive -->
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center h-48 sm:h-64">
+      <div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-md p-3 sm:p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-4 w-4 sm:h-5 sm:w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-2 sm:ml-3">
+          <p class="text-xs sm:text-sm text-red-700">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && orders.length === 0" class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No orders</h3>
+      <p class="mt-1 text-sm text-gray-500">Get started by creating your first order.</p>
+    </div>
+
+    <!-- Search and Filters - Mobile Responsive -->
+    <div class="bg-white shadow rounded-lg mb-4 sm:mb-6">
+      <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <div class="flex-1 min-w-0">
+            <div class="relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+              <input type="text" 
+                     [(ngModel)]="filterParams.search"
+                     (ngModelChange)="applyFilters()"
+                     placeholder="Search orders..."
+                     class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 sm:pl-10 text-xs sm:text-sm border-gray-300 rounded-md py-1.5 sm:py-2">
+            </div>
+          </div>
+          <div class="flex space-x-2 sm:space-x-3">
+            <div class="relative flex-1 sm:flex-auto min-w-0">
+              <select [(ngModel)]="filterParams.sortBy" 
+                      (ngModelChange)="applyFilters()"
+                      class="focus:ring-blue-500 focus:border-blue-500 block w-full text-xs sm:text-sm border-gray-300 rounded-md py-1 sm:py-2">
+                <option value="created_at">Sort by Date</option>
+                <option value="id">Sort by Order ID</option>
+                <option value="total">Sort by Total</option>
+                <option value="status">Sort by Status</option>
+              </select>
+            </div>
+            <button (click)="resetFilters()"
+                    class="inline-flex items-center px-2 sm:px-3 py-1 sm:py-2 border border-gray-300 shadow-sm text-xs sm:text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mobile-tap-target">
+              Reset
+            </button>
+          </div>
+        </div>
+        
+        <!-- Status Filter Pills - Mobile Responsive -->
+        <div class="mt-3 sm:mt-4 filters-container">
+          <div class="flex flex-nowrap sm:flex-wrap gap-2 pb-1 sm:pb-0">
+            <span class="text-xs sm:text-sm text-gray-500 mr-1 sm:mr-2 whitespace-nowrap flex items-center">Filter by:</span>
+            <label class="inline-flex items-center mobile-tap-target whitespace-nowrap">
+              <input type="checkbox" 
+                     [checked]="filterParams.status.includes('pending')"
+                     (change)="toggleStatusFilter('pending', $event)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              <span class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-700">Pending</span>
+            </label>
+            <label class="inline-flex items-center mobile-tap-target whitespace-nowrap">
+              <input type="checkbox" 
+                     [checked]="filterParams.status.includes('paid')"
+                     (change)="toggleStatusFilter('paid', $event)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              <span class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-700">Paid</span>
+            </label>
+            <label class="inline-flex items-center mobile-tap-target whitespace-nowrap">
+              <input type="checkbox" 
+                     [checked]="filterParams.status.includes('shipped')"
+                     (change)="toggleStatusFilter('shipped', $event)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              <span class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-700">Shipped</span>
+            </label>
+            <label class="inline-flex items-center mobile-tap-target whitespace-nowrap">
+              <input type="checkbox" 
+                     [checked]="filterParams.status.includes('completed')"
+                     (change)="toggleStatusFilter('completed', $event)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              <span class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-700">Completed</span>
+            </label>
+            <label class="inline-flex items-center mobile-tap-target whitespace-nowrap">
+              <input type="checkbox" 
+                     [checked]="filterParams.status.includes('cancelled')"
+                     (change)="toggleStatusFilter('cancelled', $event)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              <span class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-700">Cancelled</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions - Mobile Responsive -->
+    <div class="bg-blue-50 border border-blue-200 rounded-md p-3 sm:p-4 mb-4 sm:mb-6" *ngIf="selectedOrders.size > 0">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-2 sm:ml-3">
+            <p class="text-xs sm:text-sm text-blue-800">
+              {{ selectedOrders.size }} order{{ selectedOrders.size > 1 ? 's' : '' }} selected
+              <span *ngIf="selectedOrders.size > 0" class="text-blue-600 block sm:inline text-xs sm:text-sm">(Total: EGP {{ getSelectedOrdersTotal() | number:'1.2-2' }})</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 sm:space-x-3">
+          <select [(ngModel)]="bulkActionStatus"
+                  class="focus:ring-blue-500 focus:border-blue-500 block w-full text-xs sm:text-sm border-gray-300 rounded-md py-1 sm:py-2">
+            <option value="">Choose action</option>
+            <option value="pending">Mark as Pending</option>
+            <option value="paid">Mark as Paid</option>
+            <option value="shipped">Mark as Shipped</option>
+            <option value="completed">Mark as Completed</option>
+            <option value="cancelled">Mark as Cancelled</option>
+          </select>
+          <button (click)="bulkUpdateStatus(bulkActionStatus)"
+                  [disabled]="!bulkActionStatus"
+                  class="inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <!-- Header with select all -->
+      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between" *ngIf="filteredOrders.length > 0">
+        <label class="inline-flex items-center">
+          <input type="checkbox" 
+                 [checked]="filteredOrders.length > 0 && selectedOrders.size === filteredOrders.length"
+                 (change)="toggleSelectAll($event)"
+                 class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+          <span class="ml-2 text-sm text-gray-600">Select all</span>
+        </label>
+        <div class="text-sm text-gray-500">
+          {{ filteredOrders.length }} order{{ filteredOrders.length > 1 ? 's' : '' }}
+        </div>
+      </div>
+
+      <!-- Orders Cards - Mobile Responsive -->
+      <div class="divide-y divide-gray-200">
+        <div *ngFor="let order of filteredOrders" class="p-3 sm:p-6 hover:bg-gray-50 order-card">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div class="flex items-center gap-2 sm:space-x-4">
+              <input type="checkbox" 
+                     [checked]="selectedOrders.has(order.id)"
+                     (change)="toggleOrderSelection(order.id)"
+                     class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-3 w-3 sm:h-4 sm:w-4">
+              
+              <div class="flex-shrink-0">
+                <div class="text-xs sm:text-sm font-medium text-gray-900">#{{ order.id }}</div>
+                <div class="text-[10px] sm:text-xs text-gray-500">{{ order.created_at | date:'MMM d, y h:mm a' }}</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between sm:justify-start gap-2 sm:space-x-4">
+              <span [ngClass]="getStatusClass(order.status)" class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium status-pill">
+                {{ order.status | titlecase }}
+              </span>
+              
+              <div class="text-right">
+                <div class="text-xs sm:text-sm font-medium text-gray-900">EGP {{ getGrandTotal(order) | number:'1.2-2' }}</div>
+                <div class="text-[10px] sm:text-xs text-gray-500" *ngIf="order.payment_method">
+                  <span *ngIf="order.payment_method === 'cod'">Cash on Delivery</span>
+                  <span *ngIf="order.payment_method === 'vodafone_cash'">Vodafone Cash</span>
+                  <span *ngIf="order.payment_method === 'instapay'">InstaPay</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div class="flex items-center gap-2 sm:space-x-4">
+              <div class="flex-shrink-0">
+                <div class="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">{{ order.shipping_name }}</div>
+                <div class="text-[10px] sm:text-xs text-gray-500">{{ order.shipping_phone }}</div>
+              </div>
+              
+              <div class="text-[10px] sm:text-xs text-gray-500">
+                {{ order.items.length }} item{{ order.items.length > 1 ? 's' : '' }}
+              </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2 sm:space-x-2">
+              <button (click)="openOrderModal(order)"
+                      class="inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 border border-gray-300 shadow-sm text-[10px] sm:text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mobile-tap-target">
+                View details
+              </button>
+              
+              <select [(ngModel)]="order.status" 
+                      (change)="onOrderStatusChange(order.id, $event)"
+                      class="text-[10px] sm:text-xs border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-0.5 sm:py-1.5">
+                <option [value]="order.status">{{ order.status | titlecase }}</option>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="shipped">Shipped</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              
+              <button (click)="printInvoice(order)"
+                      class="inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 border border-gray-300 shadow-sm text-[10px] sm:text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mobile-tap-target">
+                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                <span class="hidden sm:inline">Print</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div *ngIf="filteredOrders.length === 0" class="p-6 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
+          <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+          <div class="mt-6">
+            <button (click)="resetFilters()" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Reset Filters
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="bg-gray-50 px-6 py-3 border-t border-gray-200" *ngIf="filteredOrders.length > 0">
+        <div class="text-sm text-gray-700">
+          Showing {{ filteredOrders.length }} result{{ filteredOrders.length > 1 ? 's' : '' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details Modal - Mobile Responsive -->
+  <div *ngIf="showOrderModal && selectedOrder" class="fixed inset-0 z-50 overflow-y-auto mobile-modal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeOrderModal()"></div>
+    
+    <!-- Modal panel -->
+    <div class="flex min-h-full items-end justify-center p-2 sm:p-4 text-center sm:items-center sm:p-0">
+      <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-full sm:my-8 sm:max-w-4xl">
+        <!-- Modal header -->
+        <div class="bg-gray-50 px-3 py-2 sm:px-6 sm:py-3 flex justify-between items-center border-b border-gray-200 modal-header">
+          <h3 class="text-base sm:text-lg font-medium text-gray-900">Order #{{ selectedOrder.id }} Details</h3>
+          <button type="button" class="text-gray-400 hover:text-gray-500 p-1" (click)="closeOrderModal()">
+            <span class="sr-only">Close</span>
+            <svg class="h-5 w-5 sm:h-6 sm:w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Modal content - Mobile Responsive -->
+        <div class="bg-white px-3 pt-3 pb-3 sm:px-4 sm:pt-5 sm:pb-4 md:p-6 md:pb-4 modal-content">
+          <!-- Customer info -->
+          <div class="mb-4 sm:mb-6 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <div>
+              <h4 class="text-xs sm:text-sm font-medium text-gray-500 mb-1">Customer</h4>
+              <p class="text-sm sm:text-base font-medium">{{ selectedOrder.shipping_name }}</p>
+              <p class="text-xs sm:text-sm text-gray-500">{{ selectedOrder.shipping_phone }}</p>
+            </div>
+            <div class="mt-2 md:mt-0">
+              <h4 class="text-xs sm:text-sm font-medium text-gray-500 mb-1">Shipping Address</h4>
+              <p class="text-sm sm:text-base font-medium break-words">{{ selectedOrder.shipping_address }}</p>
+              <p class="text-xs sm:text-sm text-gray-500">{{ selectedOrder.shipping_city }}</p>
+            </div>
+          </div>
+
+          <!-- Payment Method Information -->
+          <div *ngIf="selectedOrder.payment_method" class="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div class="flex flex-col md:flex-row justify-between">
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 mb-1">Payment Method</h4>
+                <p class="font-medium">
+                  <span *ngIf="selectedOrder.payment_method === 'cod'" class="text-gray-800">Cash on Delivery</span>
+                  <span *ngIf="selectedOrder.payment_method === 'vodafone_cash'" class="text-red-600">Vodafone Cash</span>
+                  <span *ngIf="selectedOrder.payment_method === 'instapay'" class="text-blue-600">InstaPay</span>
+                </p>
+              </div>
+              <div *ngIf="selectedOrder.payment_method !== 'cod'" class="mt-2 md:mt-0">
+                <h4 class="text-sm font-medium text-gray-500 mb-1">Contact</h4>
+                <p class="font-medium">
+                  <span *ngIf="selectedOrder.payment_method === 'vodafone_cash'">{{ paymentDetails.vodafone_cash.whatsapp }}</span>
+                  <span *ngIf="selectedOrder.payment_method === 'instapay'">{{ paymentDetails.instapay.whatsapp }}</span>
+                </p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 mb-1">Payment Status</h4>
+                <p>
+                  <span [ngClass]="getStatusClass(selectedOrder.status)" class="px-2 py-0.5 rounded-full text-xs font-medium">
+                    {{ selectedOrder.status | titlecase }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Instructions -->
+          <div *ngIf="selectedOrder.payment_method === 'vodafone_cash'" class="mb-6 bg-red-50 rounded-md p-4 border border-red-100">
+            <div class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 class="font-medium text-gray-900 mb-1">Vodafone Cash Payment Instructions</h3>
+                <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                  <li>Send <span class="font-semibold">{{ getGrandTotal(selectedOrder) | number:'1.2-2' }} EGP</span> to wallet number: <span class="font-semibold">{{ paymentDetails.vodafone_cash.phone }}</span></li>
+                  <li>Take a screenshot of the transaction</li>
+                  <li>Send the screenshot along with the order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.vodafone_cash.whatsapp }}</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="selectedOrder.payment_method === 'instapay'" class="mb-6 bg-blue-50 rounded-md p-4 border border-blue-100">
+            <div class="flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 class="font-medium text-gray-900 mb-1">InstaPay Payment Instructions</h3>
+                <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                  <li>Send <span class="font-semibold">{{ getGrandTotal(selectedOrder) | number:'1.2-2' }} EGP</span> to InstaPay account: <span class="font-semibold">{{ paymentDetails.instapay.account }}</span></li>
+                  <li>Or use this link to pay directly: <a [href]="paymentDetails.instapay.link" target="_blank" class="text-blue-600 hover:underline">Click here to pay</a></li>
+                  <li>Take a screenshot of the transaction</li>
+                  <li>Send the screenshot along with the order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.instapay.whatsapp }}</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Order items - Mobile Responsive -->
+          <div class="overflow-x-auto responsive-table">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-3 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th scope="col" class="px-2 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                  <th scope="col" class="px-2 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                  <th scope="col" class="px-2 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let item of selectedOrder.items" class="hover:bg-gray-50">
+                  <td class="px-3 sm:px-6 py-2 sm:py-4">
+                    <div class="flex items-center">
+                      <img *ngIf="item.product_image" 
+                           [src]="item.product_image" 
+                           [alt]="item.product_name"
+                           (error)="onImageError($event)"
+                           class="h-10 w-10 sm:h-16 sm:w-16 rounded-md object-cover mr-2 sm:mr-4">
+                      <div>
+                        <div class="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2">{{ item.product_name }}</div>
+                        <div class="text-[10px] sm:text-xs text-gray-500">ID: {{ item.product_id }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-500">
+                    {{ item.quantity }}
+                  </td>
+                  <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-500">
+                    EGP {{ item.unit_price | number:'1.2-2' }}
+                  </td>
+                  <td class="px-2 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-900 font-medium">
+                    EGP {{ (item.quantity * item.unit_price) | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Order summary - Mobile Responsive -->
+          <div class="mt-4 sm:mt-6 border-t border-gray-200 pt-3 sm:pt-4">
+            <div class="max-w-full sm:max-w-xs ml-0 sm:ml-auto space-y-1 sm:space-y-2">
+              <div class="flex justify-between text-xs sm:text-sm">
+                <span class="text-gray-600">Subtotal:</span>
+                <span class="font-medium text-gray-900">EGP {{ getSubtotalBeforeDiscount(selectedOrder) | number:'1.2-2' }}</span>
+              </div>
+              <div *ngIf="getDiscount(selectedOrder) > 0" class="flex justify-between text-xs sm:text-sm">
+                <span class="text-green-600">Discount:</span>
+                <span class="font-medium text-green-600">- EGP {{ getDiscount(selectedOrder) | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between text-xs sm:text-sm">
+                <span class="text-gray-600">Delivery Fee:</span>
+                <span class="font-medium text-gray-900">EGP {{ getDeliveryFee(selectedOrder) | number:'1.2-2' }}</span>
+              </div>
+              <div class="flex justify-between pt-1 sm:pt-2 border-t border-gray-200">
+                <span class="font-medium text-gray-900">Grand Total:</span>
+                <span class="font-bold text-indigo-600">EGP {{ getGrandTotal(selectedOrder) | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal footer - Mobile Responsive -->
+        <div class="bg-gray-50 px-3 py-2 sm:px-6 sm:py-3 flex flex-col sm:flex-row-reverse gap-2 sm:gap-0 border-t border-gray-200 modal-footer">
+          <button type="button" 
+                  class="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:w-auto"
+                  (click)="updateStatus(selectedOrder.id, selectedOrder.status)">
+            Update Status
+          </button>
+          <button type="button" 
+                  class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:w-auto"
+                  (click)="closeOrderModal()">
+            Close
+          </button>
+          <button type="button" 
+                  class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base font-medium text-indigo-700 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:w-auto"
+                  (click)="printInvoice(selectedOrder)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            <span class="hidden sm:inline">Print Invoice</span>
+            <span class="inline sm:hidden">Print</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden PDF Render Area -->
+  <div #pdfContent style="position: fixed; left: -9999px; top: 0; width: 800px;"></div>
+</div>

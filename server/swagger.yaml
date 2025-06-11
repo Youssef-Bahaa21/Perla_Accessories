@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: Node.js REST API
+  description: API documentation for authentication, categories, and coupons.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '201':
+          description: User registered successfully
+
+  /auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: User logged in successfully
+
+  /auth/logout:
+    post:
+      summary: Logout the user
+      responses:
+        '204':
+          description: Successfully logged out
+
+  /auth/me:
+    get:
+      summary: Get current logged-in user
+      responses:
+        '200':
+          description: User info
+
+  /categories:
+    get:
+      summary: Get all categories
+      responses:
+        '200':
+          description: A list of categories
+    post:
+      summary: Create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '201':
+          description: Category created
+
+  /categories/{id}:
+    get:
+      summary: Get a specific category
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '200':
+          description: A category
+    put:
+      summary: Update a category
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '204':
+          description: Category updated
+    delete:
+      summary: Delete a category
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '204':
+          description: Category deleted
+
+  /coupons:
+    get:
+      summary: Get all coupons
+      responses:
+        '200':
+          description: List of coupons
+    post:
+      summary: Create a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coupon'
+      responses:
+        '201':
+          description: Coupon created
+
+  /coupons/{id}:
+    get:
+      summary: Get coupon details
+      parameters:
+        - $ref: '#/components/parameters/CouponId'
+      responses:
+        '200':
+          description: A coupon
+    put:
+      summary: Update a coupon
+      parameters:
+        - $ref: '#/components/parameters/CouponId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coupon'
+      responses:
+        '204':
+          description: Coupon updated
+    delete:
+      summary: Delete a coupon
+      parameters:
+        - $ref: '#/components/parameters/CouponId'
+      responses:
+        '204':
+          description: Coupon deleted
+
+  /coupons/{id}/usage:
+    get:
+      summary: Get usage data for a specific coupon
+      parameters:
+        - $ref: '#/components/parameters/CouponId'
+      responses:
+        '200':
+          description: Coupon usage stats
+
+  /coupons/validate:
+    post:
+      summary: Validate a coupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CouponValidation'
+      responses:
+        '200':
+          description: Validation result
+
+components:
+  parameters:
+    CategoryId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    CouponId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    UserCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    Coupon:
+      type: object
+      properties:
+        code:
+          type: string
+        discount:
+          type: number
+        expiresAt:
+          type: string
+          format: date-time
+
+    CouponValidation:
+      type: object
+      properties:
+        code:
+          type: string
+      required:
+        - code

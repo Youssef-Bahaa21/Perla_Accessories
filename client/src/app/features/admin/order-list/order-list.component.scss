@@ -1,0 +1,92 @@
+// Mobile-first responsive styles
+.responsive-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+// Overflow handling for order cards
+.order-card {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+// Mobile-friendly padding/margin adjustments
+@media (max-width: 640px) {
+    .sm-padding {
+        padding: 0.75rem !important;
+    }
+
+    .sm-margin {
+        margin: 0.75rem !important;
+    }
+
+    .sm-flex-col {
+        flex-direction: column !important;
+    }
+
+    .sm-gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .sm-text-xs {
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
+    }
+}
+
+// Mobile modal adjustments
+.mobile-modal {
+    @media (max-width: 640px) {
+        padding: 0.5rem !important;
+
+        .modal-content {
+            padding: 1rem !important;
+        }
+
+        .modal-header,
+        .modal-footer {
+            padding: 0.75rem !important;
+        }
+    }
+}
+
+// Enhanced tap targets for mobile
+.mobile-tap-target {
+    @media (max-width: 640px) {
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+    }
+}
+
+// Responsive status pills
+.status-pill {
+    white-space: nowrap;
+
+    @media (max-width: 640px) {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+}
+
+// Mobile filter optimization
+.filters-container {
+    @media (max-width: 640px) {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0.5rem;
+
+        &::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+    }
+}

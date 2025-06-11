@@ -1,0 +1,237 @@
+<!-- src/app/features/shiiping-details/shiiping-details.component.html -->
+<div class="min-h-screen bg-gray-50 py-8 sm:py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    
+    <!-- Shopify-style Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-medium text-gray-900">Checkout</h1>
+    </div>
+    
+    <!-- Multi-step Progress -->
+    <div class="flex justify-center mb-8">
+      <ol class="flex items-center w-full max-w-3xl">
+        <li class="flex items-center text-pink-600 font-medium">
+          <span class="flex items-center justify-center w-6 h-6 bg-pink-600 rounded-full shrink-0 text-white text-sm">1</span>
+          <span class="ml-2 text-sm">Information</span>
+        </li>
+        <li class="flex items-center w-full">
+          <div class="h-0.5 w-full bg-gray-300 mx-2"></div>
+        </li>
+        <li class="flex items-center text-gray-400">
+          <span class="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-full shrink-0 text-gray-500 text-sm">2</span>
+          <span class="ml-2 text-sm">Shipping</span>
+        </li>
+        <li class="flex items-center w-full">
+          <div class="h-0.5 w-full bg-gray-300 mx-2"></div>
+        </li>
+        <li class="flex items-center text-gray-400">
+          <span class="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-full shrink-0 text-gray-500 text-sm">3</span>
+          <span class="ml-2 text-sm">Payment</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Form Column -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6">
+          <!-- Form heading -->
+          <div class="mb-6 pb-4 border-b border-gray-100">
+            <h2 class="text-lg font-medium text-gray-900">Contact information</h2>
+          </div>
+          
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Email Field -->
+            <div class="form-group">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input 
+                formControlName="email" 
+                type="email" 
+                class="w-full py-3 px-4 rounded-md border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:ring-opacity-50 transition-colors text-sm" 
+                placeholder="Enter your email address"
+              />
+              <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" 
+                  class="text-sm text-red-600 mt-1">
+                Please enter a valid email address
+              </div>
+            </div>
+
+            <!-- Shipping Section -->
+            <div class="pt-4 border-t border-gray-100">
+              <h2 class="text-lg font-medium text-gray-900 mb-6">Shipping address</h2>
+              
+              <div class="space-y-4">
+                <!-- Name Field -->
+                <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Full name
+                  </label>
+                  <input 
+                    formControlName="name" 
+                    type="text" 
+                    class="w-full py-3 px-4 rounded-md border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:ring-opacity-50 transition-colors text-sm" 
+                    placeholder="Enter your full name"
+                  />
+                  <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" 
+                      class="text-sm text-red-600 mt-1">
+                    Name is required
+                  </div>
+                </div>
+
+                <!-- Address Field -->
+                <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Address
+                  </label>
+                  <input 
+                    formControlName="address" 
+                    type="text" 
+                    class="w-full py-3 px-4 rounded-md border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:ring-opacity-50 transition-colors text-sm" 
+                    placeholder="Enter your street address"
+                  />
+                  <div *ngIf="form.get('address')?.invalid && form.get('address')?.touched" 
+                      class="text-sm text-red-600 mt-1">
+                    Address is required
+                  </div>
+                </div>
+
+                <!-- City Field -->
+                <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    City
+                  </label>
+                  
+                  <!-- Loading state for cities -->
+                  <div *ngIf="citiesLoading" class="w-full py-3 px-4 rounded-md border border-gray-300 bg-gray-50 flex items-center">
+                    <svg class="animate-spin h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-gray-500 text-sm">Loading cities...</span>
+                  </div>
+                  
+                  <!-- City dropdown when loaded -->
+                  <select *ngIf="!citiesLoading"
+                    formControlName="city" 
+                    class="w-full py-3 px-4 rounded-md border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:ring-opacity-50 transition-colors text-sm appearance-none" 
+                  >
+                    <option value="" disabled selected>Select your city</option>
+                    <option *ngFor="let city of shippingCities" [value]="city.city_name">
+                      {{ city.city_name }} 
+                    </option>
+                  </select>
+                  
+                  <div *ngIf="form.get('city')?.invalid && form.get('city')?.touched" 
+                      class="text-sm text-red-600 mt-1">
+                    Please select a city
+                  </div>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="form-group">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <input 
+                    formControlName="phone" 
+                    type="tel" 
+                    class="w-full py-3 px-4 rounded-md border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:ring-opacity-50 transition-colors text-sm" 
+                    placeholder="Enter Egyptian mobile number (01xxxxxxxxx)"
+                  />
+                  
+                  <!-- Required error message -->
+                  <div *ngIf="form.get('phone')?.errors?.['required'] && form.get('phone')?.touched" 
+                      class="text-sm text-red-600 mt-1">
+                    Phone number is required
+                  </div>
+                  
+                  <!-- Invalid Egyptian phone error message -->
+                  <div *ngIf="form.get('phone')?.errors?.['invalidEgyptianPhone'] && form.get('phone')?.touched" 
+                      class="text-sm text-red-600 mt-1">
+                    Please enter a valid Egyptian mobile number (01xxxxxxxxx)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-6 flex justify-between items-center">
+              <a routerLink="/cart" class="text-pink-600 hover:text-pink-800 text-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Return to cart
+              </a>
+              <button
+                type="submit"
+                [disabled]="form.invalid"
+                class="py-3 px-6 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-md shadow-sm transition-colors"
+                [class.opacity-70]="form.invalid"
+                [class.cursor-not-allowed]="form.invalid"
+              >
+                Continue to shipping
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Order Summary Column -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-50 rounded-md p-6 sticky top-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Order summary</h3>
+          
+          <div class="divide-y divide-gray-200">
+            <div class="py-3 flex items-center justify-between text-sm">
+              <span class="text-gray-500">Subtotal</span>
+              <span class="font-medium">{{ (cartTotal || 0) | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="py-3 flex items-center justify-between text-sm">
+              <span class="text-gray-500">Shipping</span>
+              <span>Calculated at next step</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <span class="font-medium">Total</span>
+              <span class="font-bold text-lg">{{ (cartTotal || 0) | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-16 border-t border-gray-200 pt-8 pb-4">
+      <div class="flex flex-wrap justify-center gap-x-6 text-sm text-gray-500">
+        <a href="#" class="hover:text-pink-600">Refund policy</a>
+        <a href="#" class="hover:text-pink-600">Privacy policy</a>
+        <a href="#" class="hover:text-pink-600">Terms of service</a>
+        <a href="#" class="hover:text-pink-600">Contact</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<style>
+  /* Better focus styles for accessibility */
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+  }
+  
+  /* Improved disabled button styles */
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  /* Animation for form elements */
+  .form-group {
+    transition: all 0.3s ease;
+  }
+  
+  .form-group:hover {
+    transform: translateY(-2px);
+  }
+</style>

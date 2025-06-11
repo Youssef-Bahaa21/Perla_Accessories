@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,
+body {
+    height: 100%;
+}
+
+
+
+app-root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+
+
+
+
+
+
+#toast-container {
+    top: 80px !important;
+    /* ✅ below the navbar */
+    right: 1rem !important;
+    /* ✅ stick to the right side */
+    left: auto !important;
+    /* ✅ remove any left positioning */
+    transform: none !important;
+    /* ✅ no centering */
+    width: auto !important;
+    max-width: 90% !important;
+    z-index: 9999 !important;
+    position: fixed !important;
+}
+
+// Style for the toast itself
+#toast-container>div {
+    background: linear-gradient(to right, #ec4899, #f472b6);
+    /* ✅ pink gradient */
+    color: white;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Specific Toast types */
+.toast-success {
+    background: linear-gradient(to right, #ec4899, #f472b6) !important;
+}
+
+.toast-error {
+    background: linear-gradient(to right, #db2777, #be185d) !important;
+}
+
+.toast-info {
+    background: linear-gradient(to right, #f9a8d4, #f472b6) !important;
+}
+
+.toast-warning {
+    background: linear-gradient(to right, #f472b6, #f9a8d4) !important;
+}
+
+/* Toast progress bar pink */
+.toast-progress {
+    background-color: #db2777 !important;
+}
+
+/* Animation for sliding in from right */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Animation for sliding out to right */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Apply the animations */
+#toast-container>div {
+    animation: slideInRight 0.5s ease-out, slideOutRight 0.5s ease-in 2.5s;
+}
+
+/* Arrows */
+.carousel-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    font-size: 26px;
+    border-radius: 9999px;
+    background-color: white;
+    border: 2px solid #ec4899;
+    color: #ec4899;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.carousel-nav-btn:hover {
+    background-color: #ec4899;
+    color: white;
+    transform: scale(1.15);
+}
+
+/* Positioning owl-nav buttons */
+.owl-nav {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex !important;
+    justify-content: space-between;
+    padding: 0 8px;
+    pointer-events: none;
+    /* allow arrows to float over image */
+    z-index: 20;
+}
+
+.owl-nav button {
+    pointer-events: auto;
+    /* enable clicking */
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+swiper-container::part(pagination) {
+    --swiper-theme-color: #ec4899;
+    /* Tailwind pink-500 */
+}
+
+:host {
+    display: block;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+:host.ng-animating.ng-leave {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* ✅ Cart Modal Animations */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutToRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.animate-slideInFromRight {
+    animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+.animate-slideOutToRight {
+    animation: slideOutToRight 0.3s ease-in forwards;
+}

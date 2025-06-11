@@ -1,0 +1,305 @@
+<!-- src/app/features/checkout/checkout.component.html -->
+<div class="min-h-screen bg-gray-50 py-8 sm:py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    
+    <!-- Shopify-style Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-medium text-gray-900">Checkout</h1>
+    </div>
+    
+    <!-- Multi-step Progress -->
+    <div class="flex justify-center mb-8">
+      <ol class="flex items-center w-full max-w-3xl">
+        <li class="flex items-center text-gray-500 font-medium">
+          <span class="flex items-center justify-center w-6 h-6 bg-pink-600 rounded-full shrink-0 text-white text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+          <span class="ml-2 text-sm">Information</span>
+        </li>
+        <li class="flex items-center w-full">
+          <div class="h-0.5 w-full bg-pink-600 mx-2"></div>
+        </li>
+        <li class="flex items-center text-pink-600">
+          <span class="flex items-center justify-center w-6 h-6 bg-pink-600 rounded-full shrink-0 text-white text-sm">2</span>
+          <span class="ml-2 text-sm">Shipping</span>
+        </li>
+        <li class="flex items-center w-full">
+          <div class="h-0.5 w-full bg-gray-300 mx-2"></div>
+        </li>
+        <li class="flex items-center text-gray-400">
+          <span class="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-full shrink-0 text-gray-500 text-sm">3</span>
+          <span class="ml-2 text-sm">Payment</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content Column -->
+      <div class="lg:col-span-2">
+        <!-- Shipping Info Section -->
+        <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h2 class="text-base font-medium text-gray-900">Contact</h2>
+              <p class="text-sm text-gray-600">{{ shippingInfo?.email }}</p>
+            </div>
+            <a routerLink="/shipping" class="text-sm text-pink-600 hover:text-pink-800">Change</a>
+          </div>
+          
+          <div class="border-t border-gray-100 pt-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="text-base font-medium text-gray-900">Ship to</h2>
+                <p class="text-sm text-gray-600">{{ shippingInfo?.address }}, {{ shippingInfo?.city }}</p>
+              </div>
+              <a routerLink="/shipping" class="text-sm text-pink-600 hover:text-pink-800">Change</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Shipping Method Section -->
+        <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Shipping method</h2>
+          
+          <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <span class="block w-4 h-4 rounded-full border-4 border-pink-600 mr-2"></span>
+                <span class="text-sm text-gray-800">Standard shipping</span>
+              </div>
+              <span class="text-sm font-medium">{{ deliveryFee | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Payment Method Section -->
+        <div class="bg-white rounded-md shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Payment method</h2>
+          
+          <div class="space-y-3">
+            <!-- Cash on Delivery -->
+            <div (click)="selectPaymentMethod('cod')"
+                class="border rounded-md p-4 flex items-center gap-3 cursor-pointer transition-all"
+                [class.border-pink-600]="paymentMethod === 'cod'"
+                [class.bg-pink-50]="paymentMethod === 'cod'"
+                [class.border-gray-200]="paymentMethod !== 'cod'">
+                              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                    [class.border-pink-600]="paymentMethod === 'cod'"
+                    [class.border-gray-400]="paymentMethod !== 'cod'">
+                  <div *ngIf="paymentMethod === 'cod'" class="w-2.5 h-2.5 rounded-full bg-pink-600"></div>
+                </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-800">Cash on Delivery</p>
+                <p class="text-sm text-gray-600">Pay when you receive your order</p>
+              </div>
+              <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+            </div>
+            
+            <!-- Vodafone Cash -->
+            <div (click)="selectPaymentMethod('vodafone_cash')"
+                class="border rounded-md p-4 flex items-center gap-3 cursor-pointer transition-all"
+                [class.border-pink-600]="paymentMethod === 'vodafone_cash'"
+                [class.bg-pink-50]="paymentMethod === 'vodafone_cash'"
+                [class.border-gray-200]="paymentMethod !== 'vodafone_cash'">
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                  [class.border-pink-600]="paymentMethod === 'vodafone_cash'"
+                  [class.border-gray-400]="paymentMethod !== 'vodafone_cash'">
+                <div *ngIf="paymentMethod === 'vodafone_cash'" class="w-2.5 h-2.5 rounded-full bg-pink-600"></div>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-800">Vodafone Cash</p>
+                <p class="text-sm text-gray-600">Pay using Vodafone Cash mobile payment</p>
+              </div>
+              <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+            
+            <!-- InstaPay -->
+            <div (click)="selectPaymentMethod('instapay')"
+                class="border rounded-md p-4 flex items-center gap-3 cursor-pointer transition-all"
+                [class.border-pink-600]="paymentMethod === 'instapay'"
+                [class.bg-pink-50]="paymentMethod === 'instapay'"
+                [class.border-gray-200]="paymentMethod !== 'instapay'">
+              <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                  [class.border-pink-600]="paymentMethod === 'instapay'"
+                  [class.border-gray-400]="paymentMethod !== 'instapay'">
+                <div *ngIf="paymentMethod === 'instapay'" class="w-2.5 h-2.5 rounded-full bg-pink-600"></div>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-800">InstaPay</p>
+                <p class="text-sm text-gray-600">Pay using InstaPay electronic payment system</p>
+              </div>
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Payment Method Details -->
+          <div *ngIf="paymentMethod === 'vodafone_cash'" class="mt-4 p-4 border border-red-200 bg-red-50 rounded-md">
+            <div class="mb-1 font-medium text-gray-800">Vodafone Cash Payment Details:</div>
+            <ul class="text-sm space-y-1 text-gray-700">
+              <li>Wallet Number: {{ paymentDetails.vodafone_cash.phone }}</li>
+              <li>Please send the exact amount: {{ grandTotal | currency:'EGP ':'symbol':'1.2-2' }}</li>
+              <li>After payment, contact us on WhatsApp: {{ paymentDetails.vodafone_cash.whatsapp }}</li>
+            </ul>
+          </div>
+          
+          <div *ngIf="paymentMethod === 'instapay'" class="mt-4 p-4 border border-blue-200 bg-blue-50 rounded-md">
+            <div class="mb-1 font-medium text-gray-800">InstaPay Payment Details:</div>
+            <ul class="text-sm space-y-1 text-gray-700">
+              <li>InstaPay Account: {{ paymentDetails.instapay.account }}</li>
+              <li>InstaPay Link: 
+                <a [href]="paymentDetails.instapay.link" target="_blank" class="text-pink-600 hover:underline">Click here to pay</a>
+              </li>
+              <li>After payment, contact us on WhatsApp: {{ paymentDetails.instapay.whatsapp }}</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Order Actions -->
+        <div class="mt-6 flex justify-between">
+          <a routerLink="/shipping" class="text-pink-600 hover:text-pink-800 text-sm flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Return to shipping
+          </a>
+          <button
+            (click)="placeOrder()"
+            [disabled]="loading"
+            class="py-3 px-6 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-md shadow-sm transition-colors"
+          >
+            <span *ngIf="!loading">Complete order</span>
+            <div *ngIf="loading" class="flex items-center">
+              <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </div>
+          </button>
+        </div>
+        
+        <!-- Error message -->
+        <div *ngIf="error" class="mt-4 p-3 bg-red-100 text-red-700 text-sm rounded-md">
+          {{ error }}
+        </div>
+      </div>
+      
+      <!-- Order Summary Column -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-50 rounded-md p-6 sticky top-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Order summary</h3>
+          
+          <!-- Products List -->
+          <div class="mb-4 max-h-80 overflow-y-auto">
+            <div *ngFor="let item of cartItems" class="flex py-3 border-b border-gray-200 last:border-b-0">
+              <div class="h-16 w-16 flex-shrink-0 rounded-md border border-gray-200 overflow-hidden relative bg-gray-100">
+                <img *ngIf="item.product.images?.[0]?.url" [src]="item.product.images?.[0]?.url" [alt]="item.product.name" class="h-full w-full object-cover">
+                <div class="absolute top-0 right-0 bg-gray-800 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full -mt-1 -mr-1">
+                  {{ item.qty }}
+                </div>
+              </div>
+              <div class="ml-4 flex-1">
+                <h4 class="text-sm font-medium text-gray-900 line-clamp-2">{{ item.product.name }}</h4>
+                <p class="mt-1 text-sm text-gray-500">{{ item.product.price | currency:'EGP ':'symbol':'1.2-2' }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Totals -->
+          <div class="border-t border-gray-200 pt-4 space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-medium">{{ total | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Shipping</span>
+              <span class="font-medium">{{ deliveryFee | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+            <div *ngIf="discount > 0" class="flex justify-between text-green-600 text-sm">
+              <span>Discount</span>
+              <span>- {{ discount | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            </div>
+            
+            <!-- Coupon -->
+            <!-- Show coupon input only for logged-in users -->
+            <div class="pt-2 pb-2" *ngIf="isLoggedIn() && !couponApplied">
+              <div class="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  [(ngModel)]="couponCode" 
+                  [disabled]="couponLocked"
+                  placeholder="Discount code" 
+                  class="flex-1 py-2 px-3 border border-gray-300 text-sm rounded-md"
+                />
+                <button 
+                  (click)="applyCoupon()"
+                  [disabled]="!couponCode.trim() || couponLocked"
+                  class="py-2 px-3 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+              <div *ngIf="couponError" class="text-xs text-red-600 mt-1">{{ couponError }}</div>
+            </div>
+            
+            <!-- Login message for guests -->
+            <div class="pt-2 pb-2" *ngIf="!isLoggedIn()">
+              <div class="p-3 bg-gray-100 rounded-md text-center">
+                <p class="text-xs text-gray-600 mb-1">Sign in to use discount codes</p>
+                <a routerLink="/login" [queryParams]="{returnUrl: '/checkout'}" class="text-pink-600 hover:text-pink-700 text-sm font-medium">
+                  Sign in
+                </a>
+              </div>
+            </div>
+            
+            <div *ngIf="couponApplied" class="flex justify-between items-center py-2 text-green-600 text-sm">
+              <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Coupon: {{ couponApplied }}</span>
+              </div>
+              <button 
+                (click)="removeCoupon()"
+                class="text-xs underline text-gray-500 hover:text-gray-700"
+              >
+                Remove
+              </button>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-3 flex justify-between">
+              <span class="font-medium text-gray-900">Total</span>
+              <span class="text-xl font-bold text-gray-900">
+                {{ grandTotal | currency:'EGP ':'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="mt-16 border-t border-gray-200 pt-8 pb-4">
+      <div class="flex flex-wrap justify-center gap-x-6 text-sm text-gray-500">
+        <a href="#" class="hover:text-pink-600">Refund policy</a>
+        <a href="#" class="hover:text-pink-600">Privacy policy</a>
+        <a href="#" class="hover:text-pink-600">Terms of service</a>
+        <a href="#" class="hover:text-pink-600">Contact</a>
+      </div>
+    </footer>
+  </div>
+</div>

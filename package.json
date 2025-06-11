@@ -1,0 +1,39 @@
+{
+    "name": "perla-accessories",
+    "version": "1.0.0",
+    "description": "Perla Accessories E-commerce Platform",
+    "private": true,
+    "workspaces": [
+        "client",
+        "server"
+    ],
+    "scripts": {
+        "install:client": "cd client && npm install",
+        "install:server": "cd server && npm install",
+        "install:all": "npm run install:client && npm run install:server",
+        "build:client": "cd client && npm run build",
+        "build:server": "cd server && npm run build",
+        "build:all": "npm run build:server && npm run build:client",
+        "start:client": "cd client && npm start",
+        "start:server": "cd server && npm start",
+        "dev:client": "cd client && npm start",
+        "dev:server": "cd server && npm run dev"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/perla-accessories.git"
+    },
+    "keywords": [
+        "ecommerce",
+        "jewelry",
+        "angular",
+        "nodejs",
+        "typescript"
+    ],
+    "author": "Youssef Bahaa",
+    "license": "UNLICENSED",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    }
+}

@@ -1,0 +1,51 @@
+<!-- Scrollable promo bar -->
+<div class="w-full bg-gradient-to-r from-pink-50 via-pink-100 to-pink-200 overflow-hidden h-10 flex items-center shadow-sm relative z-10">
+  <div class="whitespace-nowrap animate-marquee text-pink-700 font-medium text-xs sm:text-sm px-4 flex">
+    <span class="flex items-center mx-8">Free Shipping + 1999 Orders</span>
+    <span class="flex items-center mx-8">Unlock 5% Off At 3K</span>
+    <span class="flex items-center mx-8">New Arrivals Just Dropped</span>
+    <span class="flex items-center mx-8">Handmade with Love in Egypt</span>
+    <span class="flex items-center mx-8">Fast Delivery</span>
+    <span class="flex items-center mx-8">Limited Edition Items</span>
+    <span class="flex items-center mx-8">Gift Wrapping Available</span>
+    <span class="flex items-center mx-8 bg-pink-100/70 px-3 py-0.5 rounded-full border border-pink-200">
+      <span class="mr-2 text-pink-600 font-bold">PERLA10</span> 
+      <span>10% off first order</span>
+    </span>
+  </div>
+  <div class="whitespace-nowrap animate-marquee2 text-pink-700 font-medium text-xs sm:text-sm px-4 flex absolute left-full top-0 h-full items-center">
+    <span class="flex items-center mx-8">Free Shipping + 1999 Orders</span>
+    <span class="flex items-center mx-8">Unlock 5% Off At 3K</span>
+    <span class="flex items-center mx-8">New Arrivals Just Dropped</span>
+    <span class="flex items-center mx-8">Handmade with Love in Egypt</span>
+    <span class="flex items-center mx-8">Fast Delivery</span>
+    <span class="flex items-center mx-8">Limited Edition Items</span>
+    <span class="flex items-center mx-8">Gift Wrapping Available</span>
+    <span class="flex items-center mx-8 bg-pink-100/70 px-3 py-0.5 rounded-full border border-pink-200">
+      <span class="mr-2 text-pink-600 font-bold">PERLA10</span> 
+      <span>10% off first order</span>
+    </span>
+  </div>
+</div>
+<style>
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  @keyframes marquee2 {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+  }
+  .animate-marquee2 {
+    animation: marquee2 30s linear infinite;
+    will-change: transform;
+  }
+  /* Add hover pause effect */
+  .animate-marquee:hover, .animate-marquee2:hover {
+    animation-play-state: paused;
+  }
+</style>

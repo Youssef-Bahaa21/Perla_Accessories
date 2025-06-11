@@ -1,0 +1,201 @@
+<div class="min-h-screen bg-gray-50 py-12">
+  <div class="max-w-3xl mx-auto px-4">
+    <div *ngIf="loading" class="flex justify-center py-10">
+      <div class="w-12 h-12">
+        <svg class="animate-spin h-full w-full text-pink-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    </div>
+    <div *ngIf="error" class="p-4 bg-red-50 text-red-600 rounded-md text-center">{{ error }}</div>
+
+    <div *ngIf="order" class="bg-white shadow-sm rounded-md p-6 sm:p-10 border border-gray-200">
+      <!-- Success header -->
+      <div class="text-center pb-8 border-b border-gray-100">
+        <div class="mb-4 flex justify-center">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-medium text-gray-900 mb-4">
+          Thank you for your order!
+        </h1>
+        <p class="text-gray-600">
+          Your order <span class="font-semibold">#{{ order.id }}</span> has been placed and is being processed.
+        </p>
+        <p class="text-gray-600 mt-1">
+          We've sent a confirmation email to <span class="font-medium">{{ order.shipping_email }}</span>
+        </p>
+      </div>
+
+      <!-- Order information -->
+      <div class="py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Customer Information -->
+          <div>
+            <h3 class="font-medium text-gray-900 mb-3">Customer information</h3>
+            <div class="space-y-3 text-gray-600">
+              <div>
+                <p class="text-sm text-gray-500">Contact information</p>
+                <p>{{ order.shipping_email }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Shipping address</p>
+                <p>{{ order.shipping_name }}</p>
+                <p>{{ order.shipping_address }}</p>
+                <p>{{ order.shipping_city }}</p>
+                <p>{{ order.shipping_phone }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Payment Information -->
+          <div>
+            <h3 class="font-medium text-gray-900 mb-3">Payment information</h3>
+            <div class="space-y-3 text-gray-600">
+              <div>
+                <p class="text-sm text-gray-500">Payment method</p>
+                <p>
+                  <span *ngIf="paymentMethod === 'cod'" class="text-gray-800">
+                    Cash on Delivery
+                  </span>
+                  <span *ngIf="paymentMethod === 'vodafone_cash'" class="text-red-600">
+                    Vodafone Cash
+                  </span>
+                  <span *ngIf="paymentMethod === 'instapay'" class="text-pink-600">
+                    InstaPay
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Payment status</p>
+                <p>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Pending
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Instructions -->
+      <div *ngIf="paymentMethod === 'vodafone_cash'" class="border border-red-200 bg-red-50 rounded-md p-4 mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 class="font-medium text-gray-900">Vodafone Cash Payment Instructions</h2>
+        </div>
+        <ul class="list-disc pl-5 text-sm space-y-2 text-gray-700">
+          <li>Send <span class="font-semibold">{{ grandTotal | currency:'EGP ':'symbol':'1.2-2' }}</span> to wallet number: <span class="font-semibold">{{ paymentDetails.vodafone_cash.phone }}</span></li>
+          <li>Take a screenshot of the transaction</li>
+          <li>Send the screenshot along with your order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.vodafone_cash.whatsapp }}</span></li>
+        </ul>
+      </div>
+      
+      <div *ngIf="paymentMethod === 'instapay'" class="border border-blue-200 bg-blue-50 rounded-md p-4 mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 class="font-medium text-gray-900">InstaPay Payment Instructions</h2>
+        </div>
+        <ul class="list-disc pl-5 text-sm space-y-2 text-gray-700">
+          <li>Send <span class="font-semibold">{{ grandTotal | currency:'EGP ':'symbol':'1.2-2' }}</span> to InstaPay account: <span class="font-semibold">{{ paymentDetails.instapay.account }}</span></li>
+          <li>Or use this link to pay directly: <a [href]="paymentDetails.instapay.link" target="_blank" class="text-pink-600 hover:underline">{{ paymentDetails.instapay.link }}</a></li>
+          <li>Take a screenshot of the transaction</li>
+          <li>Send the screenshot along with your order number to WhatsApp: <span class="font-semibold">{{ paymentDetails.instapay.whatsapp }}</span></li>
+        </ul>
+      </div>
+
+      <!-- Order items -->
+      <div class="border-t border-gray-100 pt-8">
+        <h3 class="font-medium text-gray-900 mb-4">Order summary</h3>
+        
+        <!-- Product Items List -->
+        <div class="mb-6 overflow-hidden rounded-lg border border-gray-200">
+          <div class="divide-y divide-gray-200">
+            <div *ngFor="let item of order?.items" class="p-4 flex items-start space-x-4">
+              <div class="flex-shrink-0">
+                <img 
+                  [src]="item.product_image || fallbackImage" 
+                  [alt]="item.product_name || 'Product'"
+                  (error)="onImageError($event)"
+                  class="h-16 w-16 rounded-lg object-cover border border-gray-200 shadow-sm"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">{{ item.product_name || 'Product #' + item.product_id }}</p>
+                <div class="mt-1 flex flex-wrap gap-3 text-sm text-gray-500">
+                  <span>Qty: {{ item.quantity }}</span>
+                  <span>Unit Price: {{ item.unit_price | currency:'EGP ':'symbol':'1.2-2' }}</span>
+                  <span class="font-medium">Total: {{ (item.unit_price * item.quantity) | currency:'EGP ':'symbol':'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Order Totals -->
+        <div class="divide-y divide-gray-100">
+          <div class="py-3 flex justify-between">
+            <span class="text-gray-600">Subtotal</span>
+            <span class="font-medium text-gray-900">{{ subtotal | currency:'EGP ':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-gray-600">Shipping</span>
+            <span class="font-medium text-gray-900">{{ order.delivery_fee | currency:'EGP ':'symbol':'1.2-2' }}</span>
+          </div>
+          <div *ngIf="discountAmount > 0" class="py-3 flex justify-between text-green-600">
+            <span>Discount</span>
+            <span>- {{ discountAmount | currency:'EGP ':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="font-medium text-gray-900">Total</span>
+            <span class="text-lg font-bold text-gray-900">{{ grandTotal | currency:'EGP ':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Continue Shopping -->
+      <div class="mt-8 flex justify-center space-x-4">
+        <a routerLink="/" class="py-3 px-6 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-md shadow-sm transition-colors">
+          Continue shopping
+        </a>
+        
+        <!-- Buy Again button - only shown when coming from email -->
+        <button 
+          *ngIf="isFromEmail" 
+          (click)="buyAgain()" 
+          class="py-3 px-6 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md shadow-sm transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Buy Again
+        </button>
+      </div>
+      
+      <!-- Error message for buy again -->
+      <div *ngIf="buyAgainMessage" class="mt-4 text-center">
+        <p class="text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 shadow-sm inline-block">
+          {{ buyAgainMessage }}
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="mt-16 border-t border-gray-200 pt-8 pb-4 max-w-3xl mx-auto">
+    <div class="flex flex-wrap justify-center gap-x-6 text-sm text-gray-500">
+      <a href="#" class="hover:text-pink-600">Refund policy</a>
+      <a href="#" class="hover:text-pink-600">Privacy policy</a>
+      <a href="#" class="hover:text-pink-600">Terms of service</a>
+      <a href="#" class="hover:text-pink-600">Contact</a>
+    </div>
+  </footer>
+</div>

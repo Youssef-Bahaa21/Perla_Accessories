@@ -1,0 +1,39 @@
+<!-- app.component.html -->
+<div class="min-h-screen flex flex-col">
+  <app-header></app-header>
+
+  <main class="flex-grow pt-[120px]">  
+    <!-- Toast Notifications -->
+    <div
+      id="toast-container"
+      class="fixed z-50 left-1/2 -translate-x-1/2 mt-20 w-full max-w-sm px-4 space-y-2"
+    ></div>
+
+    <!-- Spinner -->
+    <ngx-spinner
+      bdColor="rgba(17, 24, 39, 0.85)"
+      size="large"
+      color="transparent"
+      type="ball-scale-multiple"
+      [fullScreen]="true"
+    >
+      <div class="flex flex-col items-center justify-center space-y-4">
+        <div class="relative w-16 h-16">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400 to-pink-600 animate-ping opacity-60"></div>
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-pink-300 animate-spin"></div>
+        </div>
+        <p class="text-white text-lg font-semibold uppercase animate-pulse">
+          Loading...
+        </p>
+      </div>
+    </ngx-spinner>
+
+    <!-- Main App Content -->
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- ✅ Cart Modal -->
+  <app-cart></app-cart>
+</div>

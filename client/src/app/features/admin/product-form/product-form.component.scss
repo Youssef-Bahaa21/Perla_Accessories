@@ -1,0 +1,97 @@
+/* Responsive Product Form Styles */
+
+/* Mobile-first approach */
+:host {
+    display: block;
+}
+
+/* Form section styles */
+.form-section {
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-section-header {
+    cursor: pointer;
+}
+
+/* Collapsible sections */
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+
+    &.expanded {
+        max-height: 2000px;
+    }
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 767px) {
+    .form-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sticky-sidebar {
+        position: static;
+        margin-top: 1rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Tablet and above */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .form-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Improve form field spacing */
+.field-group {
+    margin-bottom: 1rem;
+}
+
+/* Image preview grid */
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+
+    @media (min-width: 640px) {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+/* Compact form on mobile */
+@media (max-width: 639px) {
+    .py-8 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .py-6 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .space-y-8>*+* {
+        margin-top: 1rem;
+    }
+
+    .space-y-6>*+* {
+        margin-top: 0.75rem;
+    }
+}

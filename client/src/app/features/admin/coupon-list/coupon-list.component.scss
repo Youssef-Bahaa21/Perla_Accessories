@@ -1,0 +1,19 @@
+.input {
+    @apply border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-pink-500;
+}
+
+.btn-primary {
+    @apply px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700;
+}
+
+.btn-secondary {
+    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200;
+}
+
+.th {
+    @apply text-left px-4 py-3 font-semibold text-gray-600;
+}
+
+.td {
+    @apply px-4 py-2;
+}

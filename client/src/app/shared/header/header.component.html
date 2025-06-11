@@ -1,0 +1,131 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm transition-all duration-300" [class.shadow-md]="isScrolled">
+  <app-promo-bar *ngIf="showPromoBar"></app-promo-bar>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-center h-16 sm:h-18">
+
+      <!-- Logo - Simplified -->
+      <a routerLink="/" class="flex items-center" (click)="scrollToTop()">
+        <img src="logo.png" alt="Logo" class="h-10 w-auto" />
+        <span class="ml-2 text-xl font-semibold text-pink-600">Perla</span>
+      </a>
+
+      <!-- Mobile Menu Button -->
+      <button (click)="toggleMobileMenu()" class="sm:hidden p-2 text-gray-600 hover:text-pink-600 focus:outline-none">
+        <svg *ngIf="!isMobileMenuOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg *ngIf="isMobileMenuOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Desktop Navigation - Shopify style -->
+      <div class="hidden sm:flex items-center space-x-8">
+        <a routerLink="/products" routerLinkActive="text-pink-600" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors" (click)="scrollToTop()">Products</a>
+        <a routerLink="/about" routerLinkActive="text-pink-600" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors" (click)="scrollToTop()">About</a>
+        
+        <!-- Admin Navigation for Desktop - Simplified -->
+        <ng-container *ngIf="isAdmin">
+          <a routerLink="/admin/products" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors flex items-center" (click)="scrollToTop()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Admin
+          </a>
+        </ng-container>
+      </div>
+
+      <!-- User & Cart Actions - Shopify style -->
+      <div class="hidden sm:flex items-center space-x-4">
+        <!-- Cart Link -->
+        <a routerLink="/cart" class="relative text-gray-600 hover:text-pink-600 transition-colors p-2" (click)="scrollToTop()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span *ngIf="cartCount > 0" class="absolute -top-1 -right-1 bg-pink-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ cartCount }}</span>
+        </a>
+        
+        <!-- Account Links -->
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors" (click)="scrollToTop()">Sign in</a>
+          <a routerLink="/register" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-medium px-4 py-2 rounded transition-colors" (click)="scrollToTop()">Sign up</a>
+        </ng-container>
+
+        <ng-container *ngIf="isLoggedIn">
+          <a routerLink="/account/orders" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors" (click)="scrollToTop()">My Orders</a>
+          <button (click)="logout(); scrollToTop();" class="text-gray-600 hover:text-pink-600 text-sm font-medium transition-colors">Logout</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu - Shopify style -->
+  <div *ngIf="isMobileMenuOpen" class="sm:hidden bg-white border-t border-gray-100 shadow-lg">
+    <div class="py-2 space-y-1">
+      <a routerLink="/products" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+        Products
+      </a>
+      <a routerLink="/about" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+        About
+      </a>
+      <a routerLink="/cart" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+        Cart <span *ngIf="cartCount > 0" class="ml-1 bg-pink-600 text-white text-xs px-1.5 py-0.5 rounded-full">{{ cartCount }}</span>
+      </a>
+      
+      <!-- Admin Links for Mobile -->
+      <ng-container *ngIf="isAdmin">
+        <div class="border-t border-gray-200 my-1"></div>
+        <div class="px-4 py-1 text-xs font-medium text-gray-500 uppercase">Admin</div>
+        <a routerLink="/admin/products" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Products Management
+        </a>
+        <a routerLink="/admin/orders" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Orders Management
+        </a>
+        <a routerLink="/admin/coupon" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Coupons
+        </a>
+        <a routerLink="/admin/settings" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Settings
+        </a>
+      </ng-container>
+      
+      <!-- Auth Links for Mobile -->
+      <div class="border-t border-gray-200 my-1"></div>
+      <ng-container *ngIf="!isLoggedIn">
+        <a routerLink="/login" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Sign In
+        </a>
+        <a routerLink="/register" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-pink-600 hover:bg-gray-50 hover:text-pink-800">
+          Sign Up
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="isLoggedIn">
+        <a routerLink="/account/orders" (click)="closeMobileMenu(); scrollToTop();" class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          My Orders
+        </a>
+        <button (click)="logout(); closeMobileMenu(); scrollToTop();" class="block w-full text-left px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-pink-600">
+          Logout
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</nav>
+
+<!-- Spacer to prevent content from hiding under fixed header -->
+<div class="h-16 sm:h-18"></div>
+
+<style>
+  /* Simple fade-in animation for dropdown */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Clean transitions for all elements */
+  a, button {
+    transition: all 0.2s ease;
+  }
+</style>

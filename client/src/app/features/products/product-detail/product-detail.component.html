@@ -1,0 +1,547 @@
+<div class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
+  <!-- Breadcrumb Navigation -->
+  <nav *ngIf="!loading && product" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center text-sm text-gray-500">
+    <a routerLink="/" class="hover:text-pink-600 transition-colors font-medium">Home</a>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+    <a routerLink="/products" class="hover:text-pink-600 transition-colors font-medium">Products</a>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+    <span class="text-gray-800 font-semibold truncate">{{ product.name }}</span>
+  </nav>
+
+  <!-- Loading State - Improved with skeleton loader -->
+  <div *ngIf="loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8 animate-pulse">
+      <!-- Image skeleton -->
+      <div class="lg:w-3/5 bg-white rounded-xl">
+        <div class="bg-gray-200 w-full aspect-square rounded-lg"></div>
+        <div class="flex justify-center mt-4 gap-2">
+          <div *ngFor="let i of [1,2,3,4]" class="h-16 w-16 bg-gray-200 rounded-md"></div>
+        </div>
+      </div>
+      
+      <!-- Content skeleton -->
+      <div class="lg:w-2/5">
+        <div class="h-7 bg-gray-200 rounded-lg w-3/4 mb-4"></div>
+        <div class="h-6 bg-gray-200 rounded-lg w-1/4 mb-6"></div>
+        <div class="space-y-3 mb-8">
+          <div class="h-4 bg-gray-200 rounded-full w-full"></div>
+          <div class="h-4 bg-gray-200 rounded-full w-full"></div>
+          <div class="h-4 bg-gray-200 rounded-full w-3/4"></div>
+        </div>
+        <div class="h-12 bg-gray-200 rounded-xl w-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State - Enhanced -->
+  <div *ngIf="error" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center py-12 bg-white rounded-xl shadow-lg border border-red-100 max-w-2xl mx-auto">
+      <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-2">We encountered a problem</h3>
+      <p class="text-gray-600 mb-6">{{ error }}</p>
+      <button routerLink="/products" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-medium rounded-lg hover:from-pink-600 hover:to-pink-700 shadow transition-all">
+        Back to Products
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Detail - Shopify-inspired layout -->
+  <div *ngIf="product && !loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
+    
+    <!-- Product Images - Left Column -->
+    <div class="product-gallery">
+      <!-- Main Image Swiper -->
+      <div class="relative mb-4 bg-gray-50 rounded-xl overflow-hidden">
+        <!-- Product Tags -->
+        <div class="absolute top-4 left-4 z-20 flex flex-col gap-2">
+          <span *ngIf="product.is_new === 1" class="bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow-sm">NEW</span>
+          <span *ngIf="product.is_best_seller === 1" class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow-sm">BESTSELLER</span>
+        </div>
+
+
+        
+        <!-- Main Swiper Container -->
+        <div class="relative group">
+          <swiper-container 
+            #mainSwiper
+            init="false"
+            class="main-product-swiper"
+            style="width: 100%; height: 500px;"
+          >
+            <swiper-slide *ngFor="let img of product.images; let i = index">
+              <img 
+                [src]="img.url" 
+                [alt]="product.name + ' image ' + (i+1)" 
+                class="w-full h-full object-contain p-4"
+                (error)="onImageError($event)"
+                style="width: 100%; height: 100%; object-fit: contain;"
+              />
+            </swiper-slide>
+            
+            <!-- Pagination -->
+            <div class="main-swiper-pagination !bottom-4"></div>
+          </swiper-container>
+          
+          <!-- External Navigation arrows (always visible) -->
+          <button 
+            (click)="nextSlide()" 
+            class="absolute top-1/2 right-3 transform -translate-y-1/2 bg-white/80 hover:bg-white text-pink-600 w-10 h-10 rounded-full shadow-md transition-all hover:scale-110 z-30 flex items-center justify-center opacity-0 hover:opacity-100 group-hover:opacity-100"
+            [class.opacity-100]="product.images && product.images.length > 1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button 
+            (click)="prevSlide()" 
+            class="absolute top-1/2 left-3 transform -translate-y-1/2 bg-white/80 hover:bg-white text-pink-600 w-10 h-10 rounded-full shadow-md transition-all hover:scale-110 z-30 flex items-center justify-center opacity-0 hover:opacity-100 group-hover:opacity-100"
+            [class.opacity-100]="product.images && product.images.length > 1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Thumbnail Swiper -->
+      <swiper-container 
+        #thumbsSwiper
+        init="false"
+        class="thumbs-swiper"
+        style="width: 100%; height: 80px;"
+      >
+        <swiper-slide 
+          *ngFor="let img of product.images; let i = index" 
+          class="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+          [class.opacity-100]="i === activeSlideIndex"
+          (click)="goToSlide(i)"
+        >
+          <img 
+            [src]="img.url" 
+            [alt]="product.name + ' thumbnail ' + (i+1)" 
+            class="w-full h-full object-cover rounded-md border-2 transition-all"
+            [class.border-pink-500]="i === activeSlideIndex"
+            [class.border-gray-200]="i !== activeSlideIndex"
+            (error)="onImageError($event)"
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
+        </swiper-slide>
+      </swiper-container>
+
+      <!-- Image Controls -->
+      <div class="flex justify-center mt-4 gap-2">
+        <button 
+          (click)="prevSlide()" 
+          class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+          title="Previous Image (← arrow key)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <span class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm">
+          {{ activeSlideIndex + 1 }} / {{ product.images?.length || 0 }}
+        </span>
+        <button 
+          (click)="nextSlide()" 
+          class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+          title="Next Image (→ arrow key)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+    
+    </div>
+    
+    <!-- Product Info - Right Column -->
+    <div class="product-info">
+      <!-- Labels and Availability -->
+      <div class="flex items-center gap-3 mb-4">
+        <span *ngIf="product.stock > 0" class="text-xs font-medium px-3 py-1 bg-green-50 text-green-700 rounded-full">
+          <span class="flex items-center">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
+            In Stock
+          </span>
+        </span>
+        <span *ngIf="product.stock === 0" class="text-xs font-medium px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
+          Out of Stock
+        </span>
+        <span *ngIf="product.stock > 0 && product.stock <= 5" class="text-xs font-medium px-3 py-1 bg-orange-50 text-orange-700 rounded-full">
+          Only {{ product.stock }} left
+        </span>
+      </div>
+      
+      <!-- Product Title -->
+      <h1 class="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-pink-600 to-pink-800 bg-clip-text text-transparent leading-tight mb-4">{{ product.name }}</h1>
+      
+      <!-- Price -->
+      <div class="text-4xl font-bold bg-gradient-to-r from-pink-600 to-pink-700 bg-clip-text text-transparent mb-8">
+        EGP {{ product.price | number:'1.2-2' }}
+      </div>
+      
+      <!-- Description -->
+      <div class="prose prose-sm text-gray-600 mb-8 border-b border-gray-200 pb-8">
+        <p>{{ product.description || 'No description available for this product yet.' }}</p>
+      </div>
+
+      <!-- Add to Cart Section -->
+      <div class="space-y-6">
+        <button 
+          (click)="addToCart()" 
+          [disabled]="product.stock === 0"
+          class="w-full py-5 text-lg font-semibold transition-all duration-300 flex items-center justify-center gap-3 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          [ngClass]="product.stock === 0 
+            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+            : 'bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          {{ product.stock === 0 ? 'Out of Stock' : 'Add to Cart' }}
+        </button>
+
+        <div *ngIf="cartMessage" class="bg-green-50 p-4 rounded-md animate-fadeIn">
+          <p class="flex items-center text-green-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {{ cartMessage }}
+          </p>
+        </div>
+
+        <!-- Product Features -->
+        <div class="border-t border-gray-200 pt-6 space-y-3">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Premium Quality</span>
+          </div>
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Free Delivery Available</span>
+          </div>
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-gray-700">Secure Checkout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div *ngIf="product && !loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200 mt-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Review Summary -->
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Customer Reviews</h2>
+        <div class="bg-gray-50 p-4 rounded-lg text-center mb-4">
+          <div class="text-5xl font-bold mb-2 text-pink-600">
+            {{ reviews.length > 0 ? getAverageRating().toFixed(1) : '0.0' }}
+          </div>
+          <div class="flex justify-center mb-2">
+            <div class="flex items-center">
+              <ng-container *ngFor="let star of [1,2,3,4,5]">
+                <svg class="w-5 h-5" 
+                     [ngClass]="star <= getAverageRating() ? 'text-pink-500' : 'text-gray-300'" 
+                     fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927C9.349 2.39 10.651 2.39 10.951 2.927l1.286 2.61 2.88.419c.574.083.805.787.388 1.19l-2.083 2.03.492 2.868c.097.567-.498.998-.999.73L10 11.347l-2.583 1.357c-.5.268-1.096-.163-.999-.73l.492-2.868-2.083-2.03c-.417-.403-.186-1.107.388-1.19l2.88-.419 1.286-2.61z"/>
+                </svg>
+              </ng-container>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500">Based on {{ reviews.length }} reviews</p>
+        </div>
+
+        <!-- Write a Review Button -->
+        <div class="mb-8">
+          <ng-container *ngIf="isLoggedIn(); else loginPromptButton">
+            <button 
+              (click)="toggleReviewForm()" 
+              class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+            >
+              Write a Review
+            </button>
+          </ng-container>
+          <ng-template #loginPromptButton>
+            <a 
+              routerLink="/login" 
+              class="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 text-center"
+            >
+              Sign in to Write a Review
+            </a>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Review List -->
+      <div class="lg:col-span-2">
+        <div *ngIf="showReviewForm && isLoggedIn()" class="mb-8 bg-gray-50 p-6 rounded-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Write a review</h3>
+            <button (click)="toggleReviewForm()" class="text-gray-400 hover:text-gray-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          <app-review-form [productId]="product.id" (submitted)="onReviewSubmitted()"></app-review-form>
+        </div>
+
+        <ng-container *ngIf="reviews.length; else noReviews">
+          <div class="space-y-6">
+            <div *ngFor="let r of reviews" class="border-b border-gray-200 pb-6 last:border-b-0">
+              <div class="flex items-center mb-2">
+                <div class="flex items-center">
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <svg class="w-4 h-4" [ngClass]="star <= r.rating ? 'text-pink-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927C9.349 2.39 10.651 2.39 10.951 2.927l1.286 2.61 2.88.419c.574.083.805.787.388 1.19l-2.083 2.03.492 2.868c.097.567-.498.998-.999.73L10 11.347l-2.583 1.357c-.5.268-1.096-.163-.999-.73l.492-2.868-2.083-2.03c-.417-.403-.186-1.107.388-1.19l2.88-.419 1.286-2.61z"/>
+                    </svg>
+                  </ng-container>
+                </div>
+                <span class="ml-2 text-sm text-gray-500">{{ r.created_at | date:'mediumDate' }}</span>
+              </div>
+              <p class="text-gray-700 mb-2">{{ r.comment }}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-500 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Verified Customer
+                </span>
+                <button *ngIf="isAdmin()" class="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors" (click)="deleteReview(r.id)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        
+        <ng-template #noReviews>
+          <div class="text-center py-10 bg-gray-50 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <p class="text-gray-600 mb-2">No reviews yet</p>
+            <p class="text-gray-500 text-sm">Be the first to review this product</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- You may also like section -->
+  <div *ngIf="product && !loading && relatedProducts.length > 0" class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">You may also like</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let p of relatedProducts" class="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <!-- Product Image with Link -->
+          <div class="aspect-square w-full overflow-hidden relative">
+                         <a [routerLink]="['/products', p.id]" class="block w-full h-full">
+              <img 
+                [src]="p.images?.[0]?.url || 'assets/images/placeholder.jpg'" 
+                [alt]="p.name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                (error)="onImageError($event)"
+              />
+            </a>
+            <!-- Product Badges -->
+            <div class="absolute top-2 left-2 flex flex-col gap-1">
+              <span *ngIf="p.is_new === 1" class="bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded-md">NEW</span>
+              <span *ngIf="p.is_best_seller === 1" class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-md">BESTSELLER</span>
+            </div>
+          </div>
+          
+          <!-- Product Info -->
+          <div class="p-4 space-y-2">
+            <h3 class="text-sm text-gray-900 font-medium line-clamp-2 min-h-[2.5rem]">
+                             <a [routerLink]="['/products', p.id]" class="hover:text-pink-600 transition-colors">{{ p.name }}</a>
+            </h3>
+            <div class="flex items-center justify-between">
+              <p class="text-lg font-bold text-pink-600">EGP {{ p.price | number:'1.2-2' }}</p>
+              <div class="flex items-center text-xs text-gray-500">
+                <span *ngIf="p.stock && p.stock > 0" class="flex items-center">
+                  <span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                  In Stock
+                </span>
+                <span *ngIf="!p.stock || p.stock === 0" class="flex items-center text-red-500">
+                  <span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                  Out of Stock
+                </span>
+              </div>
+            </div>
+            
+            <!-- Quick Add to Cart Button -->
+            <button 
+              (click)="addRelatedProductToCart(p)" 
+              [disabled]="!p.stock || p.stock === 0"
+              class="w-full mt-3 py-2 text-sm font-medium rounded-md transition-all duration-200"
+              [ngClass]="!p.stock || p.stock === 0 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                : 'bg-pink-600 text-white hover:bg-pink-700 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md'"
+            >
+              <span *ngIf="p.stock && p.stock > 0">Add to Cart</span>
+              <span *ngIf="!p.stock || p.stock === 0">Out of Stock</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- View All Products Link -->
+      <div class="text-center mt-8">
+        <a routerLink="/products" class="inline-flex items-center px-6 py-3 border border-pink-300 text-pink-600 font-medium rounded-md hover:bg-pink-50 transition-colors">
+          View All Products
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Enhanced animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  /* Modern clip path */
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Enhanced hover effects */
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+
+  .group:hover .group-hover\:text-pink-600 {
+    color: #db2777;
+  }
+
+  /* Focus states for accessibility */
+  button:focus, a:focus {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
+  }
+
+  /* Swiper Styles */
+  .main-product-swiper {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .main-product-swiper .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+  }
+
+  /* External navigation buttons */
+  .group:hover button {
+    opacity: 1 !important;
+  }
+
+  /* Make buttons always visible on mobile */
+  @media (max-width: 768px) {
+    .group button {
+      opacity: 0.8 !important;
+    }
+  }
+
+
+
+  .main-product-swiper .main-swiper-pagination {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .main-product-swiper:hover .main-swiper-pagination {
+    opacity: 1;
+  }
+
+  .main-product-swiper .main-swiper-pagination .swiper-pagination-bullet {
+    background: rgba(219, 39, 119, 0.5);
+    opacity: 1;
+  }
+
+  .main-product-swiper .main-swiper-pagination .swiper-pagination-bullet-active {
+    background: #db2777;
+  }
+
+  /* Thumbnail Swiper */
+  .thumbs-swiper .swiper-slide {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+
+
+  /* Custom scrollbar for better UX */
+  .main-product-swiper::-webkit-scrollbar,
+  .thumbs-swiper::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Loading animation for images */
+  .main-product-swiper img,
+  .thumbs-swiper img {
+    transition: opacity 0.3s ease;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .main-product-swiper {
+      height: 400px !important;
+    }
+    
+
+
+
+    
+    .main-product-swiper .main-swiper-pagination {
+      opacity: 1;
+    }
+  }
+
+
+
+  /* Better visual feedback for interactive elements */
+  .thumbs-swiper .swiper-slide img:hover {
+    transform: scale(1.05);
+  }
+</style>
