@@ -23,6 +23,9 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 
+/* ---- Trust Proxy for Railway ---- */
+app.set('trust proxy', true);
+
 /* ---- CORS ---- */
 // Use the CORS middleware from ./middlewares/cors which reads from environment
 import corsMiddleware from './middlewares/cors';
