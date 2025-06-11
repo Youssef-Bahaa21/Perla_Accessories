@@ -7,7 +7,8 @@
         }
     },
     "buildCommand": "cd client && npm ci && npm run build",
-    "outputDirectory": "client/dist/client/browser",
+    "outputDirectory": "client/dist/client",
+    "installCommand": "cd client && npm install",
     "framework": "angular",
     "rewrites": [
         {
@@ -32,6 +33,16 @@
                     "value": "1; mode=block"
                 }
             ]
+        }
+    ],
+    "builds": [
+        {
+            "src": "client",
+            "use": "@vercel/static-build",
+            "config": {
+                "buildCommand": "npm ci && npm run build",
+                "outputDirectory": "dist/client"
+            }
         }
     ]
 }
