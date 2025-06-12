@@ -89,7 +89,6 @@ export class ProductListComponent implements OnInit {
     if (this.isBrowser) {
       window.addEventListener('resize', () => {
         if (this.getWindowWidth() >= 768 && this.mobileFiltersActive) {
-          this.closeMobileFilters();
         }
       });
     }
@@ -263,47 +262,14 @@ export class ProductListComponent implements OnInit {
     return this.categories.find(c => c.id === +id)?.name || 'Unknown';
   }
 
-  toggleMobileFilters(): void {
-    // Toggle mobile filters panel
-    this.mobileFiltersActive = !this.mobileFiltersActive;
 
-    // Prevent body scrolling when filters are open
-    if (this.isBrowser) {
-      document.body.style.overflow = this.mobileFiltersActive ? 'hidden' : '';
-    }
-  }
 
-  closeMobileFilters(): void {
-    this.mobileFiltersActive = false;
-    if (this.isBrowser) {
-      document.body.style.overflow = '';
-    }
-  }
 
-  setMobileFilter(filterType: string, value: any): void {
-    switch (filterType) {
-      case 'category':
-        this.selectedCategory = value;
-        break;
-      case 'stock':
-        this.stockFilter = value;
-        break;
-      case 'tag':
-        this.tagFilter = value;
-        break;
-    }
-    // Don't apply filters immediately - let user make multiple selections
-  }
 
-  applyMobileFilters(): void {
-    this.applyFilters();
-    this.closeMobileFilters();
-  }
 
-  clearAllMobileFilters(): void {
-    this.clearFilters();
-    this.closeMobileFilters();
-  }
+
+
+
 
   getActiveFiltersCount(): number {
     let count = 0;
