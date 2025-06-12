@@ -19,6 +19,7 @@ export class CartDetailComponent implements OnInit {
     total = 0;
     relatedProducts: Product[] = [];
     cartMessage = '';
+    showClearConfirmation = false;
 
     private cart = inject(CartService);
     private productSvc = inject(ProductService);
@@ -50,6 +51,17 @@ export class CartDetailComponent implements OnInit {
 
     clearCart() {
         this.cart.clear();
+        this.showClearConfirmation = false;
+    }
+
+    confirmClearCart() {
+        if (confirm('Are you sure you want to remove all items from your cart?')) {
+            this.clearCart();
+        }
+    }
+
+    trackByItemId(index: number, item: CartItem): number {
+        return item.product.id;
     }
 
     getItemTotal(item: CartItem): number {
@@ -61,7 +73,12 @@ export class CartDetailComponent implements OnInit {
     }
 
     onImageError(event: Event) {
-        (event.target as HTMLImageElement).src = 'https://via.placeholder.com/80';
+        (event.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=No+Image';
+    }
+
+    isMobileDevice(): boolean {
+        if (typeof window === 'undefined') return false;
+        return window.innerWidth < 768;
     }
 
     onQuantityChange(event: Event, productId: number) {

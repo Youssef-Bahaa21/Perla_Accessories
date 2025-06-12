@@ -1,38 +1,55 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+<div class="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
     
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <h1 class="text-2xl sm:text-3xl font-medium text-gray-900">Shopping Cart</h1>
-      <p class="mt-2 text-sm text-gray-600" *ngIf="itemCount > 0">{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }} in your cart</p>
-    </div>
-
-    <!-- Empty Cart State -->
-    <div *ngIf="cartItems.length === 0" class="text-center py-16">
-      <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-full h-full">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
+    <!-- Mobile-First Header -->
+    <div class="text-center mb-6 sm:mb-8">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="bg-gradient-to-r from-pink-600 to-pink-700 p-2 sm:p-3 rounded-full shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-600 to-pink-800 bg-clip-text text-transparent">Shopping Cart</h1>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-      <p class="text-gray-600 mb-6">Start shopping to add items to your cart.</p>
-      <a routerLink="/products" class="inline-flex items-center px-6 py-3 bg-pink-600 text-white font-medium rounded-md hover:bg-pink-700 transition-colors">
-        Start Shopping
-      </a>
+      <p class="text-sm sm:text-base text-gray-600" *ngIf="itemCount > 0">{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }} in your cart</p>
     </div>
 
-    <!-- Cart Items -->
-    <div *ngIf="cartItems.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Enhanced Mobile Empty Cart State -->
+    <div *ngIf="cartItems.length === 0" class="text-center py-12 sm:py-16">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-12 max-w-sm mx-auto border border-pink-100">
+        <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">Your cart is empty</h3>
+        <p class="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed">Start shopping to add items to your cart and discover amazing products.</p>
+        <a routerLink="/products" class="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-pink-600 to-pink-700 text-white font-semibold rounded-xl sm:rounded-2xl hover:from-pink-700 hover:to-pink-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          Start Shopping
+        </a>
+      </div>
+    </div>
+
+    <!-- Mobile-Optimized Cart Items -->
+    <div *ngIf="cartItems.length > 0" class="space-y-6 lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-0">
       
-      <!-- Items List -->
+      <!-- Items List - Mobile First -->
       <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-pink-100 overflow-hidden">
+          <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-pink-100">
             <div class="flex justify-between items-center">
-              <h2 class="text-lg font-medium text-gray-900">Cart Items</h2>
+              <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <h2 class="text-base sm:text-lg font-bold text-gray-900">Cart Items</h2>
+              </div>
               <button 
-                (click)="clearCart()"
-                class="text-sm text-red-600 hover:text-red-800 font-medium"
+                (click)="confirmClearCart()"
+                class="text-xs sm:text-sm text-red-600 hover:text-red-800 font-semibold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-full transition-all duration-200"
                 *ngIf="cartItems.length > 0"
               >
                 Clear All
@@ -40,155 +57,227 @@
             </div>
           </div>
           
-          <div class="divide-y divide-gray-200">
-            <div *ngFor="let item of cartItems" class="p-6 flex items-center space-x-4">
+          <div class="divide-y divide-pink-100">
+            <!-- Mobile-Optimized Cart Item -->
+            <div *ngFor="let item of cartItems; trackBy: trackByItemId" class="p-4 sm:p-6"
+                 [class.opacity-50]="item.product.stock === 0">
               
-              <!-- Product Image -->
-              <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden">
-                <img 
-                  *ngIf="item.product.images?.[0]?.url" 
-                  [src]="item.product.images![0]!.url" 
-                  [alt]="item.product.name"
-                  class="w-full h-full object-cover"
-                  (error)="onImageError($event)"
-                />
-                <div *ngIf="!item.product.images?.[0]?.url" class="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+              <!-- Mobile-First Cart Item Layout -->
+              <div class="flex gap-3 sm:gap-4">
+                <!-- Product Image -->
+                <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl sm:rounded-2xl overflow-hidden shadow-sm">
+                  <img 
+                    *ngIf="item.product.images?.[0]?.url" 
+                    [src]="item.product.images![0]!.url" 
+                    [alt]="item.product.name"
+                    class="w-full h-full object-cover"
+                    (error)="onImageError($event)"
+                  />
+                  <div *ngIf="!item.product.images?.[0]?.url" class="w-full h-full bg-pink-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Product Details -->
-              <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-medium text-gray-900 line-clamp-2">{{ item.product.name }}</h3>
-                <p class="mt-1 text-sm text-gray-500">{{ item.product.price | currency:'EGP ':'symbol':'1.2-2' }} each</p>
-                <p class="mt-1 text-xs text-gray-400" *ngIf="item.product.stock <= 5 && item.product.stock > 0">
-                  Only {{ item.product.stock }} left in stock
-                </p>
-                <p class="mt-1 text-xs text-red-600" *ngIf="item.product.stock === 0">
-                  Out of stock
-                </p>
-              </div>
+                <!-- Product Info & Controls -->
+                <div class="flex-1 min-w-0">
+                  <!-- Product Name & Price Row -->
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex-1 min-w-0 pr-2">
+                      <h3 class="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 leading-tight">{{ item.product.name }}</h3>
+                      <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ item.product.price | currency:'EGP ':'symbol':'1.2-2' }} each</p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                      <p class="text-sm sm:text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-700 bg-clip-text text-transparent">
+                        {{ getItemTotal(item) | currency:'EGP ':'symbol':'1.2-2' }}
+                      </p>
+                    </div>
+                  </div>
 
-              <!-- Quantity Controls -->
-              <div class="flex items-center space-x-2">
-                <button 
-                  (click)="updateQuantity(item.product.id, item.qty - 1)"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                  [disabled]="item.qty <= 1"
-                  [class.opacity-50]="item.qty <= 1"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                  </svg>
-                </button>
-                
-                <input 
-                  type="number" 
-                  [value]="item.qty"
-                  (input)="onQuantityChange($event, item.product.id)"
-                  min="1"
-                  [max]="item.product.stock"
-                  class="w-16 text-center py-1 px-2 border border-gray-300 rounded text-sm"
-                />
-                
-                <button 
-                  (click)="updateQuantity(item.product.id, item.qty + 1)"
-                  class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                  [disabled]="item.qty >= item.product.stock"
-                  [class.opacity-50]="item.qty >= item.product.stock"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </button>
-              </div>
+                  <!-- Stock Status -->
+                  <div class="mb-3">
+                    <span *ngIf="item.product.stock <= 5 && item.product.stock > 0" 
+                          class="inline-flex items-center text-xs font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                      </svg>
+                      Only {{ item.product.stock }} left
+                    </span>
+                    <span *ngIf="item.product.stock === 0" 
+                          class="inline-flex items-center text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                      </svg>
+                      Out of stock
+                    </span>
+                    <span *ngIf="item.product.stock > 5" 
+                          class="inline-flex items-center text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                      In stock
+                    </span>
+                  </div>
 
-              <!-- Item Total -->
-              <div class="text-right">
-                <p class="text-sm font-medium text-gray-900">{{ getItemTotal(item) | currency:'EGP ':'symbol':'1.2-2' }}</p>
-                <button 
-                  (click)="removeItem(item.product.id)"
-                  class="mt-1 text-xs text-red-600 hover:text-red-800"
-                >
-                  Remove
-                </button>
+                  <!-- Quantity Controls & Remove Button Row -->
+                  <div class="flex items-center justify-between">
+                    <!-- Enhanced Mobile Quantity Controls -->
+                    <div class="flex items-center gap-1 sm:gap-2 bg-gray-50 rounded-xl p-1">
+                      <button 
+                        (click)="updateQuantity(item.product.id, item.qty - 1)"
+                        class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                        [disabled]="item.qty <= 1"
+                        [class.opacity-50]="item.qty <= 1"
+                        [class.cursor-not-allowed]="item.qty <= 1"
+                      >
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                        </svg>
+                      </button>
+                      
+                      <div class="bg-white border border-gray-200 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 min-w-[3rem] text-center">
+                        <span class="text-sm sm:text-base font-semibold text-gray-900">{{ item.qty }}</span>
+                      </div>
+                      
+                      <button 
+                        (click)="updateQuantity(item.product.id, item.qty + 1)"
+                        class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                        [disabled]="item.qty >= item.product.stock || item.product.stock === 0"
+                        [class.opacity-50]="item.qty >= item.product.stock || item.product.stock === 0"
+                        [class.cursor-not-allowed]="item.qty >= item.product.stock || item.product.stock === 0"
+                      >
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button 
+                      (click)="removeItem(item.product.id)"
+                      class="flex items-center gap-1 text-xs sm:text-sm text-red-600 hover:text-red-800 font-medium bg-red-50 hover:bg-red-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all duration-200"
+                    >
+                      <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Order Summary -->
+      <!-- Mobile-Optimized Order Summary -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-pink-100 p-4 sm:p-6 sticky top-4 sm:top-6">
+          <!-- Header -->
+          <div class="flex items-center gap-2 mb-4 sm:mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <h3 class="text-base sm:text-lg font-bold text-gray-900">Order Summary</h3>
+          </div>
           
-          <div class="space-y-3">
-            <div class="flex justify-between text-sm">
+          <!-- Summary Details -->
+          <div class="space-y-3 sm:space-y-4">
+            <div class="flex justify-between items-center text-sm sm:text-base">
               <span class="text-gray-600">Subtotal ({{ itemCount }} items)</span>
-              <span class="font-medium">{{ total | currency:'EGP ':'symbol':'1.2-2' }}</span>
+              <span class="font-semibold text-gray-900">{{ total | currency:'EGP ':'symbol':'1.2-2' }}</span>
             </div>
             
-            <div class="flex justify-between text-sm">
+            <div class="flex justify-between items-center text-sm sm:text-base">
               <span class="text-gray-600">Shipping</span>
-              <span class="text-gray-500">Calculated at checkout</span>
+              <span class="text-gray-500 text-xs sm:text-sm">Calculated at checkout</span>
             </div>
             
-            <div class="border-t border-gray-200 pt-3">
-              <div class="flex justify-between">
-                <span class="text-base font-medium text-gray-900">Total</span>
-                <span class="text-xl font-bold text-gray-900">{{ total | currency:'EGP ':'symbol':'1.2-2' }}</span>
+            <div class="border-t border-pink-100 pt-3 sm:pt-4">
+              <div class="flex justify-between items-center">
+                <span class="text-base sm:text-lg font-bold text-gray-900">Total</span>
+                <span class="text-lg sm:text-2xl font-bold bg-gradient-to-r from-pink-600 to-pink-700 bg-clip-text text-transparent">
+                  {{ total | currency:'EGP ':'symbol':'1.2-2' }}
+                </span>
               </div>
             </div>
           </div>
 
+          <!-- Action Buttons -->
           <div class="mt-6 space-y-3">
             <a 
               routerLink="/shipping" 
-              class="w-full bg-pink-600 text-white py-3 px-4 rounded-md font-medium text-center hover:bg-pink-700 transition-colors flex items-center justify-center"
+              class="w-full bg-gradient-to-r from-pink-600 to-pink-700 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold text-center hover:from-pink-700 hover:to-pink-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-sm sm:text-base"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
               Proceed to Checkout
             </a>
             
             <a 
               routerLink="/products" 
-              class="w-full bg-gray-100 text-gray-900 py-3 px-4 rounded-md font-medium text-center hover:bg-gray-200 transition-colors flex items-center justify-center"
+              class="w-full bg-gray-50 border-2 border-gray-200 text-gray-700 py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold text-center hover:bg-gray-100 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+              </svg>
               Continue Shopping
             </a>
           </div>
 
-          <!-- Security badges -->
-          <div class="mt-6 pt-6 border-t border-gray-200">
-            <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span>Secure checkout</span>
+          <!-- Enhanced Security badges -->
+          <div class="mt-6 pt-4 sm:pt-6 border-t border-pink-100">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+              <div class="flex items-center gap-1">
+                <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Secure checkout</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Free returns</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- You May Also Like Section -->
-    <div *ngIf="cartItems.length > 0 && relatedProducts.length > 0" class="mt-12">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">You may also like</h3>
-          <a routerLink="/products" class="text-sm text-pink-600 hover:text-pink-800 font-medium transition-colors">
+    <!-- Mobile-Optimized Related Products Section -->
+    <div *ngIf="cartItems.length > 0 && relatedProducts.length > 0" class="mt-8 sm:mt-12">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-pink-100 p-4 sm:p-6">
+        <!-- Section Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+          <div class="flex items-center gap-2">
+            <div class="bg-gradient-to-r from-pink-600 to-pink-700 p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-gray-900">You may also like</h3>
+          </div>
+          <a routerLink="/products" class="text-xs sm:text-sm text-pink-600 hover:text-pink-800 font-semibold bg-pink-50 hover:bg-pink-100 px-3 py-1.5 rounded-full transition-all duration-200 self-start sm:self-auto">
             View all products →
           </a>
         </div>
 
         <!-- Success Message -->
-        <div *ngIf="cartMessage" class="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-          <p class="text-sm text-green-800">{{ cartMessage }}</p>
+        <div *ngIf="cartMessage" class="mb-4 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-xl animate-fadeIn">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-sm text-green-800 font-medium">{{ cartMessage }}</p>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Mobile-First Product Grid -->
+        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div *ngFor="let product of relatedProducts" class="group relative">
             <div class="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               
