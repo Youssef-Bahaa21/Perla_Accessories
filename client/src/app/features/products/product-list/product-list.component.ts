@@ -15,6 +15,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { Product, Category } from '../../../core/models';
 import { SeoService } from '../../../core/services/seo.service';
+import { SocialMediaService } from '../../../core/services/social-media.service';
 
 @Component({
   selector: 'app-product-list',
@@ -56,6 +57,7 @@ export class ProductListComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private seo = inject(SeoService);
+  private socialMedia = inject(SocialMediaService);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -102,6 +104,9 @@ export class ProductListComponent implements OnInit {
         this.seo.updateSEO(seoData);
         this.seo.updateCanonicalUrl(`/products?category=${category.id}`);
 
+        // Update social media tags for category
+        this.socialMedia.updateCategorySocialMedia(category.name, this.filteredProducts);
+
         // Add breadcrumb for category
         const breadcrumbs = [
           { name: 'Home', url: '/' },
@@ -129,6 +134,15 @@ export class ProductListComponent implements OnInit {
       };
       this.seo.updateSEO(seoData);
       this.seo.updateCanonicalUrl('/products');
+
+      // Update social media tags for general products page
+      this.socialMedia.updateSocialMediaTags({
+        title: 'Premium Handcrafted Accessories Collection - Perla Accessories',
+        description: 'Discover Perla\'s complete collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
+        image: 'https://perla-accessories.vercel.app/landing.png',
+        url: 'https://perla-accessories.vercel.app/products',
+        imageAlt: 'Perla Accessories - Beautiful handcrafted jewelry collection'
+      });
 
       // Add breadcrumb for products page
       const breadcrumbs = [

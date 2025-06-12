@@ -9,6 +9,7 @@ import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
 import { SeoService } from '../../../core/services/seo.service';
+import { SocialMediaService } from '../../../core/services/social-media.service';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -129,6 +130,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   private seo = inject(SeoService);
+  private socialMedia = inject(SocialMediaService);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -221,6 +223,9 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     const seoData = this.seo.generateProductSEO(this.product, this.category);
     this.seo.updateSEO(seoData);
     this.seo.updateCanonicalUrl(`/products/${this.product.id}`);
+
+    // Update social media tags for product sharing
+    this.socialMedia.updateProductSocialMedia(this.product);
 
     // Add breadcrumb structured data
     const breadcrumbs = [

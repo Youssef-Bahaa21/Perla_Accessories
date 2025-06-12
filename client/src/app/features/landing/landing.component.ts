@@ -8,6 +8,7 @@ import { CarouselModule } from 'ngx-owl-carousel-o';
 import { ProductService } from '../../core/services/product.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { SeoService } from '../../core/services/seo.service';
+import { SocialMediaService } from '../../core/services/social-media.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -69,11 +70,15 @@ export class LandingPageComponent implements OnInit {
   private router = inject(Router);
   private notification = inject(NotificationService);
   private seo = inject(SeoService);
+  private socialMedia = inject(SocialMediaService);
 
   ngOnInit(): void {
     // Set SEO data for homepage
     this.seo.updateSEO(this.seo.generateHomepageSEO());
     this.seo.updateCanonicalUrl('/');
+
+    // Reset social media tags to default for homepage
+    this.socialMedia.resetToDefault();
 
     this.loadFeaturedProducts();
     this.loadCategories();
