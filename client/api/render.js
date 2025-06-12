@@ -134,33 +134,11 @@ function generateProductsPageMetaTags() {
 }
 
 async function generateHomepageMetaTags() {
-  try {
-    // Try to fetch featured products for homepage
-    const response = await fetch(`${API_BASE_URL}/products?page=1&limit=10`);
-    
-    if (response.ok) {
-      const data = await response.json();
-      const featuredProducts = data.data.filter(p => p.is_featured === 1);
-      
-      if (featuredProducts.length > 0 && featuredProducts[0].images?.length > 0) {
-        return {
-          title: 'Perla Accessories - Premium Handcrafted Collection',
-          description: `Discover ${data.total} unique handcrafted accessories and jewelry pieces. Premium quality, limited edition designs that express your individual style.`,
-          image: featuredProducts[0].images[0].url,
-          url: 'https://perla-accessories.vercel.app',
-          type: 'website'
-        };
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch featured products:', error);
-  }
-  
-  // Fallback to default homepage meta tags
+  // Use the specific Landingbg.png image for landing page
   return {
     title: 'Perla Accessories - Premium Handcrafted Collection',
     description: 'Discover our exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
-    image: 'https://perla-accessories.vercel.app/landing2.png',
+    image: 'https://perla-accessories.vercel.app/Landingbg.png',
     url: 'https://perla-accessories.vercel.app',
     type: 'website'
   };
