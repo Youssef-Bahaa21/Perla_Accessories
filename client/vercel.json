@@ -16,18 +16,6 @@
             "dest": "/api/render"
         },
         {
-            "src": "/products",
-            "dest": "/api/render"
-        },
-        {
-            "src": "/landing",
-            "dest": "/api/render"
-        },
-        {
-            "src": "^/$",
-            "dest": "/api/render"
-        },
-        {
             "src": "/(.*)",
             "dest": "/index.html"
         }

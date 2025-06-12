@@ -40,7 +40,6 @@ function isBot(userAgent) {
   const botPatterns = [
     'facebookexternalhit',
     'WhatsApp',
-    'whatsapp',
     'Twitterbot',
     'LinkedInBot',
     'TelegramBot',
@@ -48,18 +47,11 @@ function isBot(userAgent) {
     'SlackBot',
     'DiscordBot',
     'GoogleBot',
-    'BingBot',
-    'facebot',
-    'facebook',
-    'ia_archiver',
-    'crawler',
-    'bot',
-    'spider'
+    'BingBot'
   ];
   
-  const userAgentLower = userAgent.toLowerCase();
   return botPatterns.some(pattern => 
-    userAgentLower.includes(pattern.toLowerCase())
+    userAgent.toLowerCase().includes(pattern.toLowerCase())
   );
 }
 
@@ -86,12 +78,6 @@ async function generateBotHTML(url) {
       console.error('Failed to fetch product:', error);
       metaTags = generateDefaultMetaTags();
     }
-  } else if (url.includes('/products')) {
-    // Products listing page
-    metaTags = generateProductsPageMetaTags();
-  } else if (url.includes('/landing') || url === '/' || url === '') {
-    // Homepage/landing page
-    metaTags = await generateHomepageMetaTags();
   } else {
     metaTags = generateDefaultMetaTags();
   }
@@ -123,87 +109,45 @@ function generateDefaultMetaTags() {
   };
 }
 
-function generateProductsPageMetaTags() {
-  return {
-    title: 'Shop All Products - Perla Accessories | Premium Jewelry Collection',
-    description: 'Browse our complete collection of handcrafted accessories and jewelry. Find unique, limited edition pieces perfect for expressing your individual style.',
-    image: 'https://perla-accessories.vercel.app/landing3.png',
-    url: 'https://perla-accessories.vercel.app/products',
-    type: 'website'
-  };
-}
-
-async function generateHomepageMetaTags() {
-  // Use the specific Landingbg.png image for landing page
-  return {
-    title: 'Perla Accessories - Premium Handcrafted Collection',
-    description: 'Discover our exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
-    image: 'https://perla-accessories.vercel.app/Landingbg.png',
-    url: 'https://perla-accessories.vercel.app',
-    type: 'website'
-  };
-}
-
 function generateHTML(metaTags) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${metaTags.title}</title>
   <meta name="description" content="${metaTags.description}">
   
-  <!-- Open Graph Meta Tags (Facebook, WhatsApp, etc.) -->
+  <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="${metaTags.title}">
   <meta property="og:description" content="${metaTags.description}">
   <meta property="og:image" content="${metaTags.image}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:type" content="image/png">
   <meta property="og:url" content="${metaTags.url}">
   <meta property="og:type" content="${metaTags.type}">
   <meta property="og:site_name" content="Perla Accessories">
-  <meta property="og:locale" content="en_US">
   
-  <!-- WhatsApp specific meta tags -->
+  <!-- WhatsApp Meta Tags -->
   <meta name="image" content="${metaTags.image}">
-  <meta property="whatsapp:image" content="${metaTags.image}">
   
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${metaTags.title}">
   <meta name="twitter:description" content="${metaTags.description}">
   <meta name="twitter:image" content="${metaTags.image}">
-  <meta name="twitter:image:alt" content="${metaTags.title}">
-  
-  <!-- Additional meta tags for better social sharing -->
-  <meta name="author" content="Perla Accessories">
-  <meta name="robots" content="index, follow">
   
   <!-- Redirect to actual site for real users -->
   <script>
     // Only redirect if not a bot
-    if (typeof navigator !== 'undefined' && !/(facebook|whatsapp|twitter|telegram|skype|slack|discord|google|bing|bot|crawler|spider)/i.test(navigator.userAgent)) {
-      setTimeout(function() {
-        window.location.href = '${metaTags.url}';
-      }, 1000);
+    if (typeof navigator !== 'undefined' && !/(facebook|whatsapp|twitter|telegram|skype|slack|discord|google|bing)bot/i.test(navigator.userAgent)) {
+      window.location.href = '${metaTags.url}';
     }
   </script>
 </head>
-<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
-  <div style="max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h1 style="color: #ec4899; margin-bottom: 10px;">${metaTags.title}</h1>
-    <p style="color: #666; margin-bottom: 20px;">${metaTags.description}</p>
-    <img src="${metaTags.image}" alt="${metaTags.title}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
-    
-    <div style="text-align: center;">
-      <a href="${metaTags.url}" style="display: inline-block; background: #ec4899; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Visit Perla Accessories</a>
-    </div>
-    
-    <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
-      If you are not redirected automatically, <a href="${metaTags.url}" style="color: #ec4899;">click here</a>.
-    </p>
-  </div>
+<body>
+  <h1>${metaTags.title}</h1>
+  <p>${metaTags.description}</p>
+  <img src="${metaTags.image}" alt="${metaTags.title}" style="max-width: 100%; height: auto;">
+  
+  <p>If you are not redirected automatically, <a href="${metaTags.url}">click here</a>.</p>
 </body>
 </html>`;
 } 
