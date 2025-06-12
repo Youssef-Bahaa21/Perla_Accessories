@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const csrfProtection = csrf({
     cookie: {
         httpOnly: false, // Allow Angular to read the token
-        sameSite: isProduction ? 'none' : 'lax', // Use 'none' only in production with HTTPS
+        sameSite: 'lax', // Use 'lax' for better compatibility
         secure: isProduction, // Secure cookies only in production
         path: '/',
         maxAge: 3600000, // 1 hour
@@ -57,10 +57,10 @@ csrfMiddleware.get('/csrf-token', (req, res) => {
     try {
         const token = req.csrfToken();
 
-        // Set cookie with environment-appropriate settings
+        // Set cookie with compatible settings
         res.cookie('XSRF-TOKEN', token, {
             httpOnly: false, // Allow Angular to read it
-            sameSite: isProduction ? 'none' : 'lax', // Match the csrf config
+            sameSite: 'lax', // Use 'lax' for better compatibility
             secure: isProduction, // Secure in production
             path: '/',
             maxAge: 3600000, // 1 hour
@@ -71,7 +71,7 @@ csrfMiddleware.get('/csrf-token', (req, res) => {
             token: token,
             environment: process.env.NODE_ENV || 'development',
             secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax'
+            sameSite: 'lax'
         });
     } catch (error) {
         console.error('Error generating CSRF token:', error);
