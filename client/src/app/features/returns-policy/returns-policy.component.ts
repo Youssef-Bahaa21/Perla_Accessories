@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
   selector: 'app-returns-policy',
@@ -190,4 +191,20 @@ import { RouterModule } from '@angular/router';
     </style>
   `,
 })
-export class ReturnsPolicyComponent { }
+export class ReturnsPolicyComponent implements OnInit {
+  private seo = inject(SeoService);
+
+  ngOnInit(): void {
+    // Set SEO data for returns policy page
+    this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('returns'));
+    this.seo.updateCanonicalUrl('/returns-policy');
+
+    // Add breadcrumb structured data
+    const breadcrumbs = [
+      { name: 'Home', url: '/' },
+      { name: 'Returns Policy', url: '/returns-policy' }
+    ];
+    const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
+    this.seo.updateSEO({ structuredData: breadcrumbData });
+  }
+}

@@ -9,18 +9,21 @@ export const routes: Route[] = [
     // Public routes
     {
         path: 'landing',
+        title: 'Home - Perla Accessories | Beautiful Handcrafted Jewelry & Accessories',
         loadComponent: () =>
             import('./features/landing/landing.component')
                 .then(m => m.LandingPageComponent),
     },
     {
         path: 'products',
+        title: 'Shop All Products - Perla Accessories | Jewelry & Accessories',
         loadComponent: () =>
             import('./features/products/product-list/product-list.component')
                 .then(m => m.ProductListComponent),
     },
     {
         path: 'products/:id',
+        title: 'Product Details - Perla Accessories',
         loadComponent: () =>
             import('./features/products/product-detail/product-detail.component')
                 .then(m => m.ProductDetailComponent),
@@ -28,24 +31,28 @@ export const routes: Route[] = [
 
     {
         path: 'privacy-policy',
+        title: 'Privacy Policy - Perla Accessories',
         loadComponent: () =>
             import('./features/privacy-policy/privacy-policy.component')
                 .then(m => m.PrivacyPolicyComponent),
     },
     {
         path: 'terms',
+        title: 'Terms of Service - Perla Accessories',
         loadComponent: () =>
             import('./features/terms-of-service/terms-of-service.component')
                 .then(m => m.TermsOfServiceComponent),
     },
     {
         path: 'returns-policy',
+        title: 'Returns Policy - Perla Accessories',
         loadComponent: () =>
             import('./features/returns-policy/returns-policy.component')
                 .then(m => m.ReturnsPolicyComponent),
     },
     {
         path: 'about',
+        title: 'About Us - Perla Accessories | Our Story',
         loadComponent: () =>
             import('./features/about/about.component')
                 .then(m => m.AboutComponent),
@@ -53,6 +60,7 @@ export const routes: Route[] = [
 
     {
         path: 'login',
+        title: 'Sign In - Perla Accessories',
         canActivate: [guestGuard],
         loadComponent: () =>
             import('./features/auth/login/login.component').then(
@@ -62,6 +70,7 @@ export const routes: Route[] = [
 
     {
         path: 'forgot-password',
+        title: 'Forgot Password - Perla Accessories',
         canActivate: [guestGuard],
         loadComponent: () =>
             import('./features/auth/forgot-password/forgot-password.component')
@@ -70,6 +79,7 @@ export const routes: Route[] = [
 
     {
         path: 'reset-password',
+        title: 'Reset Password - Perla Accessories',
         canActivate: [guestGuard],
         loadComponent: () =>
             import('./features/auth/reset-password/reset-password.component')
@@ -77,6 +87,7 @@ export const routes: Route[] = [
     },
     {
         path: 'register',
+        title: 'Sign Up - Perla Accessories',
         canActivate: [guestGuard],
         loadComponent: () =>
             import('./features/auth/register/register.component').then(
@@ -88,6 +99,7 @@ export const routes: Route[] = [
     // Multi-step checkout flow
     {
         path: 'shipping',
+        title: 'Shipping Details - Perla Accessories',
         loadComponent: () =>
             import('./features/shipping-details/shipping-details.component').then(
                 m => m.ShippingDetailsComponent
@@ -95,6 +107,7 @@ export const routes: Route[] = [
     },
     {
         path: 'checkout',
+        title: 'Checkout - Perla Accessories',
         loadComponent: () =>
             import('./features/checkout/checkout.component').then(
                 m => m.CheckoutComponent
@@ -102,6 +115,7 @@ export const routes: Route[] = [
     },
     {
         path: 'cart',
+        title: 'Shopping Cart - Perla Accessories',
         loadComponent: () =>
             import('./features/cart-detail/cart-detail.component').then(
                 m => m.CartDetailComponent
@@ -110,6 +124,7 @@ export const routes: Route[] = [
 
     {
         path: 'order-confirmation/:id',
+        title: 'Order Confirmation - Perla Accessories',
         loadComponent: () =>
             import('./features/order-confirmation/order-confirmation.component')
                 .then(m => m.OrderConfirmationComponent),
@@ -119,6 +134,7 @@ export const routes: Route[] = [
     // Account & orders
     {
         path: 'account/orders',
+        title: 'My Orders - Perla Accessories',
         canActivate: [authGuard],
         runGuardsAndResolvers: 'always', // <- important!
         loadComponent: () =>
@@ -129,6 +145,7 @@ export const routes: Route[] = [
     // Admin layout with children
     {
         path: 'admin',
+        title: 'Admin Dashboard - Perla Accessories',
         canActivate: [authGuard, adminGuard],
         loadComponent: () =>
             import(
@@ -137,6 +154,7 @@ export const routes: Route[] = [
         children: [
             {
                 path: 'products',
+                title: 'Manage Products - Admin - Perla Accessories',
                 loadComponent: () =>
                     import(
                         './features/admin/product-form/product-form.component'
@@ -144,6 +162,7 @@ export const routes: Route[] = [
             },
             {
                 path: 'categories',
+                title: 'Manage Categories - Admin - Perla Accessories',
                 loadComponent: () =>
                     import(
                         './features/admin/category-management/category-management.component'
@@ -151,6 +170,7 @@ export const routes: Route[] = [
             },
             {
                 path: 'settings',
+                title: 'Settings - Admin - Perla Accessories',
                 loadComponent: () =>
                     import(
                         './features/admin/settings/settings/settings.component'
@@ -159,12 +179,14 @@ export const routes: Route[] = [
 
             {
                 path: 'coupon',
+                title: 'Manage Coupons - Admin - Perla Accessories',
                 loadComponent: () =>
                     import('./features/admin/coupon-list/coupon-list.component')
                         .then(m => m.CouponListComponent),
             },
             {
                 path: 'orders',
+                title: 'Manage Orders - Admin - Perla Accessories',
                 loadComponent: () =>
                     import(
                         './features/admin/order-list/order-list.component'

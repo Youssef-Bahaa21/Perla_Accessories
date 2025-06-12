@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
   selector: 'app-about',
@@ -335,4 +336,20 @@ import { RouterModule } from '@angular/router';
     </style>
   `,
 })
-export class AboutComponent { }
+export class AboutComponent implements OnInit {
+  private seo = inject(SeoService);
+
+  ngOnInit(): void {
+    // Set SEO data for about page
+    this.seo.updateSEO(this.seo.generateAboutSEO());
+    this.seo.updateCanonicalUrl('/about');
+
+    // Add breadcrumb structured data
+    const breadcrumbs = [
+      { name: 'Home', url: '/' },
+      { name: 'About', url: '/about' }
+    ];
+    const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
+    this.seo.updateSEO({ structuredData: breadcrumbData });
+  }
+}

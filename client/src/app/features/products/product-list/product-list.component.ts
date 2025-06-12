@@ -14,6 +14,7 @@ import { ApiService } from '../../../core/services/api/api.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { Product, Category } from '../../../core/models';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-product-list',
@@ -36,7 +37,7 @@ export class ProductListComponent implements OnInit {
   addedToCartMessage: { [pid: number]: string } = {};
   loading = true;
   error = '';
-  fallbackImage = 'https://via.placeholder.com/150'; // Fallback image if loading fails
+  fallbackImage = 'https://webhostingmedia.net/wp-content/uploads/2018/01/http-error-404-not-found.png';
 
   page = 1;
   pageSize = 12;
@@ -54,6 +55,7 @@ export class ProductListComponent implements OnInit {
   private cart = inject(CartService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private seo = inject(SeoService);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -63,7 +65,10 @@ export class ProductListComponent implements OnInit {
     this.loadPage();
 
     this.api.categories.list().subscribe({
-      next: cats => (this.categories = cats),
+      next: cats => {
+        this.categories = cats;
+        this.updateSEO();
+      },
       error: () => (this.error = 'Could not load categories.'),
     });
 
@@ -72,6 +77,9 @@ export class ProductListComponent implements OnInit {
       if (params['category']) {
         this.selectedCategory = +params['category'];
         this.applyFilters();
+        this.updateSEO();
+      } else {
+        this.updateSEO();
       }
     });
 
@@ -82,6 +90,53 @@ export class ProductListComponent implements OnInit {
           this.mobileFiltersActive = false;
         }
       });
+    }
+  }
+
+  private updateSEO(): void {
+    if (this.selectedCategory !== 'all') {
+      // Category-specific SEO
+      const category = this.categories.find(cat => cat.id === +this.selectedCategory);
+      if (category) {
+        const seoData = this.seo.generateCategorySEO(category);
+        this.seo.updateSEO(seoData);
+        this.seo.updateCanonicalUrl(`/products?category=${category.id}`);
+
+        // Add breadcrumb for category
+        const breadcrumbs = [
+          { name: 'Home', url: '/' },
+          { name: 'Products', url: '/products' },
+          { name: category.name, url: `/products?category=${category.id}` }
+        ];
+        const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
+        this.seo.updateSEO({ structuredData: breadcrumbData });
+      }
+    } else {
+      // General products page SEO
+      const seoData = {
+        title: 'Premium Handcrafted Accessories Collection',
+        description: 'Discover Perla\'s complete collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Premium quality with 3 years of craftsmanship excellence.',
+        keywords: 'accessories collection, handcrafted jewelry, premium accessories, perla accessories, unique style, limited edition, fashion accessories',
+        url: '/products',
+        type: 'website' as const,
+        structuredData: {
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Perla Accessories Collection',
+          description: 'Complete collection of handcrafted accessories and jewelry',
+          url: 'https://perla-accessories.vercel.app/products'
+        }
+      };
+      this.seo.updateSEO(seoData);
+      this.seo.updateCanonicalUrl('/products');
+
+      // Add breadcrumb for products page
+      const breadcrumbs = [
+        { name: 'Home', url: '/' },
+        { name: 'Products', url: '/products' }
+      ];
+      const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
+      this.seo.updateSEO({ structuredData: breadcrumbData });
     }
   }
 
@@ -254,5 +309,26 @@ export class ProductListComponent implements OnInit {
       return window.innerWidth;
     }
     return 1200; // Default width for SSR
+  }
+
+  // Method to check if device is mobile (touch-enabled)
+  isMobileDevice(): boolean {
+    if (!this.isBrowser) return false;
+    return this.getWindowWidth() < 768 || ('ontouchstart' in window);
+  }
+
+  // Modified methods to handle mobile vs desktop behavior
+  showNextImageDesktop(pid: number, count: number) {
+    // Only trigger on desktop devices
+    if (!this.isMobileDevice() && count > 1) {
+      this.activeImageIndices[pid] = 1;
+    }
+  }
+
+  resetImageDesktop(pid: number) {
+    // Only trigger on desktop devices
+    if (!this.isMobileDevice()) {
+      this.activeImageIndices[pid] = 0;
+    }
   }
 }

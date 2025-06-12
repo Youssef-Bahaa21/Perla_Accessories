@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# Allow all pages except admin and user-specific pages
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /cart
+Disallow: /cart/*
+Disallow: /checkout
+Disallow: /checkout/*
+Disallow: /auth
+Disallow: /auth/*
+Disallow: /order-confirmation
+Disallow: /orders
+Disallow: /orders/*
+
+# Allow important pages for SEO
+Allow: /
+Allow: /about
+Allow: /products
+Allow: /products/*
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /returns-policy
+Allow: /shipping-details
+
+# Sitemap location
+Sitemap: https://perla-accessories.vercel.app/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1 

@@ -4,10 +4,11 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../../core/services/api/api.service';
 import { ProductService } from '../../../core/services/product.service';
-import { Product, Review } from '../../../core/models';
+import { Product, Review, Category } from '../../../core/models';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
+import { SeoService } from '../../../core/services/seo.service';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -42,10 +43,11 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   loading = true;
   error = '';
   cartMessage = '';
-  fallbackImage = 'https://via.placeholder.com/150';
+  fallbackImage = 'https://webhostingmedia.net/wp-content/uploads/2018/01/http-error-404-not-found.png';
   showReviewForm = false;
   relatedProducts: Product[] = [];
   activeSlideIndex = 0;
+  category?: Category;
 
   private routeSubscription?: Subscription;
   private syncInterval?: any;
@@ -126,6 +128,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
+  private seo = inject(SeoService);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -179,6 +182,23 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
         this.loading = false;
 
+        // Load category for SEO
+        if (this.product.category_id) {
+          this.api.categories.get(this.product.category_id).subscribe({
+            next: category => {
+              this.category = category;
+              // Update SEO with product and category data
+              this.updateProductSEO();
+            },
+            error: () => {
+              // Still update SEO without category
+              this.updateProductSEO();
+            }
+          });
+        } else {
+          this.updateProductSEO();
+        }
+
         // Load related products - products in the same category
         if (this.product && this.product.category_id) {
           this.loadRelatedProducts(this.product.category_id, this.product.id);
@@ -192,6 +212,36 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  private updateProductSEO(): void {
+    if (!this.product) return;
+
+    // Generate product SEO data
+    const seoData = this.seo.generateProductSEO(this.product, this.category);
+    this.seo.updateSEO(seoData);
+    this.seo.updateCanonicalUrl(`/products/${this.product.id}`);
+
+    // Add breadcrumb structured data
+    const breadcrumbs = [
+      { name: 'Home', url: '/' },
+      { name: 'Products', url: '/products' }
+    ];
+
+    if (this.category) {
+      breadcrumbs.push({
+        name: this.category.name,
+        url: `/products?category=${this.category.id}`
+      });
+    }
+
+    breadcrumbs.push({
+      name: this.product.name,
+      url: `/products/${this.product.id}`
+    });
+
+    const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
+    this.seo.updateSEO({ structuredData: breadcrumbData });
   }
 
   private initializeSwiper() {

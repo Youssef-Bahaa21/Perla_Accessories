@@ -1,0 +1,189 @@
+// Mobile-first responsive styles for orders component
+.order-card {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+// Enhanced mobile responsiveness
+@media (max-width: 768px) {
+
+    // Reduce padding on mobile
+    .bg-gray-50 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    // Order card mobile optimization
+    .bg-white.rounded-lg.shadow {
+        margin-bottom: 1.5rem !important;
+        padding: 1rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    // Header spacing
+    .text-3xl.font-medium {
+        font-size: 1.875rem !important;
+        line-height: 2.25rem !important;
+    }
+
+    // Order header mobile layout
+    .flex.flex-col.md\\:flex-row {
+        gap: 0.75rem !important;
+    }
+
+    // Status badge mobile sizing
+    .px-3.py-1.rounded-full {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
+    }
+
+    // Order items table mobile adjustments
+    .overflow-hidden.rounded-lg.border {
+        border-radius: 0.5rem !important;
+    }
+
+    // Payment method box mobile
+    .bg-blue-50.border.border-blue-200 {
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    // Grid adjustments for shipping info
+    .grid.grid-cols-1.md\\:grid-cols-2 {
+        gap: 1rem !important;
+    }
+
+    // Mobile product image sizing
+    .h-20.w-20 {
+        height: 4rem !important;
+        width: 4rem !important;
+    }
+
+    .h-16.w-16 {
+        height: 3.5rem !important;
+        width: 3.5rem !important;
+    }
+
+    // Typography adjustments
+    .text-sm {
+        font-size: 0.8125rem !important;
+        line-height: 1.25rem !important;
+    }
+
+    .text-xs {
+        font-size: 0.6875rem !important;
+        line-height: 1rem !important;
+    }
+
+    // Button spacing on mobile
+    .bg-pink-600.hover\\:bg-pink-700 {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.8125rem !important;
+    }
+
+    // Improved tap targets for mobile
+    button,
+    a {
+        min-height: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Price text adjustments
+    .text-pink-600 {
+        font-weight: 700 !important;
+    }
+
+    // Container max-width adjustments
+    .max-w-5xl {
+        max-width: 100% !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
+// Extra small mobile devices
+@media (max-width: 480px) {
+
+    // Further reduce spacing
+    .py-12 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    // Smaller headers
+    .text-3xl {
+        font-size: 1.5rem !important;
+        line-height: 2rem !important;
+    }
+
+    // Compact order cards
+    .bg-white.rounded-lg.shadow {
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    // Grid items full width
+    .grid-cols-3 {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+        gap: 0.375rem !important;
+    }
+
+    // Smaller product images
+    .h-20.w-20 {
+        height: 3rem !important;
+        width: 3rem !important;
+    }
+
+    // Compact text
+    .text-sm {
+        font-size: 0.75rem !important;
+        line-height: 1.125rem !important;
+    }
+}
+
+// Ensure proper image responsiveness
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+// Better focus states for mobile accessibility
+@media (max-width: 768px) {
+
+    button:focus,
+    a:focus {
+        outline: 2px solid rgba(236, 72, 153, 0.6);
+        outline-offset: 2px;
+    }
+}
+
+// Loading spinner mobile optimization
+.animate-spin {
+    @media (max-width: 480px) {
+        height: 2rem !important;
+        width: 2rem !important;
+    }
+}
+
+// Error/empty state mobile improvements
+.max-w-md.mx-auto {
+    @media (max-width: 480px) {
+        max-width: 100% !important;
+        margin: 0 0.5rem !important;
+    }
+}
+
+// Currency display improvements
+.currency-display {
+    white-space: nowrap;
+
+    @media (max-width: 480px) {
+        font-size: 0.75rem !important;
+        white-space: normal;
+        word-break: break-all;
+    }
+}

@@ -162,8 +162,8 @@
             class="relative aspect-square overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100"
             (touchstart)="handleTouchStart($event, p.id)"
             (touchmove)="handleTouchMove($event, p.id, p.images?.length || 1)"
-            (mouseenter)="showNextImage(p.id, p.images?.length || 1)"
-            (mouseleave)="resetImage(p.id)"
+            (mouseenter)="showNextImageDesktop(p.id, p.images?.length || 1)"
+            (mouseleave)="resetImageDesktop(p.id)"
           >
             <a [routerLink]="['/products', p.id]" class="absolute inset-0 z-10"></a>
             
@@ -220,12 +220,19 @@
             </ng-template>
 
             <!-- Mobile-friendly Add to Cart Overlay -->
-            <div class="absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <div class="absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-20 transition-all duration-300" 
+                 [ngClass]="{
+                   'opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0': !isMobileDevice(),
+                   'opacity-100 mobile-add-to-cart': isMobileDevice()
+                 }">
               <button
                 (click)="addToCart(p); $event.stopPropagation(); $event.preventDefault();"
                 [disabled]="p.stock === 0"
-                class="w-full py-2 sm:py-3 px-3 sm:px-4 bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white text-xs sm:text-sm font-semibold rounded-xl sm:rounded-2xl shadow-xl transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2"
-                [ngClass]="{'opacity-50 cursor-not-allowed': p.stock === 0}"
+                class="w-full py-2 sm:py-3 px-3 sm:px-4 bg-gradient-to-r from-pink-600 to-pink-700 text-white text-xs sm:text-sm font-semibold rounded-xl sm:rounded-2xl shadow-xl transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2"
+                [ngClass]="{
+                  'opacity-50 cursor-not-allowed': p.stock === 0,
+                  'hover:from-pink-700 hover:to-pink-800': !isMobileDevice()
+                }"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

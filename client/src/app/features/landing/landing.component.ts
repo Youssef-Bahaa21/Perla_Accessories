@@ -7,6 +7,7 @@ import { Product, Category } from '../../core/models';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { ProductService } from '../../core/services/product.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -67,8 +68,13 @@ export class LandingPageComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
   private notification = inject(NotificationService);
+  private seo = inject(SeoService);
 
   ngOnInit(): void {
+    // Set SEO data for homepage
+    this.seo.updateSEO(this.seo.generateHomepageSEO());
+    this.seo.updateCanonicalUrl('/');
+
     this.loadFeaturedProducts();
     this.loadCategories();
   }

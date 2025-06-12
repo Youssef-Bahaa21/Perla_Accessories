@@ -1,0 +1,31 @@
+{
+    "name": "Perla Accessories - Premium Handcrafted Jewelry",
+    "short_name": "Perla",
+    "description": "Discover unique, handcrafted accessories and jewelry. Limited edition pieces designed to express your individual style.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ec4899",
+    "orientation": "portrait",
+    "scope": "/",
+    "lang": "en",
+    "categories": [
+        "shopping",
+        "lifestyle",
+        "fashion"
+    ],
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
