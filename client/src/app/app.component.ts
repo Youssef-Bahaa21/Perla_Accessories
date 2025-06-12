@@ -7,7 +7,6 @@ import { NgxSpinnerComponent } from 'ngx-spinner';
 import { NotificationService } from './core/services/notification.service';
 import { AuthService } from './core/services/auth/auth.service';
 import { CartService } from './core/services/cart/cart.service';
-import { CsrfService } from './core/services/csrf.service';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { HeaderComponent } from './shared/header/header.component';
@@ -42,23 +41,25 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
-    private csrfService: CsrfService,
     private http: HttpClient,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    // Only initialize in browser environment
+    // Only fetch CSRF token in browser environment
     if (isPlatformBrowser(this.platformId)) {
-      // Initialize CSRF token
-      this.csrfService.initializeCsrfToken().subscribe(() => {
-        // Debug CSRF status after initialization
-        setTimeout(() => {
-          this.csrfService.debugCsrfStatus();
-        }, 1000);
+      // Fetch CSRF token with debugging
+      console.log('Fetching CSRF token from:', `${environment.api}/api/csrf-token`);
+
+      this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe({
+        next: (response) => {
+          console.log('CSRF token fetched successfully:', response);
+        },
+        error: (error) => {
+          console.error('Failed to fetch CSRF token:', error);
+        }
       });
 
-      // Subscribe to user changes
       this.authService.currentUser$.subscribe((user: any) => {
         this.user = user;
       });
