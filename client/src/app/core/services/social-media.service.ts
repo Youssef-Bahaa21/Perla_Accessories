@@ -32,17 +32,23 @@ export class SocialMediaService {
         // Update basic meta tags
         this.meta.updateTag({ name: 'description', content: data.description });
 
-        // Update Open Graph tags
+        // Update Open Graph tags (Facebook, WhatsApp, etc.)
         this.meta.updateTag({ property: 'og:title', content: data.title });
         this.meta.updateTag({ property: 'og:description', content: data.description });
         this.meta.updateTag({ property: 'og:image', content: data.image || this.defaultImage });
         this.meta.updateTag({ property: 'og:image:alt', content: data.imageAlt || this.defaultImageAlt });
         this.meta.updateTag({ property: 'og:image:width', content: data.imageWidth || '1200' });
         this.meta.updateTag({ property: 'og:image:height', content: data.imageHeight || '630' });
+        this.meta.updateTag({ property: 'og:image:type', content: 'image/png' });
         this.meta.updateTag({ property: 'og:url', content: data.url || this.baseUrl });
         this.meta.updateTag({ property: 'og:type', content: data.type || 'website' });
+        this.meta.updateTag({ property: 'og:site_name', content: 'Perla Accessories' });
+
+        // WhatsApp specific tags (uses Open Graph but requires these for better preview)
+        this.meta.updateTag({ name: 'image', content: data.image || this.defaultImage });
 
         // Update Twitter Card tags
+        this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
         this.meta.updateTag({ name: 'twitter:title', content: data.title });
         this.meta.updateTag({ name: 'twitter:description', content: data.description });
         this.meta.updateTag({ name: 'twitter:image', content: data.image || this.defaultImage });
