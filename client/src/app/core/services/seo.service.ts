@@ -27,7 +27,8 @@ export class SeoService {
         defaultTitle: 'Perla Accessories - Premium Handcrafted Accessories & Jewelry',
         defaultDescription: 'Discover Perla\'s exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Shop premium quality accessories with 3 years of craftsmanship excellence.',
         defaultKeywords: 'accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry',
-        defaultImage: '/assets/images/perla-og-image.jpg',
+        defaultImage: 'https://perla-accessories.vercel.app/landing3.png',
+        productShowcaseImage: 'https://perla-accessories.vercel.app/landing2.png',
         locale: 'en_US',
         currency: 'EGP',
         country: 'EG'
@@ -230,6 +231,7 @@ export class SeoService {
             title: undefined, // Will use default
             description: undefined, // Will use default
             keywords: this.defaultData.defaultKeywords,
+            image: this.defaultData.productShowcaseImage, // Use the product showcase image
             url: '/',
             type: 'website',
             structuredData
@@ -319,6 +321,68 @@ export class SeoService {
         };
     }
 
+    generateProductCollectionSEO(products: Product[]): SEOData {
+        // Use the best product image for showcase, prioritizing featured or best-seller items
+        let showcaseImage = this.defaultData.productShowcaseImage;
+
+        if (products.length > 0) {
+            // First try to find a featured product with images
+            const featuredProduct = products.find(p => p.is_featured && p.images?.length);
+            if (featuredProduct?.images?.[0]?.url) {
+                showcaseImage = featuredProduct.images[0].url;
+            } else {
+                // Otherwise use the first product with images
+                const productWithImage = products.find(p => p.images?.length);
+                if (productWithImage?.images?.[0]?.url) {
+                    showcaseImage = productWithImage.images[0].url;
+                }
+            }
+        }
+
+        const description = products.length > 0
+            ? `Discover ${products.length} unique handcrafted accessories and jewelry pieces from Perla. Premium quality, limited edition designs that express your individual style.`
+            : this.defaultData.defaultDescription;
+
+        const structuredData = {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: 'Perla Accessories Collection',
+            description: description,
+            url: `${this.defaultData.domain}/landing`,
+            numberOfItems: products.length,
+            mainEntity: {
+                '@type': 'ItemList',
+                numberOfItems: products.length,
+                itemListElement: products.slice(0, 8).map((product, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    item: {
+                        '@type': 'Product',
+                        name: product.name,
+                        description: product.description,
+                        image: product.images?.[0]?.url || showcaseImage,
+                        offers: {
+                            '@type': 'Offer',
+                            price: product.price,
+                            priceCurrency: this.defaultData.currency,
+                            availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+                        }
+                    }
+                }))
+            }
+        };
+
+        return {
+            title: 'Perla Accessories - Premium Handcrafted Collection',
+            description,
+            keywords: `handcrafted accessories, premium jewelry, perla collection, unique designs, limited edition, ${products.length} products`,
+            image: showcaseImage,
+            url: '/landing',
+            type: 'website',
+            structuredData
+        };
+    }
+
     generateReturnsOrShippingPolicySEO(pageType: 'returns' | 'shipping'): SEOData {
         const isReturns = pageType === 'returns';
         const title = isReturns
@@ -357,11 +421,40 @@ export class SeoService {
         };
     }
 
+    updateCanonicalUrl(url: string): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+
+        // Remove existing canonical link
+        const existingCanonical = document.querySelector('link[rel="canonical"]');
+        if (existingCanonical) {
+            existingCanonical.remove();
+        }
+
+        // Add new canonical link
+        const canonical = document.createElement('link');
+        canonical.rel = 'canonical';
+        canonical.href = url.startsWith('http') ? url : `${this.defaultData.domain}${url}`;
+        document.head.appendChild(canonical);
+    }
+
+    generateBreadcrumbStructuredData(breadcrumbs: { name: string; url: string }[]): any {
+        return {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: breadcrumbs.map((breadcrumb, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name: breadcrumb.name,
+                item: breadcrumb.url.startsWith('http') ? breadcrumb.url : `${this.defaultData.domain}${breadcrumb.url}`
+            }))
+        };
+    }
+
     private addStructuredData(data: any): void {
         if (!isPlatformBrowser(this.platformId)) return;
 
         // Remove existing structured data
-        const existingScript = document.querySelector('script[type="application/ld+json"]');
+        const existingScript = document.querySelector('script[type="application/ld+json"][data-seo]');
         if (existingScript) {
             existingScript.remove();
         }
@@ -369,38 +462,10 @@ export class SeoService {
         // Add new structured data
         const script = document.createElement('script');
         script.type = 'application/ld+json';
+        script.setAttribute('data-seo', 'true');
         script.text = JSON.stringify(data);
         document.head.appendChild(script);
     }
 
-    generateBreadcrumbStructuredData(breadcrumbs: Array<{ name: string, url: string }>): any {
-        return {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: breadcrumbs.map((crumb, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
-                name: crumb.name,
-                item: `${this.defaultData.domain}${crumb.url}`
-            }))
-        };
-    }
 
-    updateCanonicalUrl(url: string): void {
-        if (!isPlatformBrowser(this.platformId)) return;
-
-        const canonicalUrl = `${this.defaultData.domain}${url}`;
-
-        // Remove existing canonical tag
-        const existingCanonical = document.querySelector('link[rel="canonical"]');
-        if (existingCanonical) {
-            existingCanonical.remove();
-        }
-
-        // Add new canonical tag
-        const link = document.createElement('link');
-        link.rel = 'canonical';
-        link.href = canonicalUrl;
-        document.head.appendChild(link);
-    }
 } 

@@ -16,8 +16,8 @@ export interface SocialMediaData {
     providedIn: 'root'
 })
 export class SocialMediaService {
-    private defaultImage = 'https://perla-accessories.vercel.app/landing.png';
-    private defaultImageAlt = 'Perla Accessories - Beautiful handcrafted jewelry and accessories';
+    private defaultImage = 'https://perla-accessories.vercel.app/landing2.png';
+    private defaultImageAlt = 'Perla Accessories - Premium handcrafted jewelry and accessories collection';
     private baseUrl = 'https://perla-accessories.vercel.app';
 
     constructor(
@@ -88,6 +88,33 @@ export class SocialMediaService {
             image: this.defaultImage,
             url: this.baseUrl,
             imageAlt: this.defaultImageAlt
+        });
+    }
+
+    updateHomepageWithProducts(products: any[]): void {
+        // Use the best product image for homepage sharing
+        let showcaseImage = this.defaultImage;
+        let showcaseAlt = this.defaultImageAlt;
+
+        if (products.length > 0) {
+            // Try to find a featured or best-seller product with image
+            const bestProduct = products.find(p => p.is_featured && p.images?.length) ||
+                products.find(p => p.is_best_seller && p.images?.length) ||
+                products.find(p => p.images?.length);
+
+            if (bestProduct?.images?.[0]?.url) {
+                showcaseImage = bestProduct.images[0].url;
+                showcaseAlt = `${bestProduct.name} - Premium Perla Accessories Collection`;
+            }
+        }
+
+        this.updateSocialMediaTags({
+            title: 'Perla Accessories - Premium Handcrafted Collection',
+            description: `Discover ${products.length} unique handcrafted accessories and jewelry pieces from Perla. Premium quality, limited edition designs that express your individual style.`,
+            image: showcaseImage,
+            url: this.baseUrl,
+            imageAlt: showcaseAlt,
+            type: 'website'
         });
     }
 

@@ -73,13 +73,6 @@ export class LandingPageComponent implements OnInit {
   private socialMedia = inject(SocialMediaService);
 
   ngOnInit(): void {
-    // Set SEO data for homepage
-    this.seo.updateSEO(this.seo.generateHomepageSEO());
-    this.seo.updateCanonicalUrl('/');
-
-    // Reset social media tags to default for homepage
-    this.socialMedia.resetToDefault();
-
     this.loadFeaturedProducts();
     this.loadCategories();
   }
@@ -109,12 +102,37 @@ export class LandingPageComponent implements OnInit {
           });
 
         this.loading = false;
+
+        // Update SEO with product collection data after products are loaded
+        this.updateSEOWithProducts();
       },
       error: () => {
         this.error = 'Could not load featured products.';
         this.loading = false;
+
+        // Fallback to default homepage SEO if products fail to load
+        this.seo.updateSEO(this.seo.generateHomepageSEO());
+        this.seo.updateCanonicalUrl('/');
+        this.socialMedia.resetToDefault();
       },
     });
+  }
+
+  private updateSEOWithProducts(): void {
+    if (this.featuredProducts.length > 0) {
+      // Use product collection SEO that showcases actual products
+      const seoData = this.seo.generateProductCollectionSEO(this.featuredProducts);
+      this.seo.updateSEO(seoData);
+      this.seo.updateCanonicalUrl('/');
+
+      // Update social media tags with products
+      this.socialMedia.updateHomepageWithProducts(this.featuredProducts);
+    } else {
+      // Fallback to homepage SEO if no featured products
+      this.seo.updateSEO(this.seo.generateHomepageSEO());
+      this.seo.updateCanonicalUrl('/');
+      this.socialMedia.resetToDefault();
+    }
   }
 
   private loadCategories(): void {
