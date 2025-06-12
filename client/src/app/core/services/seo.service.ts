@@ -106,13 +106,14 @@ export class SeoService {
         ].join(', ');
 
         const image = product.images?.[0]?.url || this.defaultData.defaultImage;
+        const fullImageUrl = image.startsWith('http') ? image : `${this.defaultData.domain}${image}`;
 
         const structuredData = {
             '@context': 'https://schema.org',
             '@type': 'Product',
             name: product.name,
             description: description,
-            image: image.startsWith('http') ? image : `${this.defaultData.domain}${image}`,
+            image: fullImageUrl,
             sku: `PERLA-${product.id}`,
             brand: {
                 '@type': 'Brand',
@@ -141,7 +142,7 @@ export class SeoService {
             title,
             description,
             keywords,
-            image,
+            image: fullImageUrl,
             url: `/products/${product.id}`,
             type: 'product',
             structuredData

@@ -120,13 +120,15 @@ export class SocialMediaService {
 
     private getProductImageUrl(product: any): string {
         if (product.images && product.images.length > 0) {
-            const image = product.images[0];
+            const imageObj = product.images[0];
+            const imageUrl = imageObj.url || imageObj.image || '';
+
             // If it's a full URL, use it directly
-            if (image.startsWith('http')) {
-                return image;
+            if (imageUrl.startsWith('http')) {
+                return imageUrl;
             }
             // If it's a relative path, make it absolute
-            return `${this.baseUrl}${image.startsWith('/') ? '' : '/'}${image}`;
+            return imageUrl ? `${this.baseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}` : this.defaultImage;
         }
         return this.defaultImage;
     }
