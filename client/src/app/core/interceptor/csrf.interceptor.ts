@@ -2,13 +2,15 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID, inject } from '@angular/core';
+import { CsrfService } from '../services/csrf.service';
 
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
     const platformId = inject(PLATFORM_ID);
+    const csrfService = inject(CsrfService);
 
     // Only attempt to add CSRF token in browser environment for state-changing methods
     if (isPlatformBrowser(platformId) && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method.toUpperCase())) {
-        const xsrfToken = getCookie('XSRF-TOKEN');
+        const xsrfToken = csrfService.getCsrfToken();
         if (xsrfToken && xsrfToken !== 'mock-token') {
             req = req.clone({
                 setHeaders: {
@@ -19,13 +21,3 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
     }
     return next(req);
 };
-
-function getCookie(name: string): string | null {
-    // Check if document is available (browser environment)
-    if (typeof document === 'undefined') {
-        return null;
-    }
-
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return match ? decodeURIComponent(match[2]) : null;
-}
