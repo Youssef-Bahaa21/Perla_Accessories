@@ -217,7 +217,26 @@
     }
 }
 
-// Mobile menu for filters
+// Mobile Filter System - Modern Bottom Sheet Design
+.mobile-filter-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0;
+    animation: fadeInBackdrop 0.3s ease-out forwards;
+}
+
+@keyframes fadeInBackdrop {
+    to {
+        opacity: 1;
+    }
+}
+
 .mobile-filter-menu {
     position: fixed;
     bottom: 0;
@@ -226,41 +245,281 @@
     background: white;
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
-    padding: 1.5rem 1rem;
-    z-index: 50;
-    box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    max-height: 85vh;
     transform: translateY(100%);
-    transition: transform 0.3s ease-out;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 -20px 25px -5px rgba(0, 0, 0, 0.1), 0 -10px 10px -5px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
 
     &.active {
         transform: translateY(0);
     }
+
+    // Drag indicator at the top
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0.75rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2.5rem;
+        height: 0.25rem;
+        background: #d1d5db;
+        border-radius: 0.125rem;
+    }
 }
 
-// Floating filter button for mobile
-.filter-button {
+.mobile-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mobile-filter-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus {
+        background: #f3f4f6;
+        color: #374151;
+        transform: scale(1.05);
+    }
+}
+
+.mobile-filter-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1.5rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-section {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.filter-section-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.filter-grid {
+    display: grid;
+    gap: 0.75rem;
+
+    &.filter-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.filter-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.filter-option-btn {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: white;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #ec4899, #db2777);
+        transition: left 0.3s ease;
+        z-index: -1;
+    }
+
+    &:hover:not(.active) {
+        border-color: #ec4899;
+        color: #ec4899;
+        transform: translateY(-1px);
+    }
+
+    &.active {
+        border-color: #ec4899;
+        color: white;
+        font-weight: 600;
+
+        &::before {
+            left: 0;
+        }
+    }
+}
+
+.mobile-filter-actions {
+    padding: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    background: #fafafa;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.mobile-filter-clear-btn {
+    flex: 0 0 auto;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #ec4899;
+    color: #ec4899;
+    font-weight: 600;
+    border-radius: 0.875rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #fdf2f8;
+        transform: translateY(-1px);
+    }
+}
+
+.mobile-filter-apply-btn {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+
+    &:hover {
+        background: linear-gradient(135deg, #db2777, #be185d);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+    }
+}
+
+// Floating filter button for mobile - Enhanced
+.mobile-filter-button {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
-    height: 3.5rem;
-    width: 3.5rem;
+    height: 3.75rem;
+    width: 3.75rem;
     border-radius: 50%;
     background: linear-gradient(135deg, #ec4899, #db2777);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.5);
-    z-index: 40;
-}
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    z-index: 99;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 3px solid white;
+    position: relative;
 
-@media (min-width: 768px) {
-    .filter-button {
-        display: none;
+    &:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
     }
 
-    .mobile-filter-menu {
-        display: none;
+    &.active {
+        background: linear-gradient(135deg, #db2777, #be185d);
+        transform: scale(0.95);
+    }
+
+    // Pulse animation when filters are active
+    &:not(.active):has(+ .mobile-filter-badge) {
+        animation: filterPulse 2s infinite;
+    }
+}
+
+.mobile-filter-badge {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    background: #f59e0b;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+@keyframes filterPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4), 0 0 0 0 rgba(236, 72, 153, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4), 0 0 0 8px rgba(236, 72, 153, 0.1);
+    }
+}
+
+// Desktop - Hide mobile filter elements
+@media (min-width: 768px) {
+
+    .mobile-filter-button,
+    .mobile-filter-menu,
+    .mobile-filter-backdrop {
+        display: none !important;
+    }
+}
+
+// Enhanced mobile responsiveness
+@media (max-width: 480px) {
+    .mobile-filter-button {
+        bottom: 1rem;
+        right: 1rem;
+        height: 3.5rem;
+        width: 3.5rem;
+    }
+
+    .mobile-filter-content {
+        padding: 0 1rem;
+    }
+
+    .mobile-filter-header {
+        padding: 1.25rem 1rem 0.75rem;
+    }
+
+    .mobile-filter-actions {
+        padding: 1.25rem 1rem;
+    }
+
+    .filter-grid.filter-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -402,4 +661,198 @@
         pointer-events: none;
         touch-action: auto; // Allow default scrolling behavior
     }
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideInUp {
+    animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 1.5s infinite;
+}
+
+/* Custom scrollbar for filters */
+.filter-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.filter-scrollbar::-webkit-scrollbar-thumb {
+    background: #ec4899;
+    border-radius: 10px;
+}
+
+.filter-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #db2777;
+}
+
+/* Product card hover effects */
+.product-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Image gallery transition effect */
+.image-slide {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Quick view modal animation */
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Modern Shopify-like enhancements */
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Smooth hover animations */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.hover-float:hover {
+    animation: float 0.6s ease-in-out;
+}
+
+/* Glass morphism effects */
+.glass {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background: linear-gradient(-45deg, #ec4899, #f472b6, #fb7185, #f97316);
+    background-size: 400% 400%;
+    animation: gradient-shift 3s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Enhanced scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #ec4899, #f472b6);
+    border-radius: 10px;
+    border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #db2777, #e11d48);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    .grid-cols-2>* {
+        min-height: 320px;
+    }
+}
+
+/* Focus states for accessibility */
+.focus-ring:focus {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
 }

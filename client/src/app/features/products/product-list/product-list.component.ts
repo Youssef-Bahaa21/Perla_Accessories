@@ -89,7 +89,7 @@ export class ProductListComponent implements OnInit {
     if (this.isBrowser) {
       window.addEventListener('resize', () => {
         if (this.getWindowWidth() >= 768 && this.mobileFiltersActive) {
-          this.mobileFiltersActive = false;
+          this.closeMobileFilters();
         }
       });
     }
@@ -271,6 +271,46 @@ export class ProductListComponent implements OnInit {
     if (this.isBrowser) {
       document.body.style.overflow = this.mobileFiltersActive ? 'hidden' : '';
     }
+  }
+
+  closeMobileFilters(): void {
+    this.mobileFiltersActive = false;
+    if (this.isBrowser) {
+      document.body.style.overflow = '';
+    }
+  }
+
+  setMobileFilter(filterType: string, value: any): void {
+    switch (filterType) {
+      case 'category':
+        this.selectedCategory = value;
+        break;
+      case 'stock':
+        this.stockFilter = value;
+        break;
+      case 'tag':
+        this.tagFilter = value;
+        break;
+    }
+    // Don't apply filters immediately - let user make multiple selections
+  }
+
+  applyMobileFilters(): void {
+    this.applyFilters();
+    this.closeMobileFilters();
+  }
+
+  clearAllMobileFilters(): void {
+    this.clearFilters();
+    this.closeMobileFilters();
+  }
+
+  getActiveFiltersCount(): number {
+    let count = 0;
+    if (this.selectedCategory !== 'all') count++;
+    if (this.stockFilter !== 'all') count++;
+    if (this.tagFilter !== 'all') count++;
+    return count;
   }
 
   resetStockFilter() {
