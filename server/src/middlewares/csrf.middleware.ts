@@ -8,13 +8,16 @@ const csrfProtection = csrf({
         sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
         path: '/',
+        maxAge: 3600000, // 1 hour
     },
+    ignoreMethods: ['GET', 'HEAD', 'OPTIONS'], // Only protect state-changing methods
     value: (req) => {
-        // Check for token in multiple locations
+        // Check for token in multiple locations (case-insensitive)
         return req.body._token ||
             req.query._token ||
             req.headers['x-csrf-token'] ||
-            req.headers['x-xsrf-token']; // Angular sends this header
+            req.headers['x-xsrf-token'] || // Angular default header
+            req.headers['csrf-token']; // Additional fallback
     }
 });
 
@@ -25,6 +28,19 @@ csrfMiddleware.use(cookieParser());
 
 // Apply csrfProtection only after parsing cookies
 csrfMiddleware.use(csrfProtection);
+
+// Enhanced error handling for CSRF errors
+csrfMiddleware.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err.code === 'EBADCSRFTOKEN') {
+        res.status(403).json({
+            error: 'Invalid CSRF token',
+            message: 'CSRF token validation failed. Please refresh the page and try again.',
+            code: 'CSRF_INVALID'
+        });
+    } else {
+        next(err);
+    }
+});
 
 // Provide a route to get CSRF token
 csrfMiddleware.get('/csrf-token', (req, res) => {

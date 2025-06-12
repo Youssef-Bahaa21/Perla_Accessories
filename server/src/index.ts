@@ -48,28 +48,33 @@ app.get('/health', (_req, res) => {
     });
 });
 
-/* ---- CSRF Token Endpoint (always available) ---- */
+/* ---- CSRF Token Endpoint (fallback for when CSRF is disabled) ---- */
 app.get('/api/csrf-token', (req, res) => {
-    // Always return a success response for CSRF token requests
-    res.cookie('XSRF-TOKEN', 'production-token', {
-        httpOnly: false, // Allow Angular to read it
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        path: '/',
-    });
-    res.json({
-        message: 'CSRF token set successfully',
-        token: 'production-token'
-    });
+    // If CSRF is disabled, provide a mock token for frontend compatibility
+    if (process.env.DISABLE_CSRF === 'true') {
+        res.cookie('XSRF-TOKEN', 'mock-token', {
+            httpOnly: false, // Allow Angular to read it
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+        });
+        res.json({
+            message: 'CSRF disabled - mock token provided',
+            token: 'mock-token'
+        });
+    } else {
+        // If CSRF is enabled, redirect to the proper CSRF middleware endpoint
+        res.redirect('/api/csrf-token');
+    }
 });
 
 /* ---- CSRF Protection ---- */
-// Disable CSRF in production for now to fix authentication issues
-if (process.env.NODE_ENV !== 'production' && process.env.DISABLE_CSRF !== 'true') {
-    app.use('/api', csrfMiddleware); // CSRF enabled only in development
-    console.log('🔒 CSRF Protection: ENABLED (development)');
+// Enable CSRF protection for all environments unless explicitly disabled
+if (process.env.DISABLE_CSRF !== 'true') {
+    app.use('/api', csrfMiddleware); // CSRF enabled for all environments
+    console.log('🔒 CSRF Protection: ENABLED');
 } else {
-    console.log('⚠️ CSRF Protection: DISABLED (for production)');
+    console.log('⚠️ CSRF Protection: DISABLED (via DISABLE_CSRF=true)');
 }
 
 /* ✅ Swagger UI */

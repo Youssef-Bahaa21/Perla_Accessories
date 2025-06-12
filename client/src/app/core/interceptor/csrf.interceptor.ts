@@ -6,13 +6,13 @@ import { PLATFORM_ID, inject } from '@angular/core';
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
     const platformId = inject(PLATFORM_ID);
 
-    // Only attempt to add CSRF token in browser environment
-    if (isPlatformBrowser(platformId) && ['POST', 'PUT', 'DELETE'].includes(req.method.toUpperCase())) {
+    // Only attempt to add CSRF token in browser environment for state-changing methods
+    if (isPlatformBrowser(platformId) && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method.toUpperCase())) {
         const xsrfToken = getCookie('XSRF-TOKEN');
-        if (xsrfToken) {
+        if (xsrfToken && xsrfToken !== 'mock-token') {
             req = req.clone({
                 setHeaders: {
-                    'X-CSRF-Token': xsrfToken
+                    'X-XSRF-TOKEN': xsrfToken // Use the correct header name that Angular expects
                 }
             });
         }
