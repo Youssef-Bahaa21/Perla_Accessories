@@ -1,16 +1,24 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { catchError, switchMap, throwError, Observable } from 'rxjs';
+import { catchError, switchMap, throwError, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment as env } from '../../../environments/environment';
 
 // Flag to prevent multiple concurrent refresh attempts
 let isRefreshing = false;
+// Maximum number of refresh attempts to prevent infinite loops
+const MAX_REFRESH_ATTEMPTS = 3;
+// Counter for refresh attempts in the current session
+let refreshAttempts = 0;
+// Timestamp of the last successful refresh to prevent too frequent refreshes
+let lastRefreshTime = 0;
+// Minimum time between refresh attempts (in milliseconds)
+const MIN_REFRESH_INTERVAL = 10000; // 10 seconds
 
 /**
- * Interceptor that handles token refresh on 401 errors.
+ * Enhanced interceptor that handles token refresh on 401 errors with additional security measures.
  * This prevents automatic logout on page refresh if access token expires.
  */
 export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
@@ -35,19 +43,32 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
             // Only attempt refresh on 401 errors, in browser environment, 
-            // when we're not already refreshing
-            if (error.status === 401 &&
+            // when we're not already refreshing, and within rate limits
+            const currentTime = Date.now();
+            const canAttemptRefresh =
+                error.status === 401 &&
                 isPlatformBrowser(platformId) &&
-                !isRefreshing) {
+                !isRefreshing &&
+                refreshAttempts < MAX_REFRESH_ATTEMPTS &&
+                currentTime - lastRefreshTime > MIN_REFRESH_INTERVAL;
 
+            if (canAttemptRefresh) {
                 isRefreshing = true;
-                console.log('Token expired. Attempting refresh...');
+                refreshAttempts++;
+                console.log(`Token expired. Attempting refresh (${refreshAttempts}/${MAX_REFRESH_ATTEMPTS})...`);
 
                 // Attempt to refresh the token
                 return http.post<{ message: string }>(`${env.api}/api/auth/refresh`, {}, { withCredentials: true }).pipe(
                     switchMap(() => {
                         console.log('Token refreshed successfully');
                         isRefreshing = false;
+                        lastRefreshTime = Date.now();
+
+                        // Reset attempts counter after successful refresh
+                        if (currentTime - lastRefreshTime > 60000) { // If it's been more than a minute
+                            refreshAttempts = 0;
+                        }
+
                         // Retry the original request with the new token (in cookies)
                         return next(req);
                     }),
@@ -57,9 +78,14 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
 
                         // Clear any remaining cookies and redirect to login for critical pages
                         if (typeof document !== 'undefined') {
-                            // Clear auth cookies with correct attributes for cross-origin
-                            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
-                            document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure; samesite=none';
+                            // Clear auth cookies with correct attributes
+                            // Adding HttpOnly and configuring SameSite based on environment
+                            const isSecure = window.location.protocol === 'https:';
+                            const sameSite = isSecure ? 'none' : 'lax';
+
+                            // Security enhanced cookie clearing
+                            document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; ${isSecure ? 'secure; ' : ''}samesite=${sameSite}`;
+                            document.cookie = `refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; ${isSecure ? 'secure; ' : ''}samesite=${sameSite}`;
                         }
 
                         // If this is a protected route (orders, account), redirect to login
@@ -80,6 +106,18 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unkno
                         return throwError(() => userFriendlyError);
                     })
                 );
+            }
+
+            // If refresh isn't possible or fails, handle based on error type
+            if (error.status === 401) {
+                // Only attempt to redirect for auth errors on protected routes
+                const currentUrl = router.url;
+                if (currentUrl.includes('/account') || currentUrl.includes('/admin')) {
+                    // Navigate to login for protected routes
+                    router.navigate(['/login'], {
+                        queryParams: { returnUrl: currentUrl }
+                    });
+                }
             }
 
             // For other errors, just pass them through

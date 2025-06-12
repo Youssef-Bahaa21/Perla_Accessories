@@ -14,6 +14,7 @@ import { messageInterceptor } from './core/interceptor/message.interceptor';
 import { credentialsInterceptor } from './core/interceptor/credentials.interceptor';
 import { csrfInterceptor } from './core/interceptor/csrf.interceptor';
 import { authRefreshInterceptor } from './core/interceptor/auth-refresh.interceptor';
+import { authInterceptor } from './core/interceptor/auth/auth.interceptor';
 
 import { HttpClientXsrfModule } from '@angular/common/http';
 
@@ -33,11 +34,12 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([
-        credentialsInterceptor,
+        authInterceptor,           // Security headers & token validation
+        credentialsInterceptor,    // Handle credentials
         authRefreshInterceptor,    // Add auth refresh interceptor
-        loadingInterceptor,
-        csrfInterceptor,         // ✅ optional, if you manually fetch token
-        messageInterceptor,
+        loadingInterceptor,        // Show loading indicator
+        csrfInterceptor,           // CSRF protection
+        messageInterceptor,        // Handle API messages
       ])
     ),
 
