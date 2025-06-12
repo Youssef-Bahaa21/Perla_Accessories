@@ -78,6 +78,20 @@ async function generateBotHTML(url) {
       console.error('Failed to fetch product:', error);
       metaTags = generateDefaultMetaTags();
     }
+  } else if (url === '/' || url === '/landing') {
+    metaTags = generateHomepageMetaTags();
+  } else if (url === '/products') {
+    metaTags = generateProductsPageMetaTags();
+  } else if (url === '/privacy-policy') {
+    metaTags = generatePrivacyPolicyMetaTags();
+  } else if (url === '/terms') {
+    metaTags = generateTermsMetaTags();
+  } else if (url === '/returns-policy') {
+    metaTags = generateReturnsPolicyMetaTags();
+  } else if (url.startsWith('/account')) {
+    metaTags = generateAccountMetaTags();
+  } else if (url === '/cart') {
+    metaTags = generateCartMetaTags();
   } else {
     metaTags = generateDefaultMetaTags();
   }
@@ -96,6 +110,76 @@ function generateProductMetaTags(product) {
     image: productImage,
     url: `https://perla-accessories.vercel.app/products/${product.id}`,
     type: 'product'
+  };
+}
+
+function generateHomepageMetaTags() {
+  return {
+    title: 'Perla Accessories - Premium Handcrafted Accessories & Jewelry',
+    description: 'Discover Perla\'s exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
+    image: 'https://perla-accessories.vercel.app/Landingbg.png',
+    url: 'https://perla-accessories.vercel.app',
+    type: 'website'
+  };
+}
+
+function generateProductsPageMetaTags() {
+  return {
+    title: 'Shop All Products - Perla Accessories | Jewelry & Accessories',
+    description: 'Browse our complete collection of handcrafted accessories and jewelry. Premium quality, unique designs, and limited edition pieces to express your style.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/products',
+    type: 'website'
+  };
+}
+
+function generatePrivacyPolicyMetaTags() {
+  return {
+    title: 'Privacy Policy - Perla Accessories',
+    description: 'Learn how Perla Accessories protects your personal information and handles your data. We are committed to maintaining your privacy and security.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/privacy-policy',
+    type: 'article'
+  };
+}
+
+function generateTermsMetaTags() {
+  return {
+    title: 'Terms of Service - Perla Accessories',
+    description: 'Read our terms of service for shopping at Perla Accessories. Learn about our policies, returns, shipping, and purchasing terms.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/terms',
+    type: 'article'
+  };
+}
+
+function generateReturnsPolicyMetaTags() {
+  return {
+    title: 'Returns Policy - Perla Accessories',
+    description: 'Learn about our hassle-free returns and exchange policy. We make it easy to return or exchange your Perla accessories.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/returns-policy',
+    type: 'article'
+  };
+}
+
+function generateAccountMetaTags() {
+  return {
+    title: 'My Account - Perla Accessories',
+    description: 'Manage your Perla Accessories account, view orders, and track your purchases.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/account',
+    type: 'website'
+  };
+}
+
+function generateCartMetaTags() {
+  return {
+    title: 'Shopping Cart - Perla Accessories',
+    description: 'Review your selected items and complete your purchase of beautiful handcrafted accessories.',
+    image: 'https://perla-accessories.vercel.app/landing2.png',
+    url: 'https://perla-accessories.vercel.app/cart',
+    type: 'website'
   };
 }
 
@@ -134,20 +218,39 @@ function generateHTML(metaTags) {
   <meta name="twitter:description" content="${metaTags.description}">
   <meta name="twitter:image" content="${metaTags.image}">
   
-  <!-- Redirect to actual site for real users -->
+  <!-- Better redirect logic for WhatsApp users -->
   <script>
-    // Only redirect if not a bot
-    if (typeof navigator !== 'undefined' && !/(facebook|whatsapp|twitter|telegram|skype|slack|discord|google|bing)bot/i.test(navigator.userAgent)) {
+    // Improved redirect logic - check if it's a real user interaction
+    const userAgent = navigator.userAgent || '';
+    const isWhatsApp = /WhatsApp/i.test(userAgent);
+    const isBot = /(facebook|whatsapp|twitter|telegram|skype|slack|discord|google|bing)bot/i.test(userAgent);
+    
+    // If it's WhatsApp but likely a user click (not a bot crawl), redirect
+    if (isWhatsApp && !isBot) {
+      // Small delay to ensure proper loading
+      setTimeout(() => {
+        window.location.href = '${metaTags.url}';
+      }, 100);
+    } else if (!isBot) {
+      // For other non-bot traffic, redirect immediately
       window.location.href = '${metaTags.url}';
     }
   </script>
+  
+  <!-- Fallback meta refresh for additional safety -->
+  <meta http-equiv="refresh" content="2;url=${metaTags.url}">
 </head>
 <body>
-  <h1>${metaTags.title}</h1>
-  <p>${metaTags.description}</p>
-  <img src="${metaTags.image}" alt="${metaTags.title}" style="max-width: 100%; height: auto;">
-  
-  <p>If you are not redirected automatically, <a href="${metaTags.url}">click here</a>.</p>
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
+    <img src="${metaTags.image}" alt="${metaTags.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+    <h1 style="color: #ec4899; margin-bottom: 10px;">${metaTags.title}</h1>
+    <p style="color: #666; margin-bottom: 20px;">${metaTags.description}</p>
+    
+    <p style="color: #888; font-size: 14px;">
+      If you are not redirected automatically, 
+      <a href="${metaTags.url}" style="color: #ec4899; text-decoration: none;">click here to continue</a>.
+    </p>
+  </div>
 </body>
 </html>`;
 } 
