@@ -2,14 +2,16 @@ import csrf from 'csurf';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 
+// Determine if we're in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 const csrfProtection = csrf({
     cookie: {
         httpOnly: false, // Allow Angular to read the token
-        sameSite: 'none', // Required for cross-origin cookies
-        secure: process.env.NODE_ENV === 'production', // HTTPS required in production
+        sameSite: isProduction ? 'none' : 'lax', // Use 'none' only in production with HTTPS
+        secure: isProduction, // Secure cookies only in production
         path: '/',
         maxAge: 3600000, // 1 hour
-        // Don't set domain to allow cross-origin cookies
     },
     ignoreMethods: ['GET', 'HEAD', 'OPTIONS'], // Only protect state-changing methods
     value: (req) => {
@@ -28,40 +30,56 @@ const csrfMiddleware = express.Router();
 csrfMiddleware.use(cookieParser());
 
 // Apply csrfProtection only after parsing cookies
-csrfMiddleware.use(csrfProtection);
-
-// Enhanced error handling for CSRF errors
-csrfMiddleware.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (err.code === 'EBADCSRFTOKEN') {
-        res.status(403).json({
-            error: 'Invalid CSRF token',
-            message: 'CSRF token validation failed. Please refresh the page and try again.',
-            code: 'CSRF_INVALID'
-        });
-    } else {
-        next(err);
-    }
+csrfMiddleware.use((req, res, next) => {
+    // Add error handling wrapper
+    csrfProtection(req, res, (err) => {
+        if (err) {
+            console.error('CSRF Error:', err.message);
+            if (err.code === 'EBADCSRFTOKEN') {
+                return res.status(403).json({
+                    error: 'Invalid CSRF token',
+                    message: 'CSRF token validation failed. Please refresh the page and try again.',
+                    code: 'CSRF_INVALID'
+                });
+            }
+            return res.status(500).json({
+                error: 'CSRF middleware error',
+                message: err.message,
+                code: 'CSRF_ERROR'
+            });
+        }
+        next();
+    });
 });
 
 // Provide a route to get CSRF token
 csrfMiddleware.get('/csrf-token', (req, res) => {
-    const token = req.csrfToken();
+    try {
+        const token = req.csrfToken();
 
-    // Set cookie with cross-origin settings
-    res.cookie('XSRF-TOKEN', token, {
-        httpOnly: false, // Allow Angular to read it
-        sameSite: 'none', // Required for cross-origin
-        secure: process.env.NODE_ENV === 'production', // HTTPS required
-        path: '/',
-        maxAge: 3600000, // 1 hour
-    });
+        // Set cookie with environment-appropriate settings
+        res.cookie('XSRF-TOKEN', token, {
+            httpOnly: false, // Allow Angular to read it
+            sameSite: isProduction ? 'none' : 'lax', // Match the csrf config
+            secure: isProduction, // Secure in production
+            path: '/',
+            maxAge: 3600000, // 1 hour
+        });
 
-    res.json({
-        message: 'CSRF token set in cookie',
-        token: token, // Also return in response for debugging
-        domain: req.get('host'),
-        secure: process.env.NODE_ENV === 'production'
-    });
+        res.json({
+            message: 'CSRF token set successfully',
+            token: token,
+            environment: process.env.NODE_ENV || 'development',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax'
+        });
+    } catch (error) {
+        console.error('Error generating CSRF token:', error);
+        res.status(500).json({
+            error: 'Failed to generate CSRF token',
+            message: error.message
+        });
+    }
 });
 
 export default csrfMiddleware;

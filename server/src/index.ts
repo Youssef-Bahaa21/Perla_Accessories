@@ -60,7 +60,7 @@ if (process.env.DISABLE_CSRF !== 'true') {
     app.get('/api/csrf-token', (req, res) => {
         res.cookie('XSRF-TOKEN', 'mock-token', {
             httpOnly: false,
-            sameSite: 'none',
+            sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',
             path: '/',
         });
