@@ -29,6 +29,7 @@ export class SeoService {
         defaultKeywords: 'accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry',
         defaultImage: 'https://perla-accessories.vercel.app/landing3.png',
         productShowcaseImage: 'https://perla-accessories.vercel.app/landing2.png',
+        facebookAppId: '', // Add your Facebook App ID here when available
         locale: 'en_US',
         currency: 'EGP',
         country: 'EG'
@@ -64,6 +65,11 @@ export class SeoService {
         this.meta.updateTag({ property: 'og:type', content: data.type || 'website' });
         this.meta.updateTag({ property: 'og:site_name', content: this.defaultData.siteName });
         this.meta.updateTag({ property: 'og:locale', content: this.defaultData.locale });
+
+        // Facebook App ID (if available)
+        if (this.defaultData.facebookAppId) {
+            this.meta.updateTag({ property: 'fb:app_id', content: this.defaultData.facebookAppId });
+        }
 
         // Twitter Card tags
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
