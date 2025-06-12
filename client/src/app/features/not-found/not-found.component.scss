@@ -1,0 +1,162 @@
+// Floating animations for background elements
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) translateX(-50%) translateY(-50%);
+    }
+
+    50% {
+        transform: translateY(-20px) translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes float-delayed {
+
+    0%,
+    100% {
+        transform: translateY(0px) translateX(50%) translateY(50%);
+    }
+
+    50% {
+        transform: translateY(-15px) translateX(50%) translateY(50%);
+    }
+}
+
+@keyframes pulse-glow {
+    0% {
+        text-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+    }
+
+    50% {
+        text-shadow: 0 0 30px rgba(236, 72, 153, 0.8), 0 0 40px rgba(236, 72, 153, 0.3);
+    }
+
+    100% {
+        text-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+    }
+}
+
+// Animation classes
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 8s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+// Mobile responsiveness
+@media (max-width: 640px) {
+
+    // Reduce 404 text size on very small screens
+    .text-8xl {
+        font-size: 6rem !important;
+    }
+
+    // Adjust button padding on mobile
+    button {
+        padding: 0.875rem 1.5rem !important;
+    }
+
+    // Reduce backdrop blur on mobile for better performance
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px) !important;
+    }
+
+    // Smaller decorative elements on mobile
+    .w-\[40rem\] {
+        width: 20rem !important;
+    }
+
+    .h-\[40rem\] {
+        height: 20rem !important;
+    }
+
+    .w-\[35rem\] {
+        width: 18rem !important;
+    }
+
+    .h-\[35rem\] {
+        height: 18rem !important;
+    }
+}
+
+// Enhanced focus states for accessibility
+button:focus,
+a:focus {
+    outline: 2px solid rgba(236, 72, 153, 0.5);
+    outline-offset: 2px;
+}
+
+// Smooth transitions for all interactive elements
+button,
+a {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Glass morphism effect enhancement
+.backdrop-blur-sm {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+// Button hover effects
+button:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+// Link hover effects
+a:hover {
+    transform: translateY(-1px);
+}
+
+// Responsive text sizing
+@media (min-width: 1024px) {
+    .text-\[12rem\] {
+        font-size: 12rem;
+        line-height: 1;
+    }
+}
+
+// Performance optimizations
+* {
+    will-change: auto;
+}
+
+.animate-float,
+.animate-float-delayed {
+    will-change: transform;
+}
+
+.animate-pulse-glow {
+    will-change: text-shadow;
+}
+
+// Dark mode support (if needed in future)
+@media (prefers-color-scheme: dark) {
+    // Could add dark mode styles here
+}
+
+// Reduced motion support for accessibility
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-float,
+    .animate-float-delayed,
+    .animate-pulse-glow {
+        animation: none !important;
+    }
+
+    * {
+        transition: none !important;
+    }
+}

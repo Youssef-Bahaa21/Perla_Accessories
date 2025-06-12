@@ -196,6 +196,15 @@ export const routes: Route[] = [
         ],
     },
 
-    // Fallback
-    { path: '**', redirectTo: 'products' },
+    // Not Found page
+    {
+        path: '404',
+        title: 'Page Not Found - Perla Accessories',
+        loadComponent: () =>
+            import('./features/not-found/not-found.component')
+                .then(m => m.NotFoundComponent),
+    },
+
+    // Fallback - redirect to 404 page
+    { path: '**', redirectTo: '404' },
 ];

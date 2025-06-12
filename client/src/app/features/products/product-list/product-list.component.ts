@@ -318,30 +318,5 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  // Enhanced touch handlers - completely disabled on mobile
-  handleTouchStart(event: TouchEvent, _productId: number): void {
-    // Completely disable touch interactions for image changes on mobile
-    if (this.isMobileDevice()) {
-      return; // Do nothing on mobile
-    }
 
-    // Only work on desktop
-    if (event.touches && event.touches.length) {
-      // Could store initial X position for swipe detection on desktop
-    }
-  }
-
-  handleTouchMove(e: TouchEvent, pid: number, count: number) {
-    // Completely disable touch interactions for image changes on mobile
-    if (this.isMobileDevice() || count <= 1) {
-      return; // Do nothing on mobile
-    }
-
-    // Only work on desktop touch devices (like touch laptops)
-    if (e.touches && e.touches.length) {
-      const touch = e.touches[0];
-      const cur = this.activeImageIndices[pid] || 0;
-      this.setActiveImage(pid, cur < count - 1 ? cur + 1 : 0);
-    }
-  }
 }

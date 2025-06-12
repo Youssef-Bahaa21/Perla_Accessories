@@ -162,8 +162,6 @@
             class="relative aspect-square overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100"
             [class.mobile-static-image]="isMobileDevice()"
             [attr.data-mobile]="isMobileDevice()"
-            (touchstart)="!isMobileDevice() && handleTouchStart($event, p.id)"
-            (touchmove)="!isMobileDevice() && handleTouchMove($event, p.id, p.images?.length || 1)"
             (mouseenter)="showNextImageDesktop(p.id, p.images?.length || 1)"
             (mouseleave)="resetImageDesktop(p.id)"
           >

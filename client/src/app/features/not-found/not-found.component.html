@@ -1,0 +1,96 @@
+<div class="min-h-screen bg-gradient-to-br from-pink-50/30 via-white to-pink-50/30 flex items-center justify-center relative overflow-hidden">
+  <!-- Decorative background elements -->
+  <div class="absolute top-0 left-0 w-[40rem] h-[40rem] bg-gradient-to-br from-pink-100/20 to-pink-200/20 rounded-full filter blur-3xl opacity-60 transform -translate-x-1/2 -translate-y-1/2 animate-float"></div>
+  <div class="absolute bottom-0 right-0 w-[35rem] h-[35rem] bg-gradient-to-tl from-pink-100/20 to-pink-200/20 rounded-full filter blur-3xl opacity-50 transform translate-x-1/2 translate-y-1/2 animate-float-delayed"></div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <!-- Error content -->
+    <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-12 lg:p-16">
+      
+      <!-- 404 Number with gradient -->
+      <div class="mb-8">
+        <h1 class="text-8xl sm:text-9xl lg:text-[12rem] font-bold bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 bg-clip-text text-transparent leading-none animate-pulse-glow">
+          404
+        </h1>
+      </div>
+
+      <!-- Error message -->
+      <div class="mb-8 sm:mb-12">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+          Oops! Page Not Found
+        </h2>
+        <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          The page you're looking for seems to have wandered off. Don't worry, even our most beautiful accessories sometimes get misplaced!
+        </p>
+      </div>
+
+      <!-- Perla branding -->
+      <div class="mb-8 sm:mb-12">
+        <div class="flex items-center justify-center mb-4">
+          <img src="logo.png" alt="Perla Logo" class="h-12 w-auto mr-3" />
+          <span class="text-2xl sm:text-3xl font-bold text-pink-600">Perla</span>
+        </div>
+        <p class="text-gray-500 text-sm sm:text-base">
+          Beautiful accessories for every occasion
+        </p>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+        <!-- Go Home button -->
+        <button 
+          (click)="goHome()"
+          class="group w-full sm:w-auto bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-semibold py-4 px-8 rounded-xl sm:rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-pink-500/30 relative overflow-hidden"
+        >
+          <span class="relative z-10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Go Home
+          </span>
+          <div class="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+        </button>
+
+        <!-- Browse Products button -->
+        <button 
+          (click)="goToProducts()"
+          class="group w-full sm:w-auto bg-white text-pink-600 border-2 border-pink-200 hover:bg-pink-50 hover:border-pink-300 font-semibold py-4 px-8 rounded-xl sm:rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-pink-500/20 relative overflow-hidden"
+        >
+          <span class="relative z-10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            Browse Products
+          </span>
+        </button>
+
+        <!-- Go Back button -->
+        <button 
+          (click)="goBack()"
+          class="w-full sm:w-auto text-gray-600 hover:text-pink-600 font-medium py-2 px-4 text-base transition-colors duration-300 flex items-center justify-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Go Back
+        </button>
+      </div>
+
+      <!-- Helpful links -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <p class="text-gray-500 text-sm mb-4">
+          You might be looking for:
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 text-sm">
+          <a routerLink="/about" class="text-pink-600 hover:text-pink-700 hover:underline transition-colors">About Us</a>
+          <span class="text-gray-300">•</span>
+          <a routerLink="/privacy-policy" class="text-pink-600 hover:text-pink-700 hover:underline transition-colors">Privacy Policy</a>
+          <span class="text-gray-300">•</span>
+          <a routerLink="/terms" class="text-pink-600 hover:text-pink-700 hover:underline transition-colors">Terms of Service</a>
+          <span class="text-gray-300">•</span>
+          <a routerLink="/returns-policy" class="text-pink-600 hover:text-pink-700 hover:underline transition-colors">Returns Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

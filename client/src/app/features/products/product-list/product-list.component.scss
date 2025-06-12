@@ -312,17 +312,15 @@
         transform: none !important;
     }
 
-    // Force static images - no hover changes
+    // Force static images - no hover changes but allow scrolling
     .mobile-static-image {
-        pointer-events: none !important;
-
-        * {
-            pointer-events: auto !important;
-        }
+        // Ensure container allows touch scrolling
+        touch-action: pan-y pan-x; // Allow scrolling in all directions
 
         img {
             transition: none !important;
             transform: none !important;
+            // Don't disable pointer events on images to allow scrolling
         }
     }
 
@@ -348,7 +346,6 @@
     .mobile-add-to-cart {
         opacity: 1 !important;
         transform: translateY(0) !important;
-        pointer-events: auto !important;
     }
 }
 
@@ -392,5 +389,17 @@
     // Static product grid
     .product-grid-item:hover {
         transform: none !important;
+    }
+
+    // Ensure smooth scrolling on touch devices
+    body {
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+    }
+
+    // Prevent image interactions but allow scrolling
+    .mobile-static-image img {
+        pointer-events: none;
+        touch-action: auto; // Allow default scrolling behavior
     }
 }
