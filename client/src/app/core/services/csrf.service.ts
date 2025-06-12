@@ -10,11 +10,9 @@ import { environment } from '../../../environments/environment';
 export class CsrfService {
     private http = inject(HttpClient);
     private tokenInitialized = false;
-    private readonly CSRF_TOKEN_KEY = 'csrf-token';
 
     /**
      * Initialize CSRF token by fetching it from the server
-     * This should be called when the app starts
      */
     initializeCsrfToken(): Observable<any> {
         if (this.tokenInitialized) {
@@ -25,26 +23,23 @@ export class CsrfService {
 
         return this.http.get(`${environment.api}/api/csrf-token`, {
             withCredentials: true,
-            observe: 'response' // Get full response including headers
+            observe: 'response'
         }).pipe(
             tap((response: any) => {
                 this.tokenInitialized = true;
                 const responseBody = response.body;
                 console.log('🔒 CSRF token response:', responseBody);
 
-                // Check if cookie was set
-                let token = this.getCsrfTokenFromCookie();
-
-                if (token) {
-                    console.log('✅ CSRF token found in cookie:', token);
-                } else {
-                    // Cookie not set due to cross-origin, use localStorage fallback
-                    console.warn('⚠️ CSRF token not found in cookie, using localStorage fallback');
-                    if (responseBody && responseBody.token) {
-                        this.setCsrfTokenInStorage(responseBody.token);
-                        console.log('✅ CSRF token stored in localStorage:', responseBody.token);
+                // Wait a moment for cookie to be set, then check
+                setTimeout(() => {
+                    const token = this.getCsrfToken();
+                    if (token) {
+                        console.log('✅ CSRF token found in cookie:', token);
+                    } else {
+                        console.error('❌ CSRF token not found in cookie - check CORS and cookie settings');
+                        console.log('🔧 Response headers should include Set-Cookie with SameSite=None; Secure');
                     }
-                }
+                }, 100);
             }),
             catchError((error) => {
                 console.error('❌ Failed to initialize CSRF token:', error);
@@ -54,50 +49,15 @@ export class CsrfService {
     }
 
     /**
-     * Get CSRF token from cookie
+     * Get CSRF token from cookie (ONLY secure method)
      */
-    private getCsrfTokenFromCookie(): string | null {
+    getCsrfToken(): string | null {
         if (typeof document === 'undefined') {
             return null;
         }
 
         const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
         return match ? decodeURIComponent(match[2]) : null;
-    }
-
-    /**
-     * Get CSRF token from localStorage
-     */
-    private getCsrfTokenFromStorage(): string | null {
-        if (typeof localStorage === 'undefined') {
-            return null;
-        }
-
-        return localStorage.getItem(this.CSRF_TOKEN_KEY);
-    }
-
-    /**
-     * Set CSRF token in localStorage
-     */
-    private setCsrfTokenInStorage(token: string): void {
-        if (typeof localStorage !== 'undefined') {
-            localStorage.setItem(this.CSRF_TOKEN_KEY, token);
-        }
-    }
-
-    /**
-     * Get CSRF token (try cookie first, then localStorage)
-     */
-    getCsrfToken(): string | null {
-        // Try cookie first
-        let token = this.getCsrfTokenFromCookie();
-
-        // Fallback to localStorage
-        if (!token) {
-            token = this.getCsrfTokenFromStorage();
-        }
-
-        return token;
     }
 
     /**
@@ -112,16 +72,20 @@ export class CsrfService {
      * Debug method to log current CSRF status
      */
     debugCsrfStatus(): void {
-        const cookieToken = this.getCsrfTokenFromCookie();
-        const storageToken = this.getCsrfTokenFromStorage();
-        const finalToken = this.getCsrfToken();
+        const token = this.getCsrfToken();
 
         console.log('🔍 CSRF Debug Status:');
         console.log('- Token initialized:', this.tokenInitialized);
-        console.log('- Cookie token:', cookieToken || 'null');
-        console.log('- Storage token:', storageToken || 'null');
-        console.log('- Final token:', finalToken || 'null');
+        console.log('- Current token:', token || 'null');
         console.log('- CSRF enabled:', this.isCsrfEnabled());
         console.log('- All cookies:', document.cookie || 'empty');
+
+        if (!token) {
+            console.log('🔧 Troubleshooting:');
+            console.log('  1. Check if server sends Set-Cookie header');
+            console.log('  2. Verify SameSite=None; Secure in production');
+            console.log('  3. Ensure CORS allows credentials');
+            console.log('  4. Check browser blocks third-party cookies');
+        }
     }
 } 
