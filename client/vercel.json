@@ -12,10 +12,6 @@
             "dest": "/assets/$1"
         },
         {
-            "src": "/products/(\\d+)",
-            "dest": "/api/render"
-        },
-        {
             "src": "/(.*)",
             "dest": "/index.html"
         }
