@@ -217,28 +217,6 @@ function generateHTML(metaTags) {
   <meta name="twitter:title" content="${metaTags.title}">
   <meta name="twitter:description" content="${metaTags.description}">
   <meta name="twitter:image" content="${metaTags.image}">
-  
-  <!-- Better redirect logic for WhatsApp users -->
-  <script>
-    // Improved redirect logic - check if it's a real user interaction
-    const userAgent = navigator.userAgent || '';
-    const isWhatsApp = /WhatsApp/i.test(userAgent);
-    const isBot = /(facebook|whatsapp|twitter|telegram|skype|slack|discord|google|bing)bot/i.test(userAgent);
-    
-    // If it's WhatsApp but likely a user click (not a bot crawl), redirect
-    if (isWhatsApp && !isBot) {
-      // Small delay to ensure proper loading
-      setTimeout(() => {
-        window.location.href = '${metaTags.url}';
-      }, 100);
-    } else if (!isBot) {
-      // For other non-bot traffic, redirect immediately
-      window.location.href = '${metaTags.url}';
-    }
-  </script>
-  
-  <!-- Fallback meta refresh for additional safety -->
-  <meta http-equiv="refresh" content="2;url=${metaTags.url}">
 </head>
 <body>
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;">
@@ -246,9 +224,8 @@ function generateHTML(metaTags) {
     <h1 style="color: #ec4899; margin-bottom: 10px;">${metaTags.title}</h1>
     <p style="color: #666; margin-bottom: 20px;">${metaTags.description}</p>
     
-    <p style="color: #888; font-size: 14px;">
-      If you are not redirected automatically, 
-      <a href="${metaTags.url}" style="color: #ec4899; text-decoration: none;">click here to continue</a>.
+    <p style="color: #888; font-size: 14px; margin-bottom: 20px;">
+      <a href="${metaTags.url}" style="color: #ec4899; text-decoration: none; font-weight: bold; padding: 10px 20px; border: 2px solid #ec4899; border-radius: 5px; display: inline-block;">Visit Our Store</a>
     </p>
   </div>
 </body>
