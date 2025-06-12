@@ -51,7 +51,12 @@ export class AppComponent implements OnInit {
     // Only initialize in browser environment
     if (isPlatformBrowser(this.platformId)) {
       // Initialize CSRF token
-      this.csrfService.initializeCsrfToken().subscribe();
+      this.csrfService.initializeCsrfToken().subscribe(() => {
+        // Debug CSRF status after initialization
+        setTimeout(() => {
+          this.csrfService.debugCsrfStatus();
+        }, 1000);
+      });
 
       // Subscribe to user changes
       this.authService.currentUser$.subscribe((user: any) => {
