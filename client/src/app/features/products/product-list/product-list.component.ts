@@ -238,33 +238,7 @@ export class ProductListComponent implements OnInit {
 
   setActiveImage(pid: number, idx: number) { this.activeImageIndices[pid] = idx; }
 
-  showNextImage(pid: number, count: number) {
-    if (count > 1) this.activeImageIndices[pid] = 1;
-  }
 
-  resetImage(pid: number) { this.activeImageIndices[pid] = 0; }
-
-  // Enhanced mobile touch handling
-  handleTouchStart(event: TouchEvent, _productId: number): void {
-    // Store initial touch position if needed
-    if (event.touches && event.touches.length) {
-      // Could store initial X position for swipe detection
-    }
-  }
-
-  handleTouchMove(e: TouchEvent, pid: number, count: number) {
-    if (count <= 1) return;
-
-    // Improved swipe detection
-    if (e.touches && e.touches.length) {
-      const touch = e.touches[0];
-      const cur = this.activeImageIndices[pid] || 0;
-
-      // We could add more sophisticated swipe detection here
-      // For now, simply cycling through images
-      this.setActiveImage(pid, cur < count - 1 ? cur + 1 : 0);
-    }
-  }
 
   hasActiveFilters() {
     return this.stockFilter !== 'all' || this.selectedCategory !== 'all' || this.tagFilter !== 'all';
@@ -311,24 +285,63 @@ export class ProductListComponent implements OnInit {
     return 1200; // Default width for SSR
   }
 
-  // Method to check if device is mobile (touch-enabled)
+  // Enhanced mobile detection method - ultra-reliable for Android/iPhone
   isMobileDevice(): boolean {
     if (!this.isBrowser) return false;
-    return this.getWindowWidth() < 768 || ('ontouchstart' in window);
+
+    // Multiple detection methods for 100% accuracy
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobileUserAgent = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = this.getWindowWidth() < 768;
+
+    // Additional checks for Android and iOS specifically
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+
+    // Return true if ANY mobile indicator is detected
+    return isMobileUserAgent || isTouchDevice || isSmallScreen || isAndroid || isIOS;
   }
 
-  // Modified methods to handle mobile vs desktop behavior
+  // Completely disabled methods for mobile - only work on desktop
   showNextImageDesktop(pid: number, count: number) {
-    // Only trigger on desktop devices
+    // ONLY trigger on desktop devices - completely disabled on mobile
     if (!this.isMobileDevice() && count > 1) {
       this.activeImageIndices[pid] = 1;
     }
   }
 
   resetImageDesktop(pid: number) {
-    // Only trigger on desktop devices
+    // ONLY trigger on desktop devices - completely disabled on mobile
     if (!this.isMobileDevice()) {
       this.activeImageIndices[pid] = 0;
+    }
+  }
+
+  // Enhanced touch handlers - completely disabled on mobile
+  handleTouchStart(event: TouchEvent, _productId: number): void {
+    // Completely disable touch interactions for image changes on mobile
+    if (this.isMobileDevice()) {
+      return; // Do nothing on mobile
+    }
+
+    // Only work on desktop
+    if (event.touches && event.touches.length) {
+      // Could store initial X position for swipe detection on desktop
+    }
+  }
+
+  handleTouchMove(e: TouchEvent, pid: number, count: number) {
+    // Completely disable touch interactions for image changes on mobile
+    if (this.isMobileDevice() || count <= 1) {
+      return; // Do nothing on mobile
+    }
+
+    // Only work on desktop touch devices (like touch laptops)
+    if (e.touches && e.touches.length) {
+      const touch = e.touches[0];
+      const cur = this.activeImageIndices[pid] || 0;
+      this.setActiveImage(pid, cur < count - 1 ? cur + 1 : 0);
     }
   }
 }

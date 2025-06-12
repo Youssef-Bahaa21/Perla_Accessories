@@ -160,8 +160,10 @@
           <!-- Mobile Product Image Section -->
           <div
             class="relative aspect-square overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100"
-            (touchstart)="handleTouchStart($event, p.id)"
-            (touchmove)="handleTouchMove($event, p.id, p.images?.length || 1)"
+            [class.mobile-static-image]="isMobileDevice()"
+            [attr.data-mobile]="isMobileDevice()"
+            (touchstart)="!isMobileDevice() && handleTouchStart($event, p.id)"
+            (touchmove)="!isMobileDevice() && handleTouchMove($event, p.id, p.images?.length || 1)"
             (mouseenter)="showNextImageDesktop(p.id, p.images?.length || 1)"
             (mouseleave)="resetImageDesktop(p.id)"
           >
@@ -186,7 +188,18 @@
 
             <!-- Product Images - Mobile Optimized -->
             <ng-container *ngIf="p.images && p.images.length > 0; else noImage">
-              <div class="relative w-full h-full transition-transform duration-700 group-hover:scale-110">
+              <!-- Mobile: Show only first image (static) -->
+              <div *ngIf="isMobileDevice()" class="relative w-full h-full">
+                <img
+                  [src]="p.images[0].url"
+                  [alt]="p.name"
+                  class="absolute top-0 left-0 w-full h-full object-cover object-center"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              
+              <!-- Desktop: Interactive image gallery -->
+              <div *ngIf="!isMobileDevice()" class="relative w-full h-full transition-transform duration-700 group-hover:scale-110">
                 <ng-container *ngFor="let img of p.images; let i = index">
                   <img
                     [src]="img.url"
@@ -200,7 +213,7 @@
                   />
                 </ng-container>
                 
-                <!-- Image Dots Indicator - Mobile friendly -->
+                <!-- Image Dots Indicator - Desktop only -->
                 <div *ngIf="p.images.length > 1" class="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1 sm:gap-1.5 z-20">
                   <span *ngFor="let img of p.images; let i = index" 
                         class="h-1.5 sm:h-2 rounded-full bg-white/60 transition-all duration-300"

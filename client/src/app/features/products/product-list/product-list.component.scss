@@ -290,40 +290,107 @@
     background-clip: text;
 }
 
-// Mobile-specific: Disable hover effects on touch devices
-@media (hover: none) and (pointer: coarse) {
+// COMPLETE MOBILE DISABLE: All hover and interactive effects disabled on mobile
+@media (hover: none) and (pointer: coarse),
+(max-width: 767px) {
 
-    // Disable product card hover transform
-    .product-card:hover {
+    // Disable ALL hover effects completely
+    *:hover,
+    .group:hover,
+    .product-card:hover,
+    .hover\\:shadow-2xl:hover,
+    .hover\\:border-pink-200:hover,
+    .hover\\:-translate-y-1:hover {
+        transform: none !important;
+        box-shadow: none !important;
+        border-color: inherit !important;
+    }
+
+    // Disable image transforms and scaling
+    .group-hover\\:scale-110,
+    .group:hover .group-hover\\:scale-110 {
         transform: none !important;
     }
 
-    // Disable image scale on hover
-    .group-hover\\:scale-110:hover {
-        transform: none !important;
+    // Force static images - no hover changes
+    .mobile-static-image {
+        pointer-events: none !important;
+
+        * {
+            pointer-events: auto !important;
+        }
+
+        img {
+            transition: none !important;
+            transform: none !important;
+        }
     }
 
-    // Disable add to cart button hover opacity
-    .group-hover\\:opacity-100 {
-        opacity: 0 !important;
-    }
-
-    // Disable button transform on hover
-    .group-hover\\:translate-y-0 {
-        transform: translateY(0.5rem) !important;
-    }
-
-    // Keep buttons visible and accessible on mobile
-    .mobile-add-to-cart {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-}
-
-// Ensure mobile buttons are always visible and accessible
-@media (max-width: 767px) {
+    // Keep add to cart buttons visible and static
+    .group-hover\\:opacity-100,
     .group:hover .group-hover\\:opacity-100 {
         opacity: 1 !important;
         transform: translateY(0) !important;
+    }
+
+    .group-hover\\:translate-y-0,
+    .group:hover .group-hover\\:translate-y-0 {
+        transform: translateY(0) !important;
+    }
+
+    // Disable all transitions on mobile for static experience
+    .product-card,
+    .product-card * {
+        transition: none !important;
+    }
+
+    // Force buttons to be always visible on mobile
+    .mobile-add-to-cart {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        pointer-events: auto !important;
+    }
+}
+
+// Specific targeting for Android and iOS devices
+@media screen and (max-device-width: 768px) {
+
+    // Force disable all hover states
+    *:hover {
+        background-color: inherit !important;
+        color: inherit !important;
+        transform: none !important;
+        box-shadow: inherit !important;
+    }
+
+    // Completely static product cards
+    .product-card {
+        transform: none !important;
+        transition: none !important;
+
+        &:hover {
+            transform: none !important;
+        }
+    }
+
+    // Static images - no changes at all
+    .mobile-static-image img {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+// Touch device specific overrides
+@media (pointer: coarse) {
+
+    // Disable hover animations completely
+    .hover-float:hover {
+        animation: none !important;
+    }
+
+    // Static product grid
+    .product-grid-item:hover {
+        transform: none !important;
     }
 }
