@@ -5,10 +5,11 @@ import express from 'express';
 const csrfProtection = csrf({
     cookie: {
         httpOnly: false, // Allow Angular to read the token
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none', // Required for cross-origin cookies
+        secure: process.env.NODE_ENV === 'production', // HTTPS required in production
         path: '/',
         maxAge: 3600000, // 1 hour
+        // Don't set domain to allow cross-origin cookies
     },
     ignoreMethods: ['GET', 'HEAD', 'OPTIONS'], // Only protect state-changing methods
     value: (req) => {
@@ -45,15 +46,21 @@ csrfMiddleware.use((err: any, req: express.Request, res: express.Response, next:
 // Provide a route to get CSRF token
 csrfMiddleware.get('/csrf-token', (req, res) => {
     const token = req.csrfToken();
+
+    // Set cookie with cross-origin settings
     res.cookie('XSRF-TOKEN', token, {
         httpOnly: false, // Allow Angular to read it
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none', // Required for cross-origin
+        secure: process.env.NODE_ENV === 'production', // HTTPS required
         path: '/',
+        maxAge: 3600000, // 1 hour
     });
+
     res.json({
         message: 'CSRF token set in cookie',
-        token: token // Also return in response for debugging
+        token: token, // Also return in response for debugging
+        domain: req.get('host'),
+        secure: process.env.NODE_ENV === 'production'
     });
 });
 
