@@ -7,6 +7,7 @@ import { CartItem, CartService } from '../../core/services/cart/cart.service';
 import { Product } from '../../core/models';
 import { ProductService } from '../../core/services/product.service';
 import { ApiService } from '../../core/services/api/api.service';
+import { ConfirmationModalService } from '../../core/services/confirmation-modal.service';
 
 @Component({
     selector: 'app-cart-detail',
@@ -24,6 +25,7 @@ export class CartDetailComponent implements OnInit {
     private cart = inject(CartService);
     private productSvc = inject(ProductService);
     private api = inject(ApiService);
+    private confirmationModal = inject(ConfirmationModalService);
 
     ngOnInit() {
         this.cart.cart$.subscribe(items => {
@@ -54,8 +56,17 @@ export class CartDetailComponent implements OnInit {
         this.showClearConfirmation = false;
     }
 
-    confirmClearCart() {
-        if (confirm('Are you sure you want to remove all items from your cart?')) {
+    async confirmClearCart() {
+        const confirmed = await this.confirmationModal.confirm({
+            title: 'Clear Shopping Cart',
+            message: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+            confirmText: 'Clear Cart',
+            cancelText: 'Keep Items',
+            type: 'warning',
+            icon: 'fa-solid fa-shopping-cart'
+        });
+
+        if (confirmed) {
             this.clearCart();
         }
     }

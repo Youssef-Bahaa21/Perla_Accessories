@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService, ShippingCity } from '../../../../core/services/api/api.service';
+import { ConfirmationModalService } from '../../../../core/services/confirmation-modal.service';
 
 @Component({
   standalone: true,
@@ -12,6 +13,7 @@ import { ApiService, ShippingCity } from '../../../../core/services/api/api.serv
 export class SettingsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(ApiService);
+  private confirmationModal = inject(ConfirmationModalService);
 
   form = this.fb.group({
     shipping_fee: [0, [Validators.required, Validators.min(0)]],
@@ -154,8 +156,17 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  deleteCity(city: ShippingCity) {
-    if (!confirm(`Are you sure you want to delete "${city.city_name}"?`)) return;
+  async deleteCity(city: ShippingCity) {
+    const confirmed = await this.confirmationModal.confirm({
+      title: 'Delete Shipping City',
+      message: `Are you sure you want to delete "${city.city_name}"? This action cannot be undone.`,
+      confirmText: 'Delete City',
+      cancelText: 'Cancel',
+      type: 'danger',
+      icon: 'fa-solid fa-map-marker-alt'
+    });
+
+    if (!confirmed) return;
 
     this.citiesLoading = true;
     this.citySuccess = this.cityError = '';

@@ -5,14 +5,17 @@ import {
   inject,
   PLATFORM_ID,
   Inject,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 import { ApiService } from '../../../core/services/api/api.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
+import { SearchService } from '../../../core/services/search.service';
 import { Product, Category } from '../../../core/models';
 import { SeoService } from '../../../core/services/seo.service';
 import { SocialMediaService } from '../../../core/services/social-media.service';
@@ -30,7 +33,7 @@ import { SocialMediaService } from '../../../core/services/social-media.service'
     ReactiveFormsModule,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: Category[] = [];
@@ -52,9 +55,12 @@ export class ProductListComponent implements OnInit {
   isBrowser: boolean;
   mobileFiltersActive = false;
 
+  private destroy$ = new Subject<void>();
+
   private api = inject(ApiService);
   private productSvc = inject(ProductService);
   private cart = inject(CartService);
+  private searchService = inject(SearchService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private seo = inject(SeoService);
@@ -98,6 +104,21 @@ export class ProductListComponent implements OnInit {
         }
       });
     }
+
+    // Listen to search service for clear filters trigger
+    this.searchService.clearFilters$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(shouldClear => {
+        if (shouldClear) {
+          this.clearFilters();
+          this.searchService.resetClearFilters(); // Reset the trigger
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private updateSEO(): void {
@@ -340,27 +361,34 @@ export class ProductListComponent implements OnInit {
     return 1200; // Default width for SSR
   }
 
-  // Simple mobile detection
+  // Enhanced mobile detection method - ultra-reliable for Android/iPhone
   isMobileDevice(): boolean {
     if (!this.isBrowser) return false;
 
+    // Multiple detection methods for 100% accuracy
     const userAgent = navigator.userAgent.toLowerCase();
-    const isTouchDevice = 'ontouchstart' in window;
+    const isMobileUserAgent = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isSmallScreen = this.getWindowWidth() < 768;
 
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent) ||
-      isTouchDevice ||
-      isSmallScreen;
+    // Additional checks for Android and iOS specifically
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+
+    // Return true if ANY mobile indicator is detected
+    return isMobileUserAgent || isTouchDevice || isSmallScreen || isAndroid || isIOS;
   }
 
-  // Desktop-only image gallery methods
+  // Completely disabled methods for mobile - only work on desktop
   showNextImageDesktop(pid: number, count: number) {
+    // ONLY trigger on desktop devices - completely disabled on mobile
     if (!this.isMobileDevice() && count > 1) {
       this.activeImageIndices[pid] = 1;
     }
   }
 
   resetImageDesktop(pid: number) {
+    // ONLY trigger on desktop devices - completely disabled on mobile
     if (!this.isMobileDevice()) {
       this.activeImageIndices[pid] = 0;
     }

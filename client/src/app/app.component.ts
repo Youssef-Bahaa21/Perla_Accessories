@@ -1,5 +1,5 @@
 // src/app/app.component.ts
-import { Component, OnInit, HostListener, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnInit, HostListener, PLATFORM_ID, inject, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { NgxSpinnerComponent } from 'ngx-spinner';
 import { NotificationService } from './core/services/notification.service';
 import { AuthService } from './core/services/auth/auth.service';
 import { CartService } from './core/services/cart/cart.service';
+import { ConfirmationModalService } from './core/services/confirmation-modal.service';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { HeaderComponent } from './shared/header/header.component';
@@ -41,11 +42,16 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
+    private confirmationModal: ConfirmationModalService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private viewContainerRef: ViewContainerRef
   ) { }
 
   ngOnInit(): void {
+    // Initialize confirmation modal service
+    this.confirmationModal.setViewContainerRef(this.viewContainerRef);
+
     // Only fetch CSRF token in browser environment
     if (isPlatformBrowser(this.platformId)) {
       // Fetch CSRF token with debugging

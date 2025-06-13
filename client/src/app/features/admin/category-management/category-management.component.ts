@@ -7,6 +7,7 @@ import {
     Validators
 } from '@angular/forms';
 import { ApiService } from '../../../core/services/api/api.service';
+import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { Category } from '../../../core/models';
 import { environment } from '../../../../environments/environment';
 
@@ -18,6 +19,7 @@ import { environment } from '../../../../environments/environment';
 export class CategoryManagementComponent implements OnInit {
     private fb = inject(FormBuilder);
     private api = inject(ApiService);
+    private confirmationModal = inject(ConfirmationModalService);
 
     categoryForm: FormGroup;
     categories: Category[] = [];
@@ -132,13 +134,17 @@ export class CategoryManagementComponent implements OnInit {
         }, 100);
     }
 
-    deleteCategory(id: number, name: string) {
-        const confirmation = confirm(
-            `Are you sure you want to delete the category "${name}"?\n\n` +
-            `⚠️ WARNING: This action cannot be undone and may affect products in this category.`
-        );
+    async deleteCategory(id: number, name: string) {
+        const confirmed = await this.confirmationModal.confirm({
+            title: 'Delete Category',
+            message: `Are you sure you want to delete the category "${name}"? This action cannot be undone and may affect products in this category.`,
+            confirmText: 'Delete Category',
+            cancelText: 'Cancel',
+            type: 'danger',
+            icon: 'fa-solid fa-folder'
+        });
 
-        if (!confirmation) return;
+        if (!confirmed) return;
 
         this.api.categories.delete(id).subscribe({
             next: () => {
@@ -267,13 +273,21 @@ export class CategoryManagementComponent implements OnInit {
         });
     }
 
-    deleteCategoryImage(categoryId: number, event?: Event) {
+    async deleteCategoryImage(categoryId: number, event?: Event) {
         if (event) {
             event.stopPropagation();
         }
 
-        const confirmation = confirm('Are you sure you want to delete this image?');
-        if (!confirmation) return;
+        const confirmed = await this.confirmationModal.confirm({
+            title: 'Delete Category Image',
+            message: 'Are you sure you want to delete this image? This action cannot be undone.',
+            confirmText: 'Delete Image',
+            cancelText: 'Cancel',
+            type: 'warning',
+            icon: 'fa-solid fa-image'
+        });
+
+        if (!confirmed) return;
 
         // Use the API service instead of direct HTTP calls
         this.api.categories.deleteImage(categoryId).subscribe({

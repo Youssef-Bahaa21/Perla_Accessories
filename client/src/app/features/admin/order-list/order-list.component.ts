@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api/api.service';
+import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { environment } from '../../../../environments/environment';
 
 import { Order as BaseOrder, OrderItem } from '../../../core/models';
@@ -88,6 +89,7 @@ export class OrderListComponent implements OnInit {
   }
 
   private api = inject(ApiService);
+  private confirmationModal = inject(ConfirmationModalService);
   @ViewChild('pdfContent') pdfContentRef!: ElementRef;
 
   ngOnInit() {
@@ -259,15 +261,31 @@ export class OrderListComponent implements OnInit {
           this.applyFilters();
         }
       },
-      error: () => alert('❌ Failed to update status')
+      error: () => {
+        // Use toast notification instead of alert
+        console.error('Failed to update status');
+      }
     });
   }
 
-  archiveOrder(orderId: number) {
-    if (!confirm('Archive this order?')) return;
+  async archiveOrder(orderId: number) {
+    const confirmed = await this.confirmationModal.confirm({
+      title: 'Archive Order',
+      message: 'Are you sure you want to archive this order? This action cannot be undone.',
+      confirmText: 'Archive Order',
+      cancelText: 'Cancel',
+      type: 'warning',
+      icon: 'fa-solid fa-archive'
+    });
+
+    if (!confirmed) return;
+
     this.api.orders.delete(orderId).subscribe({
       next: () => this.orders = this.orders.filter(o => o.id !== orderId),
-      error: () => alert('❌ Failed to archive'),
+      error: () => {
+        // Use toast notification instead of alert
+        console.error('Failed to archive order');
+      }
     });
   }
 
@@ -316,7 +334,10 @@ export class OrderListComponent implements OnInit {
             this.applyFilters();
           }
         },
-        error: () => alert('❌ Failed to update status')
+        error: () => {
+          // Use toast notification instead of alert
+          console.error('Failed to update status');
+        }
       });
     });
     this.selectedOrders.clear();

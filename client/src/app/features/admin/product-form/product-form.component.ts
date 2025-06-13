@@ -9,6 +9,7 @@ import {
 import { ApiService } from '../../../core/services/api/api.service';
 import { Product, Category } from '../../../core/models';
 import { ProductService } from '../../../core/services/product.service';
+import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -21,6 +22,7 @@ export class ProductFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(ApiService);
   private productSvc = inject(ProductService);
+  private confirmationModal = inject(ConfirmationModalService);
   form: FormGroup;
   products: Product[] = [];
   filteredProducts: Product[] = [];
@@ -357,8 +359,10 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-  deleteProduct(id: number) {
-    if (!confirm('Delete this product?')) return;
+  async deleteProduct(id: number) {
+    const confirmed = await this.confirmationModal.confirmDelete('this product');
+    if (!confirmed) return;
+
     this.api.products.delete(id).subscribe({
       next: () => {
         this.success = 'Product deleted';

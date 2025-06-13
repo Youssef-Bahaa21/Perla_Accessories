@@ -7,6 +7,7 @@ import { Subject, debounceTime, distinctUntilChanged, filter, takeUntil } from '
 
 import { CartService } from '../../core/services/cart/cart.service';
 import { AuthService } from '../../core/services/auth/auth.service';
+import { SearchService } from '../../core/services/search.service';
 import { ClickOutsideDirective } from '../directives/click-outside.directive';
 
 @Component({
@@ -38,6 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private cart = inject(CartService);
   private router = inject(Router);
   private auth = inject(AuthService);
+  private searchService = inject(SearchService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
 
@@ -209,13 +211,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Search as you type with debounce
   searchProductsAsYouType(): void {
+    // Update search service with current query
+    this.searchService.updateSearchQuery(this.searchQuery);
+
+    // If search query is empty, trigger clear filters
+    if (!this.searchQuery.trim() && this.router.url.includes('/products')) {
+      this.searchService.triggerClearFilters();
+      this.router.navigate(['/products']); // Clear search params
+      return;
+    }
+
     this.searchSubject.next(this.searchQuery);
   }
 
   // Clear search input
   clearSearch(): void {
     this.searchQuery = '';
+    this.searchService.updateSearchQuery('');
+
     if (this.router.url.includes('/products')) {
+      // Trigger clear filters in product list component
+      this.searchService.triggerClearFilters();
       // Only navigate if we're already on products page
       this.router.navigate(['/products']);
     }
@@ -225,6 +241,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private performSearch(query: string): void {
     // Set flag that we're navigating due to search
     this.isNavigatingFromSearch = true;
+
+    // Update search service
+    this.searchService.updateSearchQuery(query.trim());
 
     // Don't close search immediately, navigation will handle it if needed
     const wasOnProductsPage = this.router.url.includes('/products');

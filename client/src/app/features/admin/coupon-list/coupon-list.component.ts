@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api/api.service';
+import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { Coupon, CreateCouponDTO } from '../../../core/models';
 import { Observable } from 'rxjs';
 
@@ -22,6 +23,7 @@ export class CouponListComponent implements OnInit {
   error = '';
 
   private api = inject(ApiService);
+  private confirmationModal = inject(ConfirmationModalService);
 
   ngOnInit() {
     this.loadCoupons();
@@ -91,11 +93,23 @@ export class CouponListComponent implements OnInit {
     });
   }
 
-  deleteCoupon(id: number) {
-    if (!confirm('Are you sure you want to delete this coupon?')) return;
+  async deleteCoupon(id: number) {
+    const confirmed = await this.confirmationModal.confirm({
+      title: 'Delete Coupon',
+      message: 'Are you sure you want to delete this coupon? This action cannot be undone.',
+      confirmText: 'Delete Coupon',
+      cancelText: 'Cancel',
+      type: 'danger',
+      icon: 'fa-solid fa-ticket'
+    });
+
+    if (!confirmed) return;
+
     this.api.coupons.delete(id).subscribe({
       next: () => this.loadCoupons(),
-      error: () => alert('⚠️ Delete failed')
+      error: () => {
+        console.error('Failed to delete coupon');
+      }
     });
   }
 

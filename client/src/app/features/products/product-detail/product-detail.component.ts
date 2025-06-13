@@ -7,6 +7,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { Product, Review, Category } from '../../../core/models';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { SocialMediaService } from '../../../core/services/social-media.service';
@@ -128,6 +129,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private auth = inject(AuthService);
+  private confirmationModal = inject(ConfirmationModalService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   private seo = inject(SeoService);
@@ -387,11 +389,24 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     return currentUser?.role === 'admin';
   }
 
-  deleteReview(id: number) {
-    if (!confirm('Are you sure?')) return;
+  async deleteReview(id: number) {
+    const confirmed = await this.confirmationModal.confirm({
+      title: 'Delete Review',
+      message: 'Are you sure you want to delete this review? This action cannot be undone.',
+      confirmText: 'Delete Review',
+      cancelText: 'Cancel',
+      type: 'danger',
+      icon: 'fa-solid fa-trash'
+    });
+
+    if (!confirmed) return;
+
     this.api.reviews.delete(id).subscribe({
       next: () => this.product && this.loadReviews(this.product.id),
-      error: () => alert('Failed to delete review.')
+      error: () => {
+        // Use toast notification instead of alert
+        console.error('Failed to delete review');
+      }
     });
   }
 
