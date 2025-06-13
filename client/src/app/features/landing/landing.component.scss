@@ -1,3 +1,133 @@
+/* Import AOS CSS for scroll animations */
+@import 'aos/dist/aos.css';
+
+/* Advanced AOS Custom Animations */
+[data-aos="fade-up-scale"] {
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+    transition-property: transform, opacity, scale;
+
+    &.aos-animate {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+[data-aos="slide-up-bounce"] {
+    transform: translateY(150px);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    &.aos-animate {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+[data-aos="zoom-in-rotate"] {
+    transform: scale(0.3) rotate(-45deg);
+    opacity: 0;
+    transition-property: transform, opacity;
+
+    &.aos-animate {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+[data-aos="flip-left-3d"] {
+    transform: perspective(1000px) rotateY(-90deg);
+    opacity: 0;
+    transition-property: transform, opacity;
+
+    &.aos-animate {
+        transform: perspective(1000px) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+[data-aos="slide-in-blur"] {
+    transform: translateX(-100px);
+    filter: blur(10px);
+    opacity: 0;
+    transition-property: transform, filter, opacity;
+
+    &.aos-animate {
+        transform: translateX(0);
+        filter: blur(0px);
+        opacity: 1;
+    }
+}
+
+[data-aos="elastic-scale"] {
+    transform: scale(0.1);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    &.aos-animate {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+[data-aos="wave-slide"] {
+    transform: translateY(100px) skewY(5deg);
+    opacity: 0;
+    transition-property: transform, opacity;
+
+    &.aos-animate {
+        transform: translateY(0) skewY(0deg);
+        opacity: 1;
+    }
+}
+
+/* Enhanced Stats Cards Layout for PC View */
+.brand-story-section {
+    .stats-grid {
+        @media (min-width: 768px) {
+            /* On tablets and above, center the cards with better spacing */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+
+            .stats-card {
+                flex: 0 1 280px;
+                min-width: 250px;
+                max-width: 300px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            /* On desktop, perfect 3-card layout */
+            gap: 3rem;
+            max-width: 1000px;
+
+            .stats-card {
+                flex: 0 1 300px;
+                min-width: 280px;
+                max-width: 320px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            /* On large screens, even more spacing */
+            gap: 4rem;
+            max-width: 1200px;
+
+            .stats-card {
+                flex: 0 1 350px;
+                min-width: 320px;
+                max-width: 380px;
+            }
+        }
+    }
+}
+
 /* Categories Section Enhancements */
 .categories-section {
     position: relative;
@@ -20,14 +150,12 @@
         background: linear-gradient(135deg, #fce7f3, #fbcfe8);
         top: -300px;
         left: -300px;
-        animation: floatAdvanced 15s ease-in-out infinite;
     }
 
     &::after {
         background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
         bottom: -300px;
         right: -300px;
-        animation: floatAdvanced 18s ease-in-out infinite reverse;
     }
 }
 
@@ -815,324 +943,4 @@
             left: 100%;
         }
     }
-}
-
-/* ===== ADVANCED SCROLL ANIMATIONS ===== */
-
-/* Global Scroll Progress Bar */
-::ng-deep .scroll-progress-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0%;
-    height: 4px;
-    background: linear-gradient(90deg, #ec4899, #f472b6, #fb7185);
-    z-index: 9999;
-    transition: width 0.2s ease-out;
-    box-shadow: 0 2px 10px rgba(236, 72, 153, 0.3);
-}
-
-/* Base Animation Classes */
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(60px);
-    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &.animated {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Fade In Up Animation */
-.fade-in-up {
-    opacity: 0;
-    transform: translateY(80px);
-    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &.animated {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Slide In Left Animation */
-.slide-in-left {
-    opacity: 0;
-    transform: translateX(-100px);
-    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &.animated {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Slide In Right Animation */
-.slide-in-right {
-    opacity: 0;
-    transform: translateX(100px);
-    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &.animated {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Scale In Animation */
-.scale-in {
-    opacity: 0;
-    transform: scale(0.7);
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-    &.animated {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Rotate In Animation */
-.rotate-in {
-    opacity: 0;
-    transform: rotate(-15deg) scale(0.8);
-    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-    &.animated {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-    }
-}
-
-/* Stagger Children Animation */
-.stagger-children>* {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &.animated {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Parallax Elements */
-.parallax-element {
-    will-change: transform;
-    backface-visibility: hidden;
-    transition: transform 0.1s ease-out;
-}
-
-/* Advanced Keyframe Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(80px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-100px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.7);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes rotateIn {
-    from {
-        opacity: 0;
-        transform: rotate(-15deg) scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
-    }
-}
-
-@keyframes floatAdvanced {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    25% {
-        transform: translateY(-20px) rotate(2deg);
-    }
-
-    50% {
-        transform: translateY(-10px) rotate(0deg);
-    }
-
-    75% {
-        transform: translateY(-25px) rotate(-2deg);
-    }
-}
-
-@keyframes pulseMagic {
-
-    0%,
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
-    }
-
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 20px rgba(236, 72, 153, 0);
-    }
-}
-
-@keyframes shimmerAdvanced {
-    0% {
-        background-position: -1000px 0;
-        opacity: 0.3;
-    }
-
-    50% {
-        opacity: 0.8;
-    }
-
-    100% {
-        background-position: 1000px 0;
-        opacity: 0.3;
-    }
-}
-
-@keyframes glow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
-    }
-
-    50% {
-        box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
-    }
-}
-
-/* Mobile Optimizations */
-@media (max-width: 640px) {
-
-    .enhanced-category-card,
-    .feature-card,
-    .stats-card {
-        &:hover {
-            transform: translateY(-6px) scale(1.01);
-        }
-    }
-
-    .animate-on-scroll,
-    .fade-in-up,
-    .slide-in-left,
-    .slide-in-right,
-    .scale-in,
-    .rotate-in {
-        transform: translateY(30px);
-
-        &.animated {
-            transform: translateY(0);
-        }
-    }
-}
-
-/* Reduced Motion Preferences */
-@media (prefers-reduced-motion: reduce) {
-
-    .float-element,
-    .float-element-delayed,
-    .parallax-element,
-    *[class*="animate-"],
-    *[class*="transition-"] {
-        animation: none !important;
-        transition: none !important;
-        transform: none !important;
-    }
-
-    .scroll-progress-bar {
-        transition: width 0.1s linear;
-    }
-}
-
-/* High Performance Mode */
-.enhance-performance {
-    .parallax-element {
-        transform: translate3d(0, 0, 0);
-        will-change: transform;
-    }
-
-    .enhanced-category-card,
-    .product-card,
-    .stats-card,
-    .feature-card {
-        will-change: transform, box-shadow;
-        backface-visibility: hidden;
-        transform-style: preserve-3d;
-    }
-}
-
-/* Custom styles for swiper pagination */
-::ng-deep .swiper-pagination-bullet {
-    background-color: rgba(236, 72, 153, 0.6) !important;
-    opacity: 0.6;
-    transition: all 0.4s ease;
-    transform: scale(1);
-}
-
-::ng-deep .swiper-pagination-bullet-active {
-    background-color: rgba(236, 72, 153, 1) !important;
-    opacity: 1;
-    transform: scale(1.3);
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
-    animation: pulseMagic 2s infinite;
-}
-
-/* Line clamp utilities */
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
