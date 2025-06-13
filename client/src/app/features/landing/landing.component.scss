@@ -1,61 +1,96 @@
-/* Professional E-commerce Animations */
+/* Professional E-commerce Animations - Mobile Optimized */
 [data-aos="fade-up-smooth"] {
-    transform: translateY(30px);
-    opacity: 0;
-    transition-property: transform, opacity;
-    transition-timing-function: ease-out;
-
-    &.aos-animate {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-[data-aos="fade-in-up"] {
     transform: translateY(20px);
     opacity: 0;
     transition-property: transform, opacity;
     transition-timing-function: ease-out;
+    transition-duration: 0.6s;
 
     &.aos-animate {
         transform: translateY(0);
         opacity: 1;
     }
+
+    // Reduce movement on mobile
+    @media (max-width: 768px) {
+        transform: translateY(10px);
+        transition-duration: 0.4s;
+    }
 }
 
-[data-aos="scale-in"] {
-    transform: scale(0.95);
+[data-aos="fade-in-up"] {
+    transform: translateY(15px);
     opacity: 0;
     transition-property: transform, opacity;
     transition-timing-function: ease-out;
+    transition-duration: 0.6s;
+
+    &.aos-animate {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    // Reduce movement on mobile
+    @media (max-width: 768px) {
+        transform: translateY(8px);
+        transition-duration: 0.4s;
+    }
+}
+
+[data-aos="scale-in"] {
+    transform: scale(0.98);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-timing-function: ease-out;
+    transition-duration: 0.6s;
 
     &.aos-animate {
         transform: scale(1);
         opacity: 1;
     }
+
+    // Less scaling on mobile
+    @media (max-width: 768px) {
+        transform: scale(0.99);
+        transition-duration: 0.4s;
+    }
 }
 
 [data-aos="slide-right"] {
-    transform: translateX(-30px);
+    transform: translateX(-20px);
     opacity: 0;
     transition-property: transform, opacity;
     transition-timing-function: ease-out;
+    transition-duration: 0.6s;
 
     &.aos-animate {
         transform: translateX(0);
         opacity: 1;
     }
+
+    // Reduce movement on mobile
+    @media (max-width: 768px) {
+        transform: translateX(-10px);
+        transition-duration: 0.4s;
+    }
 }
 
 [data-aos="slide-left"] {
-    transform: translateX(30px);
+    transform: translateX(20px);
     opacity: 0;
     transition-property: transform, opacity;
     transition-timing-function: ease-out;
+    transition-duration: 0.6s;
 
     &.aos-animate {
         transform: translateX(0);
         opacity: 1;
+    }
+
+    // Reduce movement on mobile
+    @media (max-width: 768px) {
+        transform: translateX(10px);
+        transition-duration: 0.4s;
     }
 }
 
@@ -778,18 +813,66 @@
     }
 }
 
-/* Improved animations for mobile */
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+
+    // Ensure categories are visible on mobile
+    .categories-section {
+        .enhanced-category-card {
+            // Ensure cards are visible on mobile
+            opacity: 1 !important;
+            transform: none !important;
+
+            // Reduce image height on mobile for better layout
+            .h-48 {
+                height: 12rem;
+            }
+
+            // Improve touch targets on mobile
+            min-height: 280px;
+
+            // Better spacing on mobile
+            margin-bottom: 1rem;
+        }
+    }
+
+    // Ensure AOS animations work smoothly on mobile
+    [data-aos] {
+        // Fallback styles if AOS doesn't load
+        opacity: 1;
+        transform: none;
+
+        // Smooth transitions for mobile
+        transition: all 0.3s ease;
+    }
+
+    // Brand story stats cards mobile optimization
+    .stats-grid {
+        // Ensure proper spacing on mobile
+        gap: 1rem;
+
+        .stats-card {
+            // Better mobile layout
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+/* Improved animations for mobile - keep some motion for better UX */
 @media (prefers-reduced-motion: reduce) {
 
+    // Only disable complex animations, keep simple ones
     .float-element,
-    .float-element-delayed,
-    .transform,
+    .float-element-delayed {
+        animation: none !important;
+    }
+
+    // Keep basic transitions for better UX
     .transition-all,
     .transition-transform,
     .transition-colors {
-        animation: none !important;
-        transition: none !important;
-        transform: none !important;
+        transition-duration: 0.1s !important;
     }
 }
 

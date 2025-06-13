@@ -82,16 +82,16 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Initialize AOS with professional e-commerce configuration
+    // Initialize AOS with mobile-friendly configuration
     AOS.init({
       duration: 600, // Faster, snappier animations
       easing: 'ease-out', // Professional, smooth easing
       once: true, // Animate only once for better performance
       mirror: false, // No mirror animations for cleaner experience
-      offset: 100, // Earlier trigger point for smoother experience
+      offset: window.innerWidth < 768 ? 50 : 100, // Different offset for mobile vs desktop
       delay: 0, // No global delay
       anchorPlacement: 'top-bottom', // Professional trigger point
-      disable: 'mobile', // Disable on mobile for performance (optional)
+      disable: false, // Enable animations on all devices including mobile
       startEvent: 'DOMContentLoaded',
       animatedClassName: 'aos-animate',
       initClassName: 'aos-init',
@@ -101,10 +101,19 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
       throttleDelay: 99,
     });
 
-    // Refresh AOS when page loads
+    // Multiple refresh attempts for better mobile compatibility
     setTimeout(() => {
       AOS.refresh();
     }, 100);
+
+    setTimeout(() => {
+      AOS.refresh();
+    }, 500);
+
+    // Force refresh after page fully loads
+    setTimeout(() => {
+      AOS.refresh();
+    }, 1000);
   }
 
   ngOnDestroy(): void {
@@ -180,10 +189,19 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
       next: categories => {
         this.categories = categories;
         this.categoriesLoading = false;
+
+        // Debug log for mobile testing
+        console.log('Categories loaded:', categories.length);
+
+        // Refresh AOS after categories load to ensure animations work
+        setTimeout(() => {
+          AOS.refresh();
+        }, 100);
       },
-      error: () => {
+      error: (error) => {
         this.categoriesError = 'Could not load categories.';
         this.categoriesLoading = false;
+        console.error('Categories loading error:', error);
       },
     });
   }
