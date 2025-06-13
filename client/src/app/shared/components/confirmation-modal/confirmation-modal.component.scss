@@ -1,0 +1,63 @@
+:host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    pointer-events: auto;
+    /* Changed from none to auto */
+}
+
+.modal-enter {
+    animation: modalEnter 0.3s ease-out;
+}
+
+.modal-leave {
+    animation: modalLeave 0.2s ease-in;
+}
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modalLeave {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+}
+
+/* Prevent scrolling when modal is open */
+:host(.modal-open) {
+    overflow: hidden;
+}
+
+/* Button hover effects */
+button:hover:not(:disabled) {
+    transform: scale(1.02);
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* Loading state for buttons */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}

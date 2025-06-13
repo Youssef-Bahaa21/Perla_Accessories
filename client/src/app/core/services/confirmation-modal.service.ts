@@ -10,24 +10,35 @@ export class ConfirmationModalService {
 
     setViewContainerRef(vcr: ViewContainerRef): void {
         this.viewContainerRef = vcr;
+        console.log('ViewContainerRef set for confirmation modal service');
     }
 
     async confirm(data: ConfirmationModalData): Promise<boolean> {
+        console.log('ConfirmationModalService: confirm called with data:', data);
+
         if (!this.viewContainerRef) {
             // Fallback to browser confirm if no view container ref is set
             console.warn('ConfirmationModalService: No ViewContainerRef set, falling back to browser confirm');
             return confirm(`${data.title}\n\n${data.message}`);
         }
 
+        // Clean up any existing modal
+        this.destroy();
+
         // Create modal component
         this.modalComponentRef = this.viewContainerRef.createComponent(ConfirmationModalComponent);
+        console.log('Modal component created:', this.modalComponentRef);
 
         try {
             // Show modal and wait for result
             const result = await this.modalComponentRef.instance.show(data);
+            console.log('Modal resolved with result:', result);
             return result;
+        } catch (error) {
+            console.error('Error in modal:', error);
+            return false;
         } finally {
-            // Clean up
+            // Clean up immediately since we've already handled the promise resolution
             this.destroy();
         }
     }
@@ -89,8 +100,14 @@ export class ConfirmationModalService {
 
     private destroy(): void {
         if (this.modalComponentRef) {
-            this.modalComponentRef.destroy();
-            this.modalComponentRef = undefined;
+            console.log('Destroying modal component');
+            try {
+                this.modalComponentRef.destroy();
+            } catch (error) {
+                console.error('Error destroying modal component:', error);
+            } finally {
+                this.modalComponentRef = undefined;
+            }
         }
     }
 } 
