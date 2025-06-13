@@ -234,8 +234,14 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
     this.seo.updateSEO(seoData);
 
-    // Update social media sharing for product
+    // Update social media sharing for product (but don't let it override our SEO)
     this.socialMedia.updateProductSocialMedia(this.product);
+
+    // IMPORTANT: Re-apply our SEO after social media service to prevent conflicts
+    setTimeout(() => {
+      console.log('🛡️ Re-applying product SEO to prevent conflicts');
+      this.seo.updateSEO(seoData);
+    }, 100);
 
     // Force update meta tags for immediate effect
     if (isPlatformBrowser(this.platformId)) {
@@ -290,6 +296,22 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       console.log('- og:description:', document.querySelector('meta[property="og:description"]')?.getAttribute('content'));
       console.log('- image:', document.querySelector('meta[name="image"]')?.getAttribute('content'));
     }
+
+    // Final defensive mechanism: Re-apply SEO after everything else is done
+    setTimeout(() => {
+      console.log('🔒 Final product SEO lock-in');
+      this.seo.updateSEO(seoData);
+
+      // Force immediate DOM verification
+      setTimeout(() => {
+        if (isPlatformBrowser(this.platformId)) {
+          console.log('🔍 FINAL VERIFICATION - Meta tags after lock-in:');
+          console.log('- og:image:', document.querySelector('meta[property="og:image"]')?.getAttribute('content'));
+          console.log('- twitter:image:', document.querySelector('meta[name="twitter:image"]')?.getAttribute('content'));
+          console.log('- image:', document.querySelector('meta[name="image"]')?.getAttribute('content'));
+        }
+      }, 50);
+    }, 500);
   }
 
   private initializeSwiper() {
