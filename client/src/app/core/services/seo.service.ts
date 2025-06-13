@@ -52,11 +52,25 @@ export class SeoService {
         const fullImageUrl = image.startsWith('http') ? image : `${this.defaultData.domain}${image}`;
         const url = data.url ? `${this.defaultData.domain}${data.url}` : this.defaultData.domain;
 
+        console.log('🔄 Updating SEO with image:', fullImageUrl);
+
         // Set page title
         this.title.setTitle(fullTitle);
 
         // Update canonical URL
         this.updateCanonicalUrl(url);
+
+        // Force remove existing image-related meta tags to prevent conflicts
+        this.forceRemoveMetaTags([
+            'og:image',
+            'og:image:secure_url',
+            'og:image:alt',
+            'og:image:width',
+            'og:image:height',
+            'og:image:type',
+            'twitter:image',
+            'image'
+        ]);
 
         // Basic meta tags
         this.meta.updateTag({ name: 'description', content: description });
@@ -66,14 +80,31 @@ export class SeoService {
         this.meta.updateTag({ name: 'author', content: this.defaultData.siteName });
 
         // Open Graph tags - Essential for WhatsApp, Facebook, Instagram
-        this.meta.updateTag({ property: 'og:title', content: fullTitle });
-        this.meta.updateTag({ property: 'og:description', content: description });
-        this.meta.updateTag({ property: 'og:image', content: fullImageUrl });
-        this.meta.updateTag({ property: 'og:image:secure_url', content: fullImageUrl });
-        this.meta.updateTag({ property: 'og:image:alt', content: fullTitle });
-        this.meta.updateTag({ property: 'og:image:width', content: '1200' });
-        this.meta.updateTag({ property: 'og:image:height', content: '630' });
-        this.meta.updateTag({ property: 'og:image:type', content: 'image/jpeg' });
+        // Using both removeTag and addTag for guaranteed replacement
+        this.meta.removeTag('property="og:title"');
+        this.meta.addTag({ property: 'og:title', content: fullTitle });
+
+        this.meta.removeTag('property="og:description"');
+        this.meta.addTag({ property: 'og:description', content: description });
+
+        this.meta.removeTag('property="og:image"');
+        this.meta.addTag({ property: 'og:image', content: fullImageUrl });
+
+        this.meta.removeTag('property="og:image:secure_url"');
+        this.meta.addTag({ property: 'og:image:secure_url', content: fullImageUrl });
+
+        this.meta.removeTag('property="og:image:alt"');
+        this.meta.addTag({ property: 'og:image:alt', content: fullTitle });
+
+        this.meta.removeTag('property="og:image:width"');
+        this.meta.addTag({ property: 'og:image:width', content: '1200' });
+
+        this.meta.removeTag('property="og:image:height"');
+        this.meta.addTag({ property: 'og:image:height', content: '630' });
+
+        this.meta.removeTag('property="og:image:type"');
+        this.meta.addTag({ property: 'og:image:type', content: 'image/jpeg' });
+
         this.meta.updateTag({ property: 'og:url', content: url });
         this.meta.updateTag({ property: 'og:type', content: data.type || 'website' });
         this.meta.updateTag({ property: 'og:site_name', content: this.defaultData.siteName });
@@ -81,7 +112,8 @@ export class SeoService {
         this.meta.updateTag({ property: 'og:image:user_generated', content: 'false' });
 
         // WhatsApp specific optimizations
-        this.meta.updateTag({ name: 'image', content: fullImageUrl });
+        this.meta.removeTag('name="image"');
+        this.meta.addTag({ name: 'image', content: fullImageUrl });
 
         // Facebook App ID (if available)
         if (this.defaultData.facebookAppId) {
@@ -89,12 +121,18 @@ export class SeoService {
         }
 
         // Twitter Card tags - Enhanced for better sharing
+        this.meta.removeTag('name="twitter:image"');
+        this.meta.addTag({ name: 'twitter:image', content: fullImageUrl });
+
+        this.meta.removeTag('name="twitter:title"');
+        this.meta.addTag({ name: 'twitter:title', content: fullTitle });
+
+        this.meta.removeTag('name="twitter:description"');
+        this.meta.addTag({ name: 'twitter:description', content: description });
+
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
         this.meta.updateTag({ name: 'twitter:site', content: this.defaultData.twitterHandle });
         this.meta.updateTag({ name: 'twitter:creator', content: this.defaultData.twitterHandle });
-        this.meta.updateTag({ name: 'twitter:title', content: fullTitle });
-        this.meta.updateTag({ name: 'twitter:description', content: description });
-        this.meta.updateTag({ name: 'twitter:image', content: fullImageUrl });
         this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
         this.meta.updateTag({ name: 'twitter:domain', content: 'perla-accessories.vercel.app' });
 
@@ -125,6 +163,17 @@ export class SeoService {
         // Language and region
         this.meta.updateTag({ name: 'language', content: 'en' });
         this.meta.updateTag({ name: 'geo.region', content: this.defaultData.country });
+
+        // Force immediate DOM update for social media crawlers
+        this.forceMetaTagUpdate();
+
+        console.log('✅ SEO meta tags updated successfully');
+        console.log('🖼️ Final image URL set to:', fullImageUrl);
+
+        // Verify meta tags after update
+        setTimeout(() => {
+            this.verifyMetaTags();
+        }, 200);
 
         // Add structured data if provided
         if (data.structuredData) {
@@ -550,5 +599,67 @@ export class SeoService {
         script.type = 'application/ld+json';
         script.text = JSON.stringify(data);
         this.document.head.appendChild(script);
+    }
+
+    private forceRemoveMetaTags(tags: string[]): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+
+        tags.forEach(tag => {
+            // Remove meta tags with 'name' attribute
+            const nameTag = this.document.querySelector(`meta[name="${tag}"]`);
+            if (nameTag) {
+                nameTag.remove();
+            }
+
+            // Remove meta tags with 'property' attribute
+            const propertyTag = this.document.querySelector(`meta[property="${tag}"]`);
+            if (propertyTag) {
+                propertyTag.remove();
+            }
+        });
+
+        console.log('🗑️ Removed existing meta tags for:', tags);
+    }
+
+    private forceMetaTagUpdate(): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+
+        // Wait a brief moment to ensure DOM is ready
+        setTimeout(() => {
+            // Force a layout recalculation
+            this.document.head.offsetHeight;
+
+            // Trigger a reparse of meta tags by touching the DOM
+            const tempMeta = this.document.createElement('meta');
+            tempMeta.setAttribute('name', 'temp-meta-tag');
+            tempMeta.setAttribute('content', 'temp');
+            this.document.head.appendChild(tempMeta);
+            this.document.head.removeChild(tempMeta);
+
+            console.log('🔄 Forced meta tag DOM update');
+        }, 100);
+    }
+
+    private verifyMetaTags(): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+
+        console.log('🔍 Verifying meta tags in DOM:');
+
+        // Check image-related meta tags
+        const ogImage = this.document.querySelector('meta[property="og:image"]')?.getAttribute('content');
+        const twitterImage = this.document.querySelector('meta[name="twitter:image"]')?.getAttribute('content');
+        const image = this.document.querySelector('meta[name="image"]')?.getAttribute('content');
+        const ogTitle = this.document.querySelector('meta[property="og:title"]')?.getAttribute('content');
+        const ogDescription = this.document.querySelector('meta[property="og:description"]')?.getAttribute('content');
+
+        console.log('- og:image:', ogImage);
+        console.log('- twitter:image:', twitterImage);
+        console.log('- image:', image);
+        console.log('- og:title:', ogTitle);
+        console.log('- og:description:', ogDescription);
+
+        // Count total meta tags
+        const allMetaTags = this.document.querySelectorAll('meta');
+        console.log(`- Total meta tags in DOM: ${allMetaTags.length}`);
     }
 } 
