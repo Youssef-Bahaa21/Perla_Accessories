@@ -1,6 +1,3 @@
-/* Import AOS CSS for scroll animations */
-@import 'aos/dist/aos.css';
-
 /* Advanced AOS Custom Animations */
 [data-aos="fade-up-scale"] {
     transform: translateY(100px) scale(0.8);
