@@ -1,9 +1,12 @@
+// Professional E-commerce Styling
+
 // Line clamping for product titles
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-height: 1.4;
 }
 
 // Animations
@@ -137,88 +140,39 @@
     background: #db2777;
 }
 
-// Enhanced Product card effects with premium animations
+// Professional product card styling
 .product-card {
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease-out;
+    cursor: pointer;
 
-    // Premium shadow system
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06),
-        0 0 0 1px rgba(236, 72, 153, 0.05);
-
-    // Subtle border radius animation
-    border-radius: 1.5rem;
-
-    // Background with subtle gradient
-    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
-}
-
-// Enhanced hover effects for desktop
-@media (hover: hover) and (pointer: fine) {
-    .product-card {
+    // Subtle hover effect for desktop only
+    @media (hover: hover) and (pointer: fine) {
         &:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow:
-                0 25px 50px -12px rgba(0, 0, 0, 0.15),
-                0 20px 25px -5px rgba(236, 72, 153, 0.1),
-                0 0 0 1px rgba(236, 72, 153, 0.1);
-
-            // Subtle glow effect
-            &::after {
-                content: '';
-                position: absolute;
-                inset: -2px;
-                border-radius: inherit;
-                background: linear-gradient(135deg,
-                        rgba(236, 72, 153, 0.1),
-                        rgba(219, 39, 119, 0.1));
-                z-index: -1;
-                opacity: 1;
-                transition: opacity 0.3s ease;
-            }
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
+    }
 
-        &::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: inherit;
-            background: linear-gradient(135deg,
-                    rgba(236, 72, 153, 0.1),
-                    rgba(219, 39, 119, 0.1));
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+    // Mobile touch feedback
+    @media (hover: none) and (pointer: coarse) {
+        &:active {
+            transform: scale(0.98);
         }
     }
 }
 
-// Enhanced image transitions with premium effects
-.image-slide {
-    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    // Premium image filters and effects
-    &:hover {
-        filter: brightness(1.05) contrast(1.02);
+// Professional image handling
+.mobile-static-image {
+    img {
+        transition: none !important;
+        transform: none !important;
     }
 }
 
-// Image container enhancements
-.product-card .relative {
-    overflow: hidden;
-
-    // Subtle inner shadow for depth
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        z-index: 1;
-        pointer-events: none;
+// Smooth image transitions for desktop
+@media (hover: hover) and (pointer: fine) {
+    .product-card img {
+        transition: transform 0.3s ease;
     }
 }
 
@@ -255,33 +209,23 @@
     outline-offset: 2px;
 }
 
-// Mobile-first responsive styles
+// Professional filter styling
 .filter-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
-    margin: 0 -1rem;
-    padding: 0 1rem;
+    .filter-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
 
-    @media (min-width: 768px) {
-        overflow-x: visible;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-    }
-}
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
-.filter-group {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    padding-bottom: 0.25rem;
-    min-width: min-content;
-
-    @media (min-width: 768px) {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        @media (max-width: 767px) {
+            justify-content: flex-start;
+            padding: 0 1rem;
+            margin: 0 -1rem;
+        }
     }
 }
 
@@ -591,261 +535,68 @@
     }
 }
 
-// Enhanced responsive grid with perfect spacing
-@media (max-width: 640px) {
-    .product-grid-item {
-        min-height: 420px; // Increased for better mobile display
-
-        // Enhanced mobile card styling
-        .product-card {
-            border-radius: 1.25rem;
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.1),
-                0 1px 3px rgba(236, 72, 153, 0.1);
-        }
-    }
-}
-
-@media (min-width: 641px) and (max-width: 768px) {
-    .product-grid-item {
-        min-height: 440px; // Perfect tablet display
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .product-grid-item {
-        min-height: 420px; // Desktop medium
-    }
-}
-
-@media (min-width: 1025px) {
-    .product-grid-item {
-        min-height: 400px; // Large desktop
-
-        // Enhanced large screen effects
-        .product-card {
-            &:hover {
-                transform: translateY(-12px) scale(1.03);
-            }
-        }
-    }
-}
-
-// Responsive hero section
+// Professional responsive design
 .hero-section {
-    padding: 2rem 0;
+    margin-bottom: 2rem;
 
-    @media (min-width: 768px) {
-        padding: 3rem 0;
+    @media (min-width: 640px) {
+        margin-bottom: 2.5rem;
     }
 
     @media (min-width: 1024px) {
-        padding: 4rem 0;
+        margin-bottom: 3rem;
     }
 }
 
-// Background clip text support with enhanced effects
+// Product grid enhancements
+.product-card {
+    min-height: 280px;
+
+    @media (min-width: 640px) {
+        min-height: 320px;
+    }
+
+    @media (min-width: 1024px) {
+        min-height: 350px;
+    }
+}
+
+// Background clip text support
 .bg-clip-text {
     -webkit-background-clip: text;
     background-clip: text;
-
-    // Subtle text shadow for better readability
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-// Premium loading animations
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.shimmer {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite;
-}
-
-// Premium button effects
-.premium-button {
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transition: left 0.5s;
-    }
-
-    &:hover::before {
-        left: 100%;
-    }
-}
-
-// Enhanced badge animations
-@keyframes badgePulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
-    }
-
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 5px rgba(236, 72, 153, 0);
-    }
-}
-
-.badge-pulse {
-    animation: badgePulse 2s infinite;
-}
-
-// Image zoom effect
-@keyframes imageZoom {
-    from {
-        transform: scale(1);
-    }
-
-    to {
-        transform: scale(1.1);
-    }
-}
-
-.image-zoom-hover:hover img {
-    animation: imageZoom 0.3s ease-out forwards;
-}
-
-// COMPLETE MOBILE DISABLE: All hover and interactive effects disabled on mobile
-@media (hover: none) and (pointer: coarse),
-(max-width: 767px) {
-
-    // Disable ALL hover effects completely
-    *:hover,
-    .group:hover,
-    .product-card:hover,
-    .hover\\:shadow-2xl:hover,
-    .hover\\:border-pink-200:hover,
-    .hover\\:-translate-y-1:hover {
-        transform: none !important;
-        box-shadow: none !important;
-        border-color: inherit !important;
-    }
-
-    // Disable image transforms and scaling
-    .group-hover\\:scale-110,
-    .group:hover .group-hover\\:scale-110 {
-        transform: none !important;
-    }
-
-    // Force static images - no hover changes but allow scrolling
-    .mobile-static-image {
-        // Ensure container allows touch scrolling
-        touch-action: pan-y pan-x; // Allow scrolling in all directions
-
-        img {
-            transition: none !important;
-            transform: none !important;
-            // Don't disable pointer events on images to allow scrolling
-        }
-    }
-
-    // Keep add to cart buttons visible and static
-    .group-hover\\:opacity-100,
-    .group:hover .group-hover\\:opacity-100 {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-
-    .group-hover\\:translate-y-0,
-    .group:hover .group-hover\\:translate-y-0 {
-        transform: translateY(0) !important;
-    }
-
-    // Disable all transitions on mobile for static experience
-    .product-card,
-    .product-card * {
-        transition: none !important;
-    }
-
-    // Force buttons to be always visible on mobile
-    .mobile-add-to-cart {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-}
-
-// Specific targeting for Android and iOS devices
-@media screen and (max-device-width: 768px) {
-
-    // Force disable all hover states
-    *:hover {
-        background-color: inherit !important;
-        color: inherit !important;
-        transform: none !important;
-        box-shadow: inherit !important;
-    }
-
-    // Completely static product cards
+// Clean mobile optimizations
+@media (hover: none) and (pointer: coarse) {
     .product-card {
-        transform: none !important;
-        transition: none !important;
 
+        // Ensure buttons are always visible on mobile
+        .add-to-cart-overlay {
+            opacity: 1 !important;
+        }
+
+        // Disable hover transforms on mobile
         &:hover {
             transform: none !important;
         }
     }
 
-    // Static images - no changes at all
+    // Static images on mobile devices
     .mobile-static-image img {
         transition: none !important;
         transform: none !important;
-        opacity: 1 !important;
     }
 }
 
-// Touch device specific overrides
+// Touch-friendly interactions
 @media (pointer: coarse) {
-
-    // Disable hover animations completely
-    .hover-float:hover {
-        animation: none !important;
-    }
-
-    // Static product grid
-    .product-grid-item:hover {
-        transform: none !important;
-    }
-
-    // Ensure smooth scrolling on touch devices
     body {
         -webkit-overflow-scrolling: touch;
-        overflow-scrolling: touch;
-    }
-
-    // Prevent image interactions but allow scrolling
-    .mobile-static-image img {
-        pointer-events: none;
-        touch-action: auto; // Allow default scrolling behavior
     }
 }
 
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
+// Clean animations
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -858,177 +609,31 @@
     }
 }
 
-@keyframes slideInUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes pulseGlow {
-    0% {
-        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
-    }
-}
-
 .animate-fadeIn {
-    animation: fadeIn 0.4s ease-out forwards;
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
-.animate-slideInUp {
-    animation: slideInUp 0.5s ease-out forwards;
-}
-
-.animate-pulse-glow {
-    animation: pulseGlow 1.5s infinite;
-}
-
-/* Custom scrollbar for filters */
-.filter-scrollbar::-webkit-scrollbar {
-    width: 4px;
-}
-
-.filter-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.filter-scrollbar::-webkit-scrollbar-thumb {
-    background: #ec4899;
-    border-radius: 10px;
-}
-
-.filter-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #db2777;
-}
-
-/* Product card hover effects */
-.product-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-}
-
-/* Image gallery transition effect */
-.image-slide {
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-/* Quick view modal animation */
-@keyframes scaleIn {
-    from {
-        transform: scale(0.95);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.scale-in {
-    animation: scaleIn 0.3s ease-out forwards;
-}
-
-/* Modern Shopify-like enhancements */
-.bg-clip-text {
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-/* Smooth hover animations */
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-.hover-float:hover {
-    animation: float 0.6s ease-in-out;
-}
-
-/* Glass morphism effects */
-.glass {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-/* Gradient text animation */
-@keyframes gradient-shift {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-.animate-gradient {
-    background: linear-gradient(-45deg, #ec4899, #f472b6, #fb7185, #f97316);
-    background-size: 400% 400%;
-    animation: gradient-shift 3s ease infinite;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* Enhanced scrollbar */
+// Professional scrollbar
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
+    background: #f8f9fa;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #ec4899, #f472b6);
-    border-radius: 10px;
-    border: 2px solid #f1f5f9;
+    background: #e9ecef;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #db2777, #e11d48);
+    background: #dee2e6;
 }
 
-/* Mobile optimizations */
-@media (max-width: 640px) {
-    .grid-cols-2>* {
-        min-height: 320px;
-    }
-}
-
-/* Focus states for accessibility */
-.focus-ring:focus {
-    outline: 2px solid #ec4899;
+// Focus states for accessibility
+button:focus,
+select:focus {
+    outline: 2px solid #374151;
     outline-offset: 2px;
 }
