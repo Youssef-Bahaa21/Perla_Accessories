@@ -62,45 +62,7 @@
 /* Enhanced Stats Cards Layout for PC View */
 .brand-story-section {
     .stats-grid {
-        @media (min-width: 768px) {
-            /* On tablets and above, center the cards with better spacing */
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-
-            .stats-card {
-                flex: 0 1 280px;
-                min-width: 250px;
-                max-width: 300px;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            /* On desktop, perfect 3-card layout */
-            gap: 3rem;
-            max-width: 1000px;
-
-            .stats-card {
-                flex: 0 1 300px;
-                min-width: 280px;
-                max-width: 320px;
-            }
-        }
-
-        @media (min-width: 1280px) {
-            /* On large screens, even more spacing */
-            gap: 4rem;
-            max-width: 1200px;
-
-            .stats-card {
-                flex: 0 1 350px;
-                min-width: 320px;
-                max-width: 380px;
-            }
-        }
+        /* Let Tailwind handle the grid layout */
     }
 }
 
