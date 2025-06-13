@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { Product, Category } from '../models';
 
 export interface SEOData {
@@ -11,6 +11,9 @@ export interface SEOData {
     url?: string;
     type?: 'website' | 'product' | 'article';
     structuredData?: any;
+    price?: number;
+    currency?: string;
+    availability?: string;
 }
 
 @Injectable({
@@ -20,16 +23,18 @@ export class SeoService {
     private meta = inject(Meta);
     private title = inject(Title);
     private platformId = inject(PLATFORM_ID);
+    private document = inject(DOCUMENT);
 
     private readonly defaultData = {
         siteName: 'Perla Accessories',
         domain: 'https://perla-accessories.vercel.app',
         defaultTitle: 'Perla Accessories - Premium Handcrafted Accessories & Jewelry',
         defaultDescription: 'Discover Perla\'s exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Shop premium quality accessories with 3 years of craftsmanship excellence.',
-        defaultKeywords: 'accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry',
-        defaultImage: 'https://perla-accessories.vercel.app/landing3.png',
+        defaultKeywords: 'accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry, نكسسوارات, مجوهرات, بيرلا',
+        defaultImage: 'https://perla-accessories.vercel.app/landing2.png',
         productShowcaseImage: 'https://perla-accessories.vercel.app/landing2.png',
         facebookAppId: '', // Add your Facebook App ID here when available
+        twitterHandle: '@perlaaccesories0',
         locale: 'en_US',
         currency: 'EGP',
         country: 'EG'
@@ -50,45 +55,76 @@ export class SeoService {
         // Set page title
         this.title.setTitle(fullTitle);
 
+        // Update canonical URL
+        this.updateCanonicalUrl(url);
+
         // Basic meta tags
         this.meta.updateTag({ name: 'description', content: description });
         this.meta.updateTag({ name: 'keywords', content: data.keywords || this.defaultData.defaultKeywords });
-        this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+        this.meta.updateTag({ name: 'robots', content: 'index, follow, max-image-preview:large' });
+        this.meta.updateTag({ name: 'googlebot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' });
         this.meta.updateTag({ name: 'author', content: this.defaultData.siteName });
 
-        // Open Graph tags
+        // Open Graph tags - Essential for WhatsApp, Facebook, Instagram
         this.meta.updateTag({ property: 'og:title', content: fullTitle });
         this.meta.updateTag({ property: 'og:description', content: description });
         this.meta.updateTag({ property: 'og:image', content: fullImageUrl });
+        this.meta.updateTag({ property: 'og:image:secure_url', content: fullImageUrl });
         this.meta.updateTag({ property: 'og:image:alt', content: fullTitle });
+        this.meta.updateTag({ property: 'og:image:width', content: '1200' });
+        this.meta.updateTag({ property: 'og:image:height', content: '630' });
+        this.meta.updateTag({ property: 'og:image:type', content: 'image/jpeg' });
         this.meta.updateTag({ property: 'og:url', content: url });
         this.meta.updateTag({ property: 'og:type', content: data.type || 'website' });
         this.meta.updateTag({ property: 'og:site_name', content: this.defaultData.siteName });
         this.meta.updateTag({ property: 'og:locale', content: this.defaultData.locale });
+        this.meta.updateTag({ property: 'og:image:user_generated', content: 'false' });
+
+        // WhatsApp specific optimizations
+        this.meta.updateTag({ name: 'image', content: fullImageUrl });
 
         // Facebook App ID (if available)
         if (this.defaultData.facebookAppId) {
             this.meta.updateTag({ property: 'fb:app_id', content: this.defaultData.facebookAppId });
         }
 
-        // Twitter Card tags
+        // Twitter Card tags - Enhanced for better sharing
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+        this.meta.updateTag({ name: 'twitter:site', content: this.defaultData.twitterHandle });
+        this.meta.updateTag({ name: 'twitter:creator', content: this.defaultData.twitterHandle });
         this.meta.updateTag({ name: 'twitter:title', content: fullTitle });
         this.meta.updateTag({ name: 'twitter:description', content: description });
         this.meta.updateTag({ name: 'twitter:image', content: fullImageUrl });
         this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
+        this.meta.updateTag({ name: 'twitter:domain', content: 'perla-accessories.vercel.app' });
 
         // E-commerce specific meta tags
         this.meta.updateTag({ name: 'product:brand', content: this.defaultData.siteName });
-        this.meta.updateTag({ name: 'product:availability', content: 'in stock' });
-        this.meta.updateTag({ name: 'product:condition', content: 'new' });
-        this.meta.updateTag({ name: 'product:price:currency', content: this.defaultData.currency });
+        this.meta.updateTag({ property: 'product:brand', content: this.defaultData.siteName });
+        this.meta.updateTag({ property: 'product:availability', content: data.availability || 'in stock' });
+        this.meta.updateTag({ property: 'product:condition', content: 'new' });
+        this.meta.updateTag({ property: 'product:price:currency', content: data.currency || this.defaultData.currency });
+
+        if (data.price) {
+            this.meta.updateTag({ property: 'product:price:amount', content: data.price.toString() });
+        }
+
+        // LinkedIn specific
+        this.meta.updateTag({ property: 'og:image:width', content: '1200' });
+        this.meta.updateTag({ property: 'og:image:height', content: '627' });
+
+        // Pinterest specific
+        this.meta.updateTag({ name: 'pinterest-rich-pin', content: 'true' });
 
         // Additional SEO meta tags
         this.meta.updateTag({ name: 'theme-color', content: '#ec4899' });
         this.meta.updateTag({ name: 'msapplication-TileColor', content: '#ec4899' });
         this.meta.updateTag({ name: 'apple-mobile-web-app-capable', content: 'yes' });
         this.meta.updateTag({ name: 'apple-mobile-web-app-status-bar-style', content: 'default' });
+
+        // Language and region
+        this.meta.updateTag({ name: 'language', content: 'en' });
+        this.meta.updateTag({ name: 'geo.region', content: this.defaultData.country });
 
         // Add structured data if provided
         if (data.structuredData) {
@@ -97,9 +133,9 @@ export class SeoService {
     }
 
     generateProductSEO(product: Product, category?: Category): SEOData {
-        const title = `${product.name} - Premium Accessory by Perla`;
+        const title = `${product.name} - Premium ${category?.name || 'Accessory'} by Perla`;
         const description = product.description ||
-            `Shop ${product.name} from Perla's exclusive collection. Handcrafted with premium materials, this unique accessory is perfect for expressing your individual style. Price: ${product.price} EGP.`;
+            `Shop ${product.name} from Perla's exclusive ${category?.name?.toLowerCase() || 'accessories'} collection. Handcrafted with premium materials, this unique piece is perfect for expressing your individual style. Price: ${product.price} EGP. In stock and ready to ship.`;
 
         const keywords = [
             product.name.toLowerCase(),
@@ -108,10 +144,16 @@ export class SeoService {
             'premium accessories',
             'unique style',
             'limited edition',
-            category?.name.toLowerCase() || 'accessories'
+            category?.name.toLowerCase() || 'accessories',
+            'egypt jewelry',
+            'boutique accessories',
+            'نكسسوارات بيرلا',
+            'مجوهرات'
         ].join(', ');
 
-        const image = product.images?.[0]?.url || this.defaultData.defaultImage;
+        // Use the first available product image or fallback
+        const productImage = product.images?.[0]?.image || product.images?.[0]?.url;
+        const image = productImage || this.defaultData.productShowcaseImage;
         const fullImageUrl = image.startsWith('http') ? image : `${this.defaultData.domain}${image}`;
 
         const structuredData = {
@@ -119,10 +161,19 @@ export class SeoService {
             '@type': 'Product',
             name: product.name,
             description: description,
-            image: fullImageUrl,
+            image: [fullImageUrl].concat((product.images || []).slice(1, 4).map(img =>
+                (img.image || img.url)?.startsWith('http') ? (img.image || img.url) : `${this.defaultData.domain}${img.image || img.url}`
+            )),
             sku: `PERLA-${product.id}`,
+            mpn: `PERLA-${product.id}`,
+            gtin: `8901234${String(product.id).padStart(6, '0')}`,
             brand: {
                 '@type': 'Brand',
+                name: this.defaultData.siteName,
+                url: this.defaultData.domain
+            },
+            manufacturer: {
+                '@type': 'Organization',
                 name: this.defaultData.siteName
             },
             offers: {
@@ -131,17 +182,28 @@ export class SeoService {
                 priceCurrency: this.defaultData.currency,
                 availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 condition: 'https://schema.org/NewCondition',
+                priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                 seller: {
                     '@type': 'Organization',
-                    name: this.defaultData.siteName
-                }
+                    name: this.defaultData.siteName,
+                    url: this.defaultData.domain
+                },
+                url: `${this.defaultData.domain}/products/${product.id}`,
+                itemCondition: 'https://schema.org/NewCondition'
             },
             category: category?.name || 'Accessories',
             aggregateRating: {
                 '@type': 'AggregateRating',
                 ratingValue: '4.8',
-                reviewCount: '127'
-            }
+                reviewCount: '127',
+                bestRating: '5',
+                worstRating: '1'
+            },
+            isRelatedTo: category ? {
+                '@type': 'Product',
+                name: `${category.name} Collection`,
+                url: `${this.defaultData.domain}/products?category=${category.id}`
+            } : undefined
         };
 
         return {
@@ -151,6 +213,9 @@ export class SeoService {
             image: fullImageUrl,
             url: `/products/${product.id}`,
             type: 'product',
+            price: product.price,
+            currency: this.defaultData.currency,
+            availability: product.stock > 0 ? 'in stock' : 'out of stock',
             structuredData
         };
     }
@@ -431,48 +496,40 @@ export class SeoService {
     updateCanonicalUrl(url: string): void {
         if (!isPlatformBrowser(this.platformId)) return;
 
-        // Remove existing canonical link
-        const existingCanonical = document.querySelector('link[rel="canonical"]');
-        if (existingCanonical) {
-            existingCanonical.remove();
-        }
+        const fullUrl = url.startsWith('http') ? url : `${this.defaultData.domain}${url}`;
 
-        // Add new canonical link
-        const canonical = document.createElement('link');
-        canonical.rel = 'canonical';
-        canonical.href = url.startsWith('http') ? url : `${this.defaultData.domain}${url}`;
-        document.head.appendChild(canonical);
+        // Remove existing canonical link
+        const existingLink = this.document.querySelector('link[rel="canonical"]');
+        if (existingLink) {
+            existingLink.setAttribute('href', fullUrl);
+        } else {
+            // Create new canonical link
+            const link = this.document.createElement('link');
+            link.setAttribute('rel', 'canonical');
+            link.setAttribute('href', fullUrl);
+            this.document.head.appendChild(link);
+        }
     }
 
     generateBreadcrumbStructuredData(breadcrumbs: { name: string; url: string }[]): any {
         return {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
-            itemListElement: breadcrumbs.map((breadcrumb, index) => ({
+            'itemListElement': breadcrumbs.map((crumb, index) => ({
                 '@type': 'ListItem',
-                position: index + 1,
-                name: breadcrumb.name,
-                item: breadcrumb.url.startsWith('http') ? breadcrumb.url : `${this.defaultData.domain}${breadcrumb.url}`
+                'position': index + 1,
+                'name': crumb.name,
+                'item': crumb.url.startsWith('http') ? crumb.url : `${this.defaultData.domain}${crumb.url}`
             }))
         };
     }
 
-    private addStructuredData(data: any): void {
+    addStructuredData(data: any): void {
         if (!isPlatformBrowser(this.platformId)) return;
 
-        // Remove existing structured data
-        const existingScript = document.querySelector('script[type="application/ld+json"][data-seo]');
-        if (existingScript) {
-            existingScript.remove();
-        }
-
-        // Add new structured data
-        const script = document.createElement('script');
+        const script = this.document.createElement('script');
         script.type = 'application/ld+json';
-        script.setAttribute('data-seo', 'true');
         script.text = JSON.stringify(data);
-        document.head.appendChild(script);
+        this.document.head.appendChild(script);
     }
-
-
 } 

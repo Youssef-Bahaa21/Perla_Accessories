@@ -222,12 +222,10 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private updateProductSEO(): void {
     if (!this.product) return;
 
-    // Generate product SEO data
     const seoData = this.seo.generateProductSEO(this.product, this.category);
     this.seo.updateSEO(seoData);
-    this.seo.updateCanonicalUrl(`/products/${this.product.id}`);
 
-    // Update social media tags for product sharing
+    // Update social media sharing for product
     this.socialMedia.updateProductSocialMedia(this.product);
 
     // Add breadcrumb structured data

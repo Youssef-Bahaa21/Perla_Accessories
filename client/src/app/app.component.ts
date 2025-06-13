@@ -15,6 +15,8 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { CartComponent } from './features/cart/cart.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { SeoService } from './core/services/seo.service';
+import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -45,31 +47,57 @@ export class AppComponent implements OnInit {
     private confirmationModal: ConfirmationModalService,
     private http: HttpClient,
     private router: Router,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private seo: SeoService
   ) { }
 
   ngOnInit(): void {
-    // Initialize confirmation modal service
-    this.confirmationModal.setViewContainerRef(this.viewContainerRef);
-
-    // Only fetch CSRF token in browser environment
     if (isPlatformBrowser(this.platformId)) {
-      // Fetch CSRF token with debugging
-      console.log('Fetching CSRF token from:', `${environment.api}/api/csrf-token`);
+      // Initialize SEO with default homepage data
+      this.seo.updateSEO(this.seo.generateHomepageSEO());
 
-      this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe({
-        next: (response) => {
-          console.log('CSRF token fetched successfully:', response);
-        },
-        error: (error) => {
-          console.error('Failed to fetch CSRF token:', error);
+      // Subscribe to router events to update SEO for each page
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          this.updatePageSEO(event.url);
         }
       });
 
+      // Initialize authentication and user state
       this.authService.currentUser$.subscribe((user: any) => {
         this.user = user;
       });
+
+      // Fetch CSRF token with debugging
+      this.http.get('/api/csrf-token', { withCredentials: true }).subscribe({
+        next: (response) => {
+          console.log('✅ CSRF token fetched successfully');
+        },
+        error: (error) => {
+          console.warn('⚠️ Could not fetch CSRF token, continuing without it:', error.message);
+        }
+      });
+
+      this.confirmationModal.setViewContainerRef(this.viewContainerRef);
     }
+  }
+
+  private updatePageSEO(url: string): void {
+    // Update SEO based on the current route
+    if (url === '/') {
+      this.seo.updateSEO(this.seo.generateHomepageSEO());
+    } else if (url === '/about') {
+      this.seo.updateSEO(this.seo.generateAboutSEO());
+    } else if (url === '/privacy-policy') {
+      this.seo.updateSEO(this.seo.generatePrivacyPolicySEO());
+    } else if (url === '/terms-of-service') {
+      this.seo.updateSEO(this.seo.generateTermsOfServiceSEO());
+    } else if (url.includes('/returns-policy')) {
+      this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('returns'));
+    } else if (url.includes('/shipping-details')) {
+      this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('shipping'));
+    }
+    // Product and category pages handle their own SEO
   }
 
   @HostListener('document:click', ['$event'])

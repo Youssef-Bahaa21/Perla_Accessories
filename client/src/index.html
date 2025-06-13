@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="utf-8">
   <title>Perla Accessories - Premium Handcrafted Accessories & Jewelry</title>
@@ -8,55 +8,101 @@
   
   <!-- Default SEO Meta Tags (will be updated by Angular SEO service) -->
   <meta name="description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Shop premium quality accessories with 3 years of craftsmanship excellence.">
-  <meta name="keywords" content="accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry">
+  <meta name="keywords" content="accessories, jewelry, handcrafted, premium, limited edition, unique style, perla accessories, fashion accessories, women accessories, boutique jewelry, نكسسوارات, مجوهرات, بيرلا">
   <meta name="author" content="Perla Accessories">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   
-  <!-- Open Graph Meta Tags (Facebook, WhatsApp, etc.) -->
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://perla-accessories.vercel.app">
+  
+  <!-- Language and Region -->
+  <meta name="language" content="en">
+  <meta name="geo.region" content="EG">
+  <meta name="geo.placename" content="Egypt">
+  
+  <!-- Open Graph Meta Tags (Facebook, WhatsApp, Instagram, etc.) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Perla Accessories">
   <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ar_EG">
   <meta property="og:title" content="Perla Accessories - Premium Handcrafted Accessories &amp; Jewelry">
-  <meta property="og:description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.">
+  <meta property="og:description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Shop premium quality accessories.">
   <meta property="og:url" content="https://perla-accessories.vercel.app">
   <meta property="og:image" content="https://perla-accessories.vercel.app/landing2.png">
+  <meta property="og:image:secure_url" content="https://perla-accessories.vercel.app/landing2.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:alt" content="Perla Accessories - Beautiful handcrafted jewelry and accessories">
+  <meta property="og:image:alt" content="Perla Accessories - Beautiful handcrafted jewelry and accessories collection">
   
-  <!-- WhatsApp and general sharing -->
+  <!-- Additional Open Graph for E-commerce -->
+  <meta property="product:brand" content="Perla Accessories">
+  <meta property="product:availability" content="in stock">
+  <meta property="product:condition" content="new">
+  <meta property="product:price:currency" content="EGP">
+  
+  <!-- WhatsApp specific (uses Open Graph but these help) -->
   <meta name="image" content="https://perla-accessories.vercel.app/landing2.png">
+  <meta property="og:image:user_generated" content="false">
   
-  <!-- Facebook App ID will be added dynamically when available -->
+  <!-- Facebook App ID (add when available) -->
+  <!-- <meta property="fb:app_id" content="YOUR_FACEBOOK_APP_ID"> -->
   
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@perlaaccesories0">
+  <meta name="twitter:creator" content="@perlaaccesories0">
   <meta name="twitter:title" content="Perla Accessories - Premium Handcrafted Accessories &amp; Jewelry">
   <meta name="twitter:description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.">
   <meta name="twitter:image" content="https://perla-accessories.vercel.app/landing2.png">
   <meta name="twitter:image:alt" content="Perla Accessories - Beautiful handcrafted jewelry and accessories">
+  <meta name="twitter:domain" content="perla-accessories.vercel.app">
+  
+  <!-- LinkedIn specific -->
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="627">
+  
+  <!-- Pinterest specific -->
+  <meta name="pinterest-rich-pin" content="true">
+  <meta property="og:see_also" content="https://www.instagram.com/perlaaccessoriesboutique">
   
   <!-- Favicon and Icons -->
   <link rel="icon" type="image/x-icon" href="/logo.png">
-  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/logo.png">
   <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/logo.png" color="#ec4899">
   
   <!-- Theme and App Meta Tags -->
   <meta name="theme-color" content="#ec4899">
   <meta name="msapplication-TileColor" content="#ec4899">
+  <meta name="msapplication-TileImage" content="/logo.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Perla Accessories">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- Search Engine Verification (add when available) -->
+  <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE"> -->
+  <!-- <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE"> -->
   
   <!-- DNS Prefetch for Performance -->
   <link rel="dns-prefetch" href="//fonts.googleapis.com">
   <link rel="dns-prefetch" href="//web-production-cab5a.up.railway.app">
+  <link rel="dns-prefetch" href="//res.cloudinary.com">
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
   
   <!-- Preconnect for Critical Resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  
+  <!-- Preload critical images -->
+  <link rel="preload" as="image" href="/landing2.png" media="(min-width: 768px)">
+  <link rel="preload" as="image" href="/logo.png">
   
   <!-- AOS (Animate On Scroll) CSS -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
@@ -72,27 +118,79 @@
     "name": "Perla Accessories",
     "url": "https://perla-accessories.vercel.app",
     "logo": "https://perla-accessories.vercel.app/logo.png",
-    "description": "Premium handcrafted accessories and jewelry brand specializing in unique, limited edition pieces",
+    "image": "https://perla-accessories.vercel.app/landing2.png",
+    "description": "Premium handcrafted accessories and jewelry brand specializing in unique, limited edition pieces designed to express individual style.",
     "foundingDate": "2021",
+    "slogan": "Express Your Unique Style",
+    "brand": "Perla Accessories",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "EG",
+      "addressRegion": "Egypt"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": ["Arabic", "English"],
+      "areaServed": "EG"
+    },
     "sameAs": [
       "https://www.instagram.com/perlaaccessoriesboutique",
       "https://www.tiktok.com/@perlaaccesories0"
     ],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "customer service",
-      "availableLanguage": ["Arabic", "English"]
-    },
     "areaServed": {
       "@type": "Country",
       "name": "Egypt"
+    },
+    "makesOffer": {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Handcrafted Accessories and Jewelry",
+        "category": "Fashion Accessories"
+      }
     }
   }
   </script>
+  
+  <!-- Website Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Perla Accessories",
+    "url": "https://perla-accessories.vercel.app",
+    "description": "Premium handcrafted accessories and jewelry online store",
+    "inLanguage": "en-US",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Perla Accessories"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://perla-accessories.vercel.app/products?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  
+  <!-- Breadcrumb List Schema (will be updated dynamically) -->
+  <script type="application/ld+json" id="breadcrumb-schema">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://perla-accessories.vercel.app"
+      }
+    ]
+  }
+  </script>
+  
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
 </head>
 <body>
   <app-root></app-root>

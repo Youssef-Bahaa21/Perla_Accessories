@@ -15,126 +15,107 @@ export interface SitemapUrl {
 })
 export class SitemapService {
     private api = inject(ApiService);
-    private domain = 'https://perla-accessories.vercel.app';
+    private readonly baseUrl = 'https://perla-accessories.vercel.app';
+    private readonly staticPages: SitemapUrl[] = [
+        {
+            loc: '',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'daily',
+            priority: 1.0
+        },
+        {
+            loc: '/about',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'monthly',
+            priority: 0.8
+        },
+        {
+            loc: '/products',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'daily',
+            priority: 0.9
+        },
+        {
+            loc: '/privacy-policy',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'yearly',
+            priority: 0.3
+        },
+        {
+            loc: '/terms-of-service',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'yearly',
+            priority: 0.3
+        },
+        {
+            loc: '/returns-policy',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'monthly',
+            priority: 0.4
+        },
+        {
+            loc: '/shipping-details',
+            lastmod: new Date().toISOString().split('T')[0],
+            changefreq: 'monthly',
+            priority: 0.4
+        }
+    ];
 
     generateSitemap(): Observable<string> {
         return forkJoin({
-            products: this.getProducts(),
-            categories: this.getCategories()
+            products: this.api.products.list(),
+            categories: this.api.categories.list()
         }).pipe(
             map(({ products, categories }) => {
-                const urls: SitemapUrl[] = [];
+                const allUrls: SitemapUrl[] = [...this.staticPages];
 
-                // Static pages
-                urls.push(
-                    {
-                        loc: this.domain,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'daily',
-                        priority: 1.0
-                    },
-                    {
-                        loc: `${this.domain}/about`,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'monthly',
-                        priority: 0.8
-                    },
-                    {
-                        loc: `${this.domain}/products`,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'daily',
-                        priority: 0.9
-                    },
-                    {
-                        loc: `${this.domain}/privacy-policy`,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'yearly',
-                        priority: 0.3
-                    },
-                    {
-                        loc: `${this.domain}/terms-of-service`,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'yearly',
-                        priority: 0.3
-                    },
-                    {
-                        loc: `${this.domain}/returns-policy`,
-                        lastmod: new Date().toISOString(),
-                        changefreq: 'yearly',
-                        priority: 0.5
-                    }
-                );
-
-                // Category pages
-                categories.forEach(category => {
-                    urls.push({
-                        loc: `${this.domain}/products?category=${category.id}`,
-                        lastmod: new Date().toISOString(),
+                // Add category pages
+                categories.forEach((category: Category) => {
+                    allUrls.push({
+                        loc: `/products?category=${category.id}`,
+                        lastmod: new Date().toISOString().split('T')[0],
                         changefreq: 'weekly',
                         priority: 0.7
                     });
                 });
 
-                // Product pages
-                products.forEach(product => {
-                    urls.push({
-                        loc: `${this.domain}/products/${product.id}`,
-                        lastmod: product.created_at ? new Date(product.created_at).toISOString() : new Date().toISOString(),
+                // Add product pages
+                const productList = Array.isArray(products) ? products : (products as any).data || [];
+                productList.forEach((product: Product) => {
+                    allUrls.push({
+                        loc: `/products/${product.id}`,
+                        lastmod: new Date(product.created_at).toISOString().split('T')[0],
                         changefreq: 'weekly',
                         priority: 0.8
                     });
                 });
 
-                return this.generateXml(urls);
+                return this.generateXMLSitemap(allUrls);
             })
         );
     }
 
-    private getProducts(): Observable<Product[]> {
-        // Get products for sitemap
-        return this.api.products.list().pipe(
-            map((response: any) => response.data || response)
-        );
-    }
-
-    private getCategories(): Observable<Category[]> {
-        return this.api.categories.list();
-    }
-
-    private generateXml(urls: SitemapUrl[]): string {
-        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    private generateXMLSitemap(urls: SitemapUrl[]): string {
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+        xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
         urls.forEach(url => {
-            xml += '  <url>\n';
-            xml += `    <loc>${this.escapeXml(url.loc)}</loc>\n`;
-
+            xml += `  <url>\n`;
+            xml += `    <loc>${this.baseUrl}${url.loc}</loc>\n`;
             if (url.lastmod) {
                 xml += `    <lastmod>${url.lastmod}</lastmod>\n`;
             }
-
             if (url.changefreq) {
                 xml += `    <changefreq>${url.changefreq}</changefreq>\n`;
             }
-
             if (url.priority !== undefined) {
                 xml += `    <priority>${url.priority}</priority>\n`;
             }
-
-            xml += '  </url>\n';
+            xml += `  </url>\n`;
         });
 
-        xml += '</urlset>';
+        xml += `</urlset>`;
         return xml;
-    }
-
-    private escapeXml(text: string): string {
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;');
     }
 
     generateRobotsTxt(): string {
@@ -162,11 +143,23 @@ Allow: /products/*
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /returns-policy
+Allow: /shipping-details
 
 # Sitemap location
-Sitemap: ${this.domain}/sitemap.xml
+Sitemap: ${this.baseUrl}/sitemap.xml
 
-# Crawl delay (optional)
-Crawl-delay: 1`;
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Block known bad bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+`;
     }
 } 
