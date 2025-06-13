@@ -57,8 +57,8 @@
       <!-- Enhanced CTAs with better hover effects -->
       <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 animate-fade-in-down animation-delay-200" data-aos="scale-in" data-aos-duration="800" data-aos-delay="800">
         <a
-          routerLink="/products"
-          class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-8 py-4 rounded-full font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30 active:scale-95 text-center relative overflow-hidden"
+          (click)="navigateToProducts()"
+          class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-8 py-4 rounded-full font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30 active:scale-95 text-center relative overflow-hidden cursor-pointer"
         >
           <span class="relative z-10 flex items-center justify-center">
             Explore Collection
@@ -70,8 +70,8 @@
         </a>
         
         <a
-          routerLink="/about"
-          class="group border-2 border-pink-400 text-pink-200 px-8 py-4 rounded-full font-medium hover:bg-pink-500/10 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 backdrop-blur-sm text-center relative overflow-hidden shadow-lg shadow-transparent hover:shadow-pink-500/20"
+          (click)="navigateToAbout()"
+          class="group border-2 border-pink-400 text-pink-200 px-8 py-4 rounded-full font-medium hover:bg-pink-500/10 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 active:scale-95 backdrop-blur-sm text-center relative overflow-hidden shadow-lg shadow-transparent hover:shadow-pink-500/20 cursor-pointer"
         >
           <span class="relative z-10 flex items-center justify-center">
             Our Story
@@ -210,8 +210,8 @@
 
     <!-- View all categories button with enhanced mobile styling -->
     <div *ngIf="!categoriesLoading && !categoriesError && categories.length > 0" class="text-center mt-12">
-      <a routerLink="/products" 
-         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300 view-all-btn">
+      <a (click)="navigateToProducts()" 
+         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300 view-all-btn cursor-pointer">
         <span class="relative z-10 flex items-center btn-content">
           View All Products
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform btn-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -349,8 +349,8 @@
 
     <!-- Enhanced CTA button -->
     <div class="text-center mt-16">
-      <a routerLink="/products" 
-         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-8 py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300">
+      <a (click)="navigateToProducts()" 
+         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-8 py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300 cursor-pointer">
         <span class="relative z-10 flex items-center">
           Browse All Products
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -429,10 +429,10 @@
     
     <!-- Enhanced CTA with better mobile styling -->
     <div class="text-center relative">
-      <a
-        routerLink="/products"
-        class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-pink-500/30 active:scale-[0.98] inline-flex items-center justify-center relative overflow-hidden"
-      >
+              <a
+          (click)="navigateToProducts()"
+          class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-pink-500/30 active:scale-[0.98] inline-flex items-center justify-center relative overflow-hidden cursor-pointer"
+        >
         <span class="relative z-10 flex items-center justify-center text-sm sm:text-base">
           Browse Our Collections
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -554,8 +554,8 @@
 
       <!-- Call to Action - Enhanced for mobile -->
       <div class="text-center">
-        <a routerLink="/about" 
-           class="group inline-flex items-center bg-gradient-to-r from-pink-500 to-pink-600 text-white font-medium transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-xl relative overflow-hidden shadow-lg hover:shadow-pink-500/30 hover:from-pink-600 hover:to-pink-700 transform hover:scale-105">
+        <a (click)="navigateToAbout()" 
+           class="group inline-flex items-center bg-gradient-to-r from-pink-500 to-pink-600 text-white font-medium transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-xl relative overflow-hidden shadow-lg hover:shadow-pink-500/30 hover:from-pink-600 hover:to-pink-700 transform hover:scale-105 cursor-pointer">
           <span class="relative z-10 flex items-center text-sm sm:text-base">
             Read Our Full Story
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

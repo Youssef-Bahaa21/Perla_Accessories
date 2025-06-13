@@ -209,6 +209,31 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   navigateToCategory(categoryId: number): void {
     this.router.navigate(['/products'], {
       queryParams: { category: categoryId }
+    }).then(() => {
+      this.scrollToTop();
+    });
+  }
+
+  // Navigate to products page and scroll to top
+  navigateToProducts(): void {
+    this.router.navigate(['/products']).then(() => {
+      this.scrollToTop();
+    });
+  }
+
+  // Navigate to about page and scroll to top
+  navigateToAbout(): void {
+    this.router.navigate(['/about']).then(() => {
+      this.scrollToTop();
+    });
+  }
+
+  // Smooth scroll to top function
+  private scrollToTop(): void {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
     });
   }
 

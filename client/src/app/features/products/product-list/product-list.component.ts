@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  AfterViewInit,
   HostListener,
   inject,
   PLATFORM_ID,
@@ -9,6 +10,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import AOS from 'aos';
 
 import { ApiService } from '../../../core/services/api/api.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -30,7 +32,7 @@ import { SocialMediaService } from '../../../core/services/social-media.service'
     ReactiveFormsModule,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, AfterViewInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: Category[] = [];
@@ -66,6 +68,34 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit() {
     this.loadPage();
+  }
+
+  ngAfterViewInit() {
+    // Initialize AOS animations after view init
+    if (this.isBrowser) {
+      AOS.init({
+        duration: 600,
+        easing: 'ease-out',
+        once: true,
+        mirror: false,
+        offset: 50,
+        delay: 0,
+        anchorPlacement: 'top-bottom',
+        disable: false,
+        startEvent: 'DOMContentLoaded',
+        animatedClassName: 'aos-animate',
+        initClassName: 'aos-init',
+        useClassNames: false,
+        disableMutationObserver: false,
+        debounceDelay: 50,
+        throttleDelay: 99,
+      });
+
+      // Refresh AOS when products are loaded
+      setTimeout(() => {
+        AOS.refresh();
+      }, 100);
+    }
 
     this.api.categories.list().subscribe({
       next: cats => {
@@ -294,7 +324,21 @@ export class ProductListComponent implements OnInit {
     setTimeout(() => (this.addedToCartMessage[p.id] = ''), 2000);
   }
 
-  setActiveImage(pid: number, idx: number) { this.activeImageIndices[pid] = idx; }
+  setActiveImage(pid: number, idx: number) {
+    this.activeImageIndices[pid] = idx;
+  }
+
+  // Navigate to next image in gallery
+  nextImage(pid: number, totalImages: number) {
+    const currentIndex = this.activeImageIndices[pid] || 0;
+    this.activeImageIndices[pid] = (currentIndex + 1) % totalImages;
+  }
+
+  // Navigate to previous image in gallery
+  previousImage(pid: number, totalImages: number) {
+    const currentIndex = this.activeImageIndices[pid] || 0;
+    this.activeImageIndices[pid] = currentIndex === 0 ? totalImages - 1 : currentIndex - 1;
+  }
 
   hasActiveFilters() {
     return this.stockFilter !== 'all' || this.selectedCategory !== 'all' || this.tagFilter !== 'all' || !!this.searchQuery;

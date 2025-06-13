@@ -137,21 +137,89 @@
     background: #db2777;
 }
 
-// Product card effects
+// Enhanced Product card effects with premium animations
 .product-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+
+    // Premium shadow system
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(236, 72, 153, 0.05);
+
+    // Subtle border radius animation
+    border-radius: 1.5rem;
+
+    // Background with subtle gradient
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
 }
 
-// Only apply hover effects on devices that support hover (desktop)
+// Enhanced hover effects for desktop
 @media (hover: hover) and (pointer: fine) {
-    .product-card:hover {
-        transform: translateY(-5px);
+    .product-card {
+        &:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.15),
+                0 20px 25px -5px rgba(236, 72, 153, 0.1),
+                0 0 0 1px rgba(236, 72, 153, 0.1);
+
+            // Subtle glow effect
+            &::after {
+                content: '';
+                position: absolute;
+                inset: -2px;
+                border-radius: inherit;
+                background: linear-gradient(135deg,
+                        rgba(236, 72, 153, 0.1),
+                        rgba(219, 39, 119, 0.1));
+                z-index: -1;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            background: linear-gradient(135deg,
+                    rgba(236, 72, 153, 0.1),
+                    rgba(219, 39, 119, 0.1));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
     }
 }
 
-// Image transitions
+// Enhanced image transitions with premium effects
 .image-slide {
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // Premium image filters and effects
+    &:hover {
+        filter: brightness(1.05) contrast(1.02);
+    }
+}
+
+// Image container enhancements
+.product-card .relative {
+    overflow: hidden;
+
+    // Subtle inner shadow for depth
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        pointer-events: none;
+    }
 }
 
 // Glass morphism
@@ -523,10 +591,43 @@
     }
 }
 
-// Responsive grid adjustments
+// Enhanced responsive grid with perfect spacing
 @media (max-width: 640px) {
     .product-grid-item {
-        min-height: 300px;
+        min-height: 420px; // Increased for better mobile display
+
+        // Enhanced mobile card styling
+        .product-card {
+            border-radius: 1.25rem;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(236, 72, 153, 0.1);
+        }
+    }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+    .product-grid-item {
+        min-height: 440px; // Perfect tablet display
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .product-grid-item {
+        min-height: 420px; // Desktop medium
+    }
+}
+
+@media (min-width: 1025px) {
+    .product-grid-item {
+        min-height: 400px; // Large desktop
+
+        // Enhanced large screen effects
+        .product-card {
+            &:hover {
+                transform: translateY(-12px) scale(1.03);
+            }
+        }
     }
 }
 
@@ -543,10 +644,85 @@
     }
 }
 
-// Background clip text support
+// Background clip text support with enhanced effects
 .bg-clip-text {
     -webkit-background-clip: text;
     background-clip: text;
+
+    // Subtle text shadow for better readability
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+// Premium loading animations
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+// Premium button effects
+.premium-button {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    &:hover::before {
+        left: 100%;
+    }
+}
+
+// Enhanced badge animations
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 5px rgba(236, 72, 153, 0);
+    }
+}
+
+.badge-pulse {
+    animation: badgePulse 2s infinite;
+}
+
+// Image zoom effect
+@keyframes imageZoom {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+.image-zoom-hover:hover img {
+    animation: imageZoom 0.3s ease-out forwards;
 }
 
 // COMPLETE MOBILE DISABLE: All hover and interactive effects disabled on mobile
