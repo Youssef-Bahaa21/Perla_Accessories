@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { RegisterDto } from '../dtos/register.dto';
 import validateBody from '../middlewares/validate';
 import { sendResetEmail } from '../utils/mailer';
+import { PasswordValidationService } from '../services/password-validation.service';
 
 const svc = new AuthService();
 
@@ -27,12 +28,28 @@ const refreshOpts = {
 const registerHandler: RequestHandler = async (req, res, next) => {
     try {
         const dto = req.body as RegisterDto;
+
+        // Validate password strength
+        const passwordValidation = PasswordValidationService.validatePasswordStrength(dto.password, dto.email);
+        if (!passwordValidation.isValid) {
+            res.status(400).json({
+                error: 'Password does not meet security requirements',
+                feedback: passwordValidation.feedback,
+                score: passwordValidation.score
+            });
+            return;
+        }
+
         const { user, token } = await svc.register(dto);
 
         // Don't set cookies or auto-login
         res.status(201).json({
             message: 'Registration successful. Please login to continue.',
-            user
+            user,
+            passwordStrength: {
+                score: passwordValidation.score,
+                entropy: passwordValidation.entropy
+            }
         });
     } catch (e) {
         next(e);
@@ -110,8 +127,25 @@ export const forgotPassword: RequestHandler = async (req, res, next) => {
 export const resetPassword: RequestHandler = async (req, res, next) => {
     const { token, password } = req.body;
     try {
+        // Validate password strength
+        const passwordValidation = PasswordValidationService.validatePasswordStrength(password);
+        if (!passwordValidation.isValid) {
+            res.status(400).json({
+                error: 'Password does not meet security requirements',
+                feedback: passwordValidation.feedback,
+                score: passwordValidation.score
+            });
+            return;
+        }
+
         await svc.resetPassword(token, password);
-        res.json({ message: 'Password updated successfully' });
+        res.json({
+            message: 'Password updated successfully',
+            passwordStrength: {
+                score: passwordValidation.score,
+                entropy: passwordValidation.entropy
+            }
+        });
     } catch (e) {
         next(e);
     }

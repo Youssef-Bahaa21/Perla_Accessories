@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import 'reflect-metadata';
-import { sanitizeInputs } from './middlewares/sanitize.middleware';
+import { sanitizeInputs, sanitizeUserContent } from './middlewares/sanitize.middleware';
+import { productApiLimiter, orderApiLimiter, reviewApiLimiter, generalApiLimiter } from './middlewares/rate-limit.middleware';
 import setupSwagger from './config/swaggerConfig';
 
 import authRoutes from './routes/auth';
@@ -75,15 +76,18 @@ if (process.env.NODE_ENV !== 'production' && process.env.DISABLE_CSRF !== 'true'
 /* ✅ Swagger UI */
 setupSwagger(app);
 
-/* ---- API Routes ---- */
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/coupons', couponRoutes);
-app.use('/api/orders', orderRoutes);
+/* ---- Input Sanitization ---- */
+app.use('/api', sanitizeInputs);
+
+/* ---- API Routes with Rate Limiting ---- */
+app.use('/api/auth', generalApiLimiter, authRoutes);
+app.use('/api/users', generalApiLimiter, userRoutes);
+app.use('/api/products', productApiLimiter, productRoutes);
+app.use('/api/categories', generalApiLimiter, categoryRoutes);
+app.use('/api/reviews', reviewApiLimiter, sanitizeUserContent, reviewRoutes);
+app.use('/api/settings', generalApiLimiter, settingsRoutes);
+app.use('/api/coupons', generalApiLimiter, couponRoutes);
+app.use('/api/orders', orderApiLimiter, orderRoutes);
 
 /* ---- Catch Errors ---- */
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

@@ -53,40 +53,16 @@ const limiter = rateLimit({
 });
 security.use(limiter);
 
-// 🔒 Login-specific limiter
-export const loginLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 5, // Reduced for production
-    message: 'Too many login attempts. Please try again after 10 minutes.',
-    skipSuccessfulRequests: true,
-});
+// Import enhanced rate limiters
+import {
+    loginLimiter,
+    accountCreationLimiter as registerLimiter,
+    refreshTokenLimiter as refreshLimiter,
+    passwordResetLimiter as emailLimiter,
+    generalApiLimiter as authMeLimiter
+} from './rate-limit.middleware';
 
-// 🔐 Register-specific limiter
-export const registerLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 3, // Reduced for production
-    message: 'Too many account creation attempts. Please try again later.',
-});
-
-// 🧑‍💻 Auth/me endpoint limiter - More permissive but still protected
-export const authMeLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 10, // 10 requests per minute
-    message: 'Too many authentication status checks. Please try again shortly.',
-});
-
-// 🔄 Auth refresh endpoint limiter
-export const refreshLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 5, // 5 refresh attempts per minute
-    message: 'Too many token refresh attempts. Please try again shortly.',
-});
-
-// 📧 Email rate limiter for password reset
-export const emailLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3, // 3 emails per hour per IP
-    message: 'Too many password reset emails. Please try again later.',
-});
+// Re-export for backward compatibility
+export { loginLimiter, registerLimiter, refreshLimiter, emailLimiter, authMeLimiter };
 
 export default security;
