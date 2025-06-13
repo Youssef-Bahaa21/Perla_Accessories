@@ -11,17 +11,22 @@ export interface UpdateCategoryDTO {
     description?: string;
 }
 
+export interface CloudinaryImageData {
+    public_id: string;
+    secure_url: string;
+}
+
 export class CategoryService {
     async findAll() {
         const [rows] = await pool.query(
-            'SELECT id, name, description, created_at FROM category;'
+            'SELECT id, name, description, created_at, image, public_id FROM category;'
         );
         return rows;
     }
 
     async findOne(id: number) {
         const [rows] = await pool.query(
-            'SELECT id, name, description, created_at FROM category WHERE id = ?;',
+            'SELECT id, name, description, created_at, image, public_id FROM category WHERE id = ?;',
             [id]
         );
         return (rows as any[])[0] || null;
@@ -66,5 +71,49 @@ export class CategoryService {
         }
 
         await pool.query('DELETE FROM category WHERE id = ?;', [id]);
+    }
+
+    // Upload Cloudinary image for a category
+    async uploadCategoryImage(categoryId: number, imageData: CloudinaryImageData) {
+        // First check if the category exists
+        const category = await this.findOne(categoryId);
+        if (!category) {
+            return { success: false, message: 'Category not found' };
+        }
+
+        // If category already has an image with public_id, we should delete it from Cloudinary
+        // This would typically be handled in the controller
+
+        // Update the category with the new image
+        const [result]: any = await pool.query(
+            'UPDATE category SET image = ?, public_id = ? WHERE id = ?',
+            [imageData.secure_url, imageData.public_id, categoryId]
+        );
+
+        return {
+            success: result.affectedRows > 0,
+            category: await this.findOne(categoryId)
+        };
+    }
+
+    // Delete category image
+    async deleteCategoryImage(categoryId: number) {
+        // First get the category to check if it has an image
+        const category = await this.findOne(categoryId);
+        if (!category || !category.image) {
+            return { success: false, message: 'Category or image not found' };
+        }
+
+        // Update the category to remove the image reference
+        const [result]: any = await pool.query(
+            'UPDATE category SET image = NULL, public_id = NULL WHERE id = ?',
+            [categoryId]
+        );
+
+        return {
+            success: result.affectedRows > 0,
+            category: await this.findOne(categoryId),
+            public_id: category.public_id
+        };
     }
 }

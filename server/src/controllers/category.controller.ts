@@ -53,3 +53,90 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
         next(err);
     }
 };
+
+export const uploadCategoryImage: RequestHandler = async (req, res, next) => {
+    try {
+        const files = req.files as Express.Multer.File[];
+
+        if (!files?.length) {
+            res.status(400).json({ message: 'No image uploaded' });
+            return;
+        }
+
+        // We only need one image for a category
+        const file = files[0];
+
+        // Check if the category exists
+        const categoryId = +req.params.id;
+        const category = await svc.findOne(categoryId);
+        if (!category) {
+            res.status(404).json({ message: 'Category not found' });
+            return;
+        }
+
+        // If category already has an image with public_id, delete it from Cloudinary
+        if (category.public_id) {
+            try {
+                const { cloudinary } = await import('../config/cloudinary');
+                await cloudinary.uploader.destroy(category.public_id);
+            } catch (cloudinaryErr) {
+                console.error('Error deleting previous image from Cloudinary:', cloudinaryErr);
+                // Continue execution, as we'll update the DB record anyway
+            }
+        }
+
+        // Prepare image data for DB
+        const imageData = {
+            public_id: file.filename || file.path?.split('/').pop() || '',
+            secure_url: file.path || ''
+        };
+
+        // Update the category with the new image
+        const result = await svc.uploadCategoryImage(categoryId, imageData);
+
+        if (!result.success) {
+            res.status(500).json({ message: 'Failed to update category image' });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            category: result.category
+        });
+    } catch (err) {
+        console.error('Upload error:', err);
+        next(err);
+    }
+};
+
+export const deleteCategoryImage: RequestHandler = async (req, res, next) => {
+    try {
+        const categoryId = +req.params.id;
+
+        // Delete the image from the database and get the public_id
+        const result = await svc.deleteCategoryImage(categoryId);
+
+        if (!result.success) {
+            res.status(404).json({ message: result.message || 'Image not found' });
+            return;
+        }
+
+        // Delete from Cloudinary if public_id exists
+        if (result.public_id) {
+            try {
+                const { cloudinary } = await import('../config/cloudinary');
+                await cloudinary.uploader.destroy(result.public_id);
+            } catch (cloudinaryErr) {
+                console.error('Error deleting from Cloudinary:', cloudinaryErr);
+                // Continue execution, as the DB record is already updated
+            }
+        }
+
+        res.status(200).json({
+            message: 'Image deleted successfully',
+            category: result.category
+        });
+    } catch (err) {
+        next(err);
+    }
+};

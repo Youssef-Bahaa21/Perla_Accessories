@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, Inject, PLATFORM_ID, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../../core/services/api/api.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -126,6 +126,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private productSvc = inject(ProductService);
   private cart = inject(CartService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
@@ -359,6 +360,14 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       this.cart.add(this.product);
       this.cartMessage = 'Added to your cart';
       setTimeout(() => (this.cartMessage = ''), 3000);
+    }
+  }
+
+  // Buy Now - Add to cart and redirect to shipping page
+  buyNow() {
+    if (this.product) {
+      this.cart.add(this.product);
+      this.router.navigate(['/shipping']);
     }
   }
 

@@ -145,9 +145,16 @@
            (click)="navigateToCategory(category.id)"
            class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1 border border-transparent hover:border-pink-200 category-card">
         
-        <!-- Category icon/image placeholder -->
-        <div class="h-32 bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center group-hover:from-pink-100 group-hover:to-pink-150 transition-all duration-300">
-          <div class="w-16 h-16 bg-gradient-to-br from-pink-200 to-pink-300 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 category-icon">
+        <!-- Category image -->
+        <div class="h-32 bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center group-hover:from-pink-100 group-hover:to-pink-150 transition-all duration-300 overflow-hidden">
+          <img *ngIf="category.image" 
+               [src]="category.image" 
+               [alt]="category.name" 
+               class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+               (error)="onImageError($event)" />
+          
+          <!-- Fallback icon when no image -->
+          <div *ngIf="!category.image" class="w-16 h-16 bg-gradient-to-br from-pink-200 to-pink-300 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 category-icon">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>

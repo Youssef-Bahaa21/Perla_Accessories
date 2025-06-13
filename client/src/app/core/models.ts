@@ -17,6 +17,8 @@ export interface Category {
     name: string;
     description?: string;
     created_at: string;
+    image?: string;
+    public_id?: string;
 }
 
 /** A product image */

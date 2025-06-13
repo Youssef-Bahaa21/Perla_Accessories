@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { ApiService } from '../../../core/services/api/api.service';
 import { Category } from '../../../core/models';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     standalone: true,
@@ -17,6 +19,7 @@ import { Category } from '../../../core/models';
 export class CategoryManagementComponent implements OnInit {
     private fb = inject(FormBuilder);
     private api = inject(ApiService);
+    private http = inject(HttpClient);
 
     categoryForm: FormGroup;
     categories: Category[] = [];
@@ -24,6 +27,12 @@ export class CategoryManagementComponent implements OnInit {
     isSubmitting = false;
     success = '';
     error = '';
+
+    // Image upload properties
+    selectedFile: File | null = null;
+    imagePreviewUrl: string | null = null;
+    isUploadingImage = false;
+    fallbackImage = 'https://via.placeholder.com/150?text=No+Image';
 
     constructor() {
         this.categoryForm = this.fb.group({
@@ -87,8 +96,14 @@ export class CategoryManagementComponent implements OnInit {
             this.api.categories.create(categoryData).subscribe({
                 next: (newCategory) => {
                     this.success = 'Category created successfully!';
-                    this.resetForm();
-                    this.loadCategories();
+
+                    // If there's a selected file, upload it for the new category
+                    if (this.selectedFile && newCategory.id) {
+                        this.uploadCategoryImage(newCategory.id);
+                    } else {
+                        this.resetForm();
+                        this.loadCategories();
+                    }
                 },
                 error: (err) => {
                     console.error('Failed to create category:', err);
@@ -106,6 +121,9 @@ export class CategoryManagementComponent implements OnInit {
             description: category.description || ''
         });
         this.success = this.error = '';
+
+        // Set image preview if available
+        this.imagePreviewUrl = category.image || null;
 
         // Scroll to form
         setTimeout(() => {
@@ -149,6 +167,10 @@ export class CategoryManagementComponent implements OnInit {
         });
         this.categoryForm.markAsUntouched();
         this.success = this.error = '';
+
+        // Reset image upload state
+        this.selectedFile = null;
+        this.imagePreviewUrl = null;
     }
 
     formatDate(dateString: string): string {
@@ -175,5 +197,108 @@ export class CategoryManagementComponent implements OnInit {
             if (field.errors['maxlength']) return `${fieldName} must not exceed ${field.errors['maxlength'].requiredLength} characters`;
         }
         return '';
+    }
+
+    // Image handling methods
+    onFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            this.selectedFile = input.files[0];
+
+            // Create a preview URL
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.imagePreviewUrl = reader.result as string;
+            };
+            reader.readAsDataURL(this.selectedFile);
+        }
+    }
+
+    uploadCategoryImage(categoryId: number) {
+        if (!this.selectedFile) {
+            this.isSubmitting = false;
+            return;
+        }
+
+        this.isUploadingImage = true;
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('image', this.selectedFile);
+
+        // Upload the image
+        this.http.post(`${environment.api}/categories/${categoryId}/image`, formData).subscribe({
+            next: (response: any) => {
+                this.success = 'Category and image uploaded successfully!';
+                this.isUploadingImage = false;
+                this.isSubmitting = false;
+                this.resetForm();
+                this.loadCategories();
+            },
+            error: (err) => {
+                console.error('Failed to upload image:', err);
+                this.error = err.error?.message || 'Failed to upload image. Please try again.';
+                this.isUploadingImage = false;
+                this.isSubmitting = false;
+                // Still reload categories as the category itself might have been created
+                this.loadCategories();
+            }
+        });
+    }
+
+    uploadImageForExistingCategory() {
+        if (!this.selectedFile || !this.editingCategoryId) {
+            return;
+        }
+
+        this.isUploadingImage = true;
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('image', this.selectedFile);
+
+        // Upload the image
+        this.http.post(`${environment.api}/categories/${this.editingCategoryId}/image`, formData).subscribe({
+            next: (response: any) => {
+                this.success = 'Category image updated successfully!';
+                this.isUploadingImage = false;
+                this.loadCategories();
+            },
+            error: (err) => {
+                console.error('Failed to upload image:', err);
+                this.error = err.error?.message || 'Failed to upload image. Please try again.';
+                this.isUploadingImage = false;
+            }
+        });
+    }
+
+    deleteCategoryImage(categoryId: number, event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const confirmation = confirm('Are you sure you want to delete this image?');
+        if (!confirmation) return;
+
+        this.http.delete(`${environment.api}/categories/${categoryId}/image`).subscribe({
+            next: () => {
+                this.success = 'Category image deleted successfully!';
+
+                // If we're editing this category, reset the image preview
+                if (this.editingCategoryId === categoryId) {
+                    this.imagePreviewUrl = null;
+                }
+
+                this.loadCategories();
+            },
+            error: (err) => {
+                console.error('Failed to delete image:', err);
+                this.error = err.error?.message || 'Failed to delete image. Please try again.';
+            }
+        });
+    }
+
+    onImageError(event: Event) {
+        (event.target as HTMLImageElement).src = this.fallbackImage;
     }
 } 
