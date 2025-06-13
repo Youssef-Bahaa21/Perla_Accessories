@@ -133,7 +133,12 @@ export class HeaderComponent {
     this.router.navigate(['/products'], {
       queryParams: { search: query.trim() }
     });
-    this.isSearchBarOpen = false;
+
+    // Don't close the search bar on mobile
+    if (!this.isSearchBarOpen || window.innerWidth >= 640) {
+      this.isSearchBarOpen = false;
+    }
+
     this.scrollToTop();
   }
 
@@ -141,7 +146,13 @@ export class HeaderComponent {
   searchProducts(event: Event): void {
     event.preventDefault();
     if (this.searchQuery.trim()) {
-      this.performSearch(this.searchQuery);
+      // For explicit search button clicks, we want to keep the behavior
+      // of closing the search bar
+      this.router.navigate(['/products'], {
+        queryParams: { search: this.searchQuery.trim() }
+      });
+      this.isSearchBarOpen = false;
+      this.scrollToTop();
     }
   }
 }
