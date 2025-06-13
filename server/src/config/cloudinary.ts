@@ -8,13 +8,27 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-;
-
-// Create Cloudinary storage engine
-const storage = new CloudinaryStorage({
+// Create Cloudinary storage engine for products
+const productStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'perla-products',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        transformation: [{ width: 1000, crop: 'limit' }],
+        // Use unique filename based on original filename and current time
+        filename_override: (req: any, file: any) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const originalName = file.originalname.replace(/\.[^/.]+$/, ""); // Remove extension
+            return `${originalName}-${uniqueSuffix}`;
+        },
+    } as any, // Type casting needed due to TypeScript definitions
+});
+
+// Create Cloudinary storage engine for categories
+const categoryStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'perla-categories',
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
         transformation: [{ width: 1000, crop: 'limit' }],
         // Use unique filename based on original filename and current time
@@ -38,4 +52,4 @@ cloudinary.uploader.upload(
     }
 );
 
-export { cloudinary, storage }; 
+export { cloudinary, productStorage, categoryStorage }; 

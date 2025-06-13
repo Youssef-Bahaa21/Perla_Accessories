@@ -10,7 +10,7 @@ import {
     deleteProductImage,
 } from '../controllers/product.controller';
 
-import { saveImages } from '../middlewares/upload.middleware';
+import { saveProductImages } from '../middlewares/upload.middleware';
 import { authenticate } from '../middlewares/auth.middleware';
 import { isAdmin } from '../middlewares/admin.middleware';
 
@@ -31,7 +31,7 @@ router.post(
     '/:productId/images',
     authenticate,
     isAdmin,
-    saveImages('images', 5),
+    saveProductImages('images', 5),
     uploadProductImages
 );
 

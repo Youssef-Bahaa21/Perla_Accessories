@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controller from '../controllers/product.controller';
-import { saveImages } from '../middlewares/upload.middleware';
+import { saveProductImages } from '../middlewares/upload.middleware';
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.get('/', controller.getProducts);
 // Get a single product
 router.get('/:id', controller.getProduct);
 
-// Create a new product
+// Create a product
 router.post('/', controller.createProduct);
 
 // Update a product
@@ -20,7 +20,7 @@ router.put('/:id', controller.updateProduct);
 router.delete('/:id', controller.deleteProduct);
 
 // Upload images for a product
-router.post('/:productId/images', saveImages('images', 5), controller.uploadProductImages);
+router.post('/:productId/images', saveProductImages('images', 5), controller.uploadProductImages);
 
 // Get images for a product
 router.get('/:productId/images', controller.getProductImages);

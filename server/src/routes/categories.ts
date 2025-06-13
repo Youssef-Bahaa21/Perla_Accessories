@@ -9,7 +9,7 @@ import {
     uploadCategoryImage,
     deleteCategoryImage
 } from '../controllers/category.controller';
-import { saveImages } from '../middlewares/upload.middleware';
+import { saveCategoryImages } from '../middlewares/upload.middleware';
 import { authenticate } from '../middlewares/auth.middleware';
 import { isAdmin } from '../middlewares/admin.middleware';
 
@@ -25,7 +25,7 @@ router.put('/:id', authenticate, isAdmin, updateCategory);
 router.delete('/:id', authenticate, isAdmin, deleteCategory);
 
 // Image upload routes
-router.post('/:id/image', authenticate, isAdmin, saveImages('image', 1), uploadCategoryImage);
+router.post('/:id/image', authenticate, isAdmin, saveCategoryImages('image', 1), uploadCategoryImage);
 router.delete('/:id/image', authenticate, isAdmin, deleteCategoryImage);
 
 export default router;

@@ -144,6 +144,26 @@ export class ApiService {
 
         delete: (id: number): Observable<void> =>
             this.http.delete<void>(`${this.base}/categories/${id}`),
+
+        uploadImage: (categoryId: number, image: File): Observable<{ success: boolean; category: Category }> => {
+            console.log(`Uploading image to category ${categoryId}`);
+            const formData = new FormData();
+            console.log(`Adding image to form: ${image.name} (${image.size} bytes, ${image.type})`);
+            formData.append('image', image, image.name);
+
+            return this.http.post<{ success: boolean; category: Category }>(
+                `${this.base}/categories/${categoryId}/image`,
+                formData
+            ).pipe(
+                map(response => {
+                    console.log('Upload response:', response);
+                    return response;
+                })
+            );
+        },
+
+        deleteImage: (categoryId: number): Observable<{ message: string; category: Category }> =>
+            this.http.delete<{ message: string; category: Category }>(`${this.base}/categories/${categoryId}/image`),
     };
 
     // ── PRODUCTS ───────────────────────────────────────────

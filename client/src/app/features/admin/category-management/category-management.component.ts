@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { ApiService } from '../../../core/services/api/api.service';
 import { Category } from '../../../core/models';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -19,7 +18,6 @@ import { environment } from '../../../../environments/environment';
 export class CategoryManagementComponent implements OnInit {
     private fb = inject(FormBuilder);
     private api = inject(ApiService);
-    private http = inject(HttpClient);
 
     categoryForm: FormGroup;
     categories: Category[] = [];
@@ -32,7 +30,7 @@ export class CategoryManagementComponent implements OnInit {
     selectedFile: File | null = null;
     imagePreviewUrl: string | null = null;
     isUploadingImage = false;
-    fallbackImage = 'https://via.placeholder.com/150?text=No+Image';
+    fallbackImage = 'assets/images/placeholder.jpg';
 
     constructor() {
         this.categoryForm = this.fb.group({
@@ -200,10 +198,10 @@ export class CategoryManagementComponent implements OnInit {
     }
 
     // Image handling methods
-    onFileSelected(event: Event) {
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files.length > 0) {
-            this.selectedFile = input.files[0];
+    onFileSelected(event: Event): void {
+        const inputElement = event.target as HTMLInputElement;
+        if (inputElement.files && inputElement.files.length > 0) {
+            this.selectedFile = inputElement.files[0];
 
             // Create a preview URL
             const reader = new FileReader();
@@ -214,6 +212,11 @@ export class CategoryManagementComponent implements OnInit {
         }
     }
 
+    removeSelectedImage(): void {
+        this.selectedFile = null;
+        this.imagePreviewUrl = null;
+    }
+
     uploadCategoryImage(categoryId: number) {
         if (!this.selectedFile) {
             this.isSubmitting = false;
@@ -222,13 +225,9 @@ export class CategoryManagementComponent implements OnInit {
 
         this.isUploadingImage = true;
 
-        // Create form data
-        const formData = new FormData();
-        formData.append('image', this.selectedFile);
-
-        // Upload the image
-        this.http.post(`${environment.api}/categories/${categoryId}/image`, formData).subscribe({
-            next: (response: any) => {
+        // Use the API service instead of direct HTTP calls
+        this.api.categories.uploadImage(categoryId, this.selectedFile).subscribe({
+            next: (response) => {
                 this.success = 'Category and image uploaded successfully!';
                 this.isUploadingImage = false;
                 this.isSubmitting = false;
@@ -253,13 +252,9 @@ export class CategoryManagementComponent implements OnInit {
 
         this.isUploadingImage = true;
 
-        // Create form data
-        const formData = new FormData();
-        formData.append('image', this.selectedFile);
-
-        // Upload the image
-        this.http.post(`${environment.api}/categories/${this.editingCategoryId}/image`, formData).subscribe({
-            next: (response: any) => {
+        // Use the API service instead of direct HTTP calls
+        this.api.categories.uploadImage(this.editingCategoryId, this.selectedFile).subscribe({
+            next: (response) => {
                 this.success = 'Category image updated successfully!';
                 this.isUploadingImage = false;
                 this.loadCategories();
@@ -280,8 +275,9 @@ export class CategoryManagementComponent implements OnInit {
         const confirmation = confirm('Are you sure you want to delete this image?');
         if (!confirmation) return;
 
-        this.http.delete(`${environment.api}/categories/${categoryId}/image`).subscribe({
-            next: () => {
+        // Use the API service instead of direct HTTP calls
+        this.api.categories.deleteImage(categoryId).subscribe({
+            next: (response) => {
                 this.success = 'Category image deleted successfully!';
 
                 // If we're editing this category, reset the image preview
@@ -298,7 +294,8 @@ export class CategoryManagementComponent implements OnInit {
         });
     }
 
-    onImageError(event: Event) {
-        (event.target as HTMLImageElement).src = this.fallbackImage;
+    onImageError(event: Event): void {
+        // Set a fallback image if the image fails to load
+        (event.target as HTMLImageElement).src = 'assets/images/placeholder.jpg';
     }
 } 
