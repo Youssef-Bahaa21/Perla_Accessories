@@ -83,21 +83,40 @@ export class AppComponent implements OnInit {
   }
 
   private updatePageSEO(url: string): void {
+    // Skip SEO updates for routes that handle their own SEO
+    if (url.includes('/products/') ||
+      url.includes('/landing') ||
+      url.includes('/category') ||
+      url.includes('/cart') ||
+      url.includes('/checkout') ||
+      url.includes('/admin') ||
+      url.includes('/login') ||
+      url.includes('/register')) {
+      console.log('🚫 Skipping app-level SEO update for:', url, '(page handles its own SEO)');
+      return;
+    }
+
     // Update SEO based on the current route
     if (url === '/') {
+      console.log('🏠 Updating homepage SEO');
       this.seo.updateSEO(this.seo.generateHomepageSEO());
     } else if (url === '/about') {
+      console.log('ℹ️ Updating about page SEO');
       this.seo.updateSEO(this.seo.generateAboutSEO());
     } else if (url === '/privacy-policy') {
+      console.log('🔒 Updating privacy policy SEO');
       this.seo.updateSEO(this.seo.generatePrivacyPolicySEO());
     } else if (url === '/terms-of-service') {
+      console.log('📋 Updating terms of service SEO');
       this.seo.updateSEO(this.seo.generateTermsOfServiceSEO());
     } else if (url.includes('/returns-policy')) {
+      console.log('↩️ Updating returns policy SEO');
       this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('returns'));
     } else if (url.includes('/shipping-details')) {
+      console.log('🚚 Updating shipping details SEO');
       this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('shipping'));
     }
-    // Product and category pages handle their own SEO
+    // All other pages use default homepage SEO or handle their own
   }
 
   @HostListener('document:click', ['$event'])
