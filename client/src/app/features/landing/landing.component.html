@@ -122,11 +122,13 @@
     </div>
 
     <!-- Loading state -->
-    <div *ngIf="categoriesLoading" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 animate-pulse">
-      <div *ngFor="let i of [1,2,3,4]" class="bg-white rounded-2xl shadow-sm overflow-hidden skeleton-loader">
-        <div class="bg-gray-200 h-32 w-full"></div>
-        <div class="p-4">
-          <div class="h-5 bg-gray-200 rounded-lg w-3/4 mx-auto"></div>
+    <div *ngIf="categoriesLoading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-pulse">
+      <div *ngFor="let i of [1,2,3,4]" class="bg-white rounded-2xl shadow-sm overflow-hidden skeleton-loader h-80">
+        <div class="bg-gray-200 h-48 w-full"></div>
+        <div class="p-6">
+          <div class="h-5 bg-gray-200 rounded-lg w-3/4 mx-auto mb-4"></div>
+          <div class="h-4 bg-gray-200 rounded-lg w-full"></div>
+          <div class="h-4 bg-gray-200 rounded-lg w-2/3 mt-2"></div>
         </div>
       </div>
     </div>
@@ -139,41 +141,75 @@
       <p>{{ categoriesError }}</p>
     </div>
 
-    <!-- Categories grid with enhanced styling -->
-    <div *ngIf="!categoriesLoading && !categoriesError" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+    <!-- Enhanced Categories grid with better image display -->
+    <div *ngIf="!categoriesLoading && !categoriesError" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
       <div *ngFor="let category of categories" 
            (click)="navigateToCategory(category.id)"
-           class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1 border border-transparent hover:border-pink-200 category-card">
+           class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden group cursor-pointer transform hover:-translate-y-2 border border-transparent hover:border-pink-200 enhanced-category-card">
         
-        <!-- Category image -->
-        <div class="h-32 bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center group-hover:from-pink-100 group-hover:to-pink-150 transition-all duration-300 overflow-hidden">
+        <!-- Category image container with proper aspect ratio -->
+        <div class="h-48 sm:h-56 md:h-64 overflow-hidden relative">
+          <!-- Gradient overlay for better text visibility -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+          
+          <!-- Image with proper sizing -->
           <img *ngIf="category.image" 
                [src]="category.image" 
                [alt]="category.name"
-               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+               class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-105"
                (error)="onImageError($event)" />
           
           <!-- Fallback icon if no image -->
-          <div *ngIf="!category.image" class="text-pink-300 group-hover:text-pink-400 transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div *ngIf="!category.image" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-50 to-pink-100 text-pink-300 group-hover:text-pink-400 transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
+          
+          <!-- Hover indicator -->
+          <div class="absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center z-20">
+            <span class="bg-white/80 backdrop-blur-sm text-pink-600 px-4 py-1.5 rounded-full text-sm font-medium inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View Collection
+            </span>
+          </div>
         </div>
         
-        <!-- Category name -->
-        <div class="p-4">
-          <h3 class="text-center font-medium text-gray-800 group-hover:text-pink-600 transition-all duration-300">
+        <!-- Category details with improved typography -->
+        <div class="p-5">
+          <h3 class="text-xl font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 mb-2">
             {{ category.name }}
           </h3>
+          
+          <p *ngIf="category.description" class="text-gray-600 text-sm line-clamp-2 mb-3">
+            {{ category.description }}
+          </p>
+          <p *ngIf="!category.description" class="text-gray-500 text-sm italic mb-3">
+            Explore our beautiful {{ category.name.toLowerCase() }} collection
+          </p>
+          
+          <!-- Action indicator -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-pink-500 font-medium">
+              Browse Collection
+            </span>
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-pink-50 group-hover:bg-pink-100 transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-pink-500 transform group-hover:translate-x-0.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- View all categories button -->
+    <!-- View all categories button with enhanced mobile styling -->
     <div *ngIf="!categoriesLoading && !categoriesError && categories.length > 0" class="text-center mt-12">
       <a routerLink="/products" 
-         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-8 py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300 view-all-btn">
+         class="group inline-flex items-center bg-white text-pink-600 font-medium transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 rounded-xl relative overflow-hidden shadow-md hover:shadow-lg border border-pink-100 hover:border-pink-300 view-all-btn">
         <span class="relative z-10 flex items-center btn-content">
           View All Products
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform btn-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -324,8 +360,8 @@
 </section>
 
 
-<!-- Why Choose Us Section - Enhanced -->
-<section class="py-20 md:py-32 bg-gradient-to-br from-pink-50/70 to-white relative z-10 overflow-hidden">
+<!-- Why Choose Us Section - Enhanced for Mobile -->
+<section class="py-16 md:py-24 lg:py-32 bg-gradient-to-br from-pink-50/70 to-white relative z-10 overflow-hidden">
   <!-- Enhanced decorative elements -->
   <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full border border-pink-200/50 opacity-50"></div>
   <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-pink-200/30 opacity-30"></div>
@@ -334,67 +370,67 @@
   
   <div class="container mx-auto px-4 sm:px-6 relative">
     <!-- Enhanced section title with improved typography hierarchy -->
-    <div class="max-w-4xl mx-auto text-center mb-16">
+    <div class="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
       <div class="inline-block bg-pink-50 px-4 py-1.5 rounded-full mb-4 shadow-sm">
         <span class="text-pink-600 font-medium text-sm tracking-wider uppercase section-tag">Our Difference</span>
       </div>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 relative inline-block">
+      <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-6 relative inline-block">
         Why Choose <span class="highlight-text">Perla</span>?
         <span class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full"></span>
       </h2>
-      <p class="text-gray-600 text-lg md:text-xl leading-relaxed mt-6 max-w-3xl mx-auto">
+      <p class="text-gray-600 text-base sm:text-lg md:text-xl leading-relaxed mt-6 max-w-3xl mx-auto px-2">
         We believe accessories should be as <span class="highlight-text">unique as you</span> are. Each Perla piece is thoughtfully designed to enhance your personal style with elegance and sophistication.
       </p>
     </div>
     
-    <!-- Enhanced feature cards with improved animations -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-16">
+    <!-- Enhanced feature cards with improved mobile layout -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-12 md:mb-16">
       <!-- Card 1 -->
-      <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200">
-        <div class="w-20 h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200 feature-card">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-gray-800 mb-3 group-hover:text-pink-600 transition-colors">Premium Quality</h3>
-        <p class="text-gray-600">Crafted with the finest materials for lasting beauty and durability. Each piece is meticulously inspected to ensure perfection.</p>
-        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 group-hover:text-pink-600 transition-colors">Premium Quality</h3>
+        <p class="text-gray-600 text-sm sm:text-base">Crafted with the finest materials for lasting beauty and durability. Each piece is meticulously inspected to ensure perfection.</p>
+        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-4 sm:mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
       </div>
       
       <!-- Card 2 -->
-      <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200">
-        <div class="w-20 h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200 feature-card">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-gray-800 mb-3 group-hover:text-pink-600 transition-colors">Ethical Sourcing</h3>
-        <p class="text-gray-600">Responsibly sourced materials that respect both people and planet. We believe in sustainable luxury that makes a difference.</p>
-        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 group-hover:text-pink-600 transition-colors">Ethical Sourcing</h3>
+        <p class="text-gray-600 text-sm sm:text-base">Responsibly sourced materials that respect both people and planet. We believe in sustainable luxury that makes a difference.</p>
+        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-4 sm:mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
       </div>
       
       <!-- Card 3 -->
-      <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200">
-        <div class="w-20 h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 text-center group hover:-translate-y-2 transform border border-transparent hover:border-pink-200 feature-card sm:col-span-2 md:col-span-1 sm:max-w-md sm:mx-auto md:max-w-none">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-10 sm:w-10 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-gray-800 mb-3 group-hover:text-pink-600 transition-colors">Unique Designs</h3>
-        <p class="text-gray-600">Handcrafted pieces that make a statement and stand out from the crowd. Express your individuality with our exclusive collections.</p>
-        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 group-hover:text-pink-600 transition-colors">Unique Designs</h3>
+        <p class="text-gray-600 text-sm sm:text-base">Handcrafted pieces that make a statement and stand out from the crowd. Express your individuality with our exclusive collections.</p>
+        <div class="w-12 h-0.5 bg-pink-200 mx-auto mt-4 sm:mt-6 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
       </div>
     </div>
     
-    <!-- Enhanced CTA -->
+    <!-- Enhanced CTA with better mobile styling -->
     <div class="text-center relative">
       <a
         routerLink="/products"
-        class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-10 py-4 rounded-xl font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-pink-500/30 active:scale-[0.98] inline-flex items-center justify-center relative overflow-hidden"
+        class="group bg-gradient-to-r from-pink-500 to-pink-600 text-white px-8 py-3 sm:px-10 sm:py-4 rounded-xl font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-pink-500/30 active:scale-[0.98] inline-flex items-center justify-center relative overflow-hidden"
       >
-        <span class="relative z-10 flex items-center justify-center">
+        <span class="relative z-10 flex items-center justify-center text-sm sm:text-base">
           Browse Our Collections
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </span>
@@ -402,7 +438,7 @@
       </a>
       
       <!-- Enhanced decorative elements -->
-      <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-pink-300/50 to-transparent rounded-full"></div>
+      <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-48 sm:w-64 h-1 bg-gradient-to-r from-transparent via-pink-300/50 to-transparent rounded-full"></div>
     </div>
   </div>
 </section>
