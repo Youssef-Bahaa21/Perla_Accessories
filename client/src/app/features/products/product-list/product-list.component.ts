@@ -47,6 +47,7 @@ export class ProductListComponent implements OnInit {
   selectedCategory: number | 'all' = 'all';
   stockFilter: 'all' | 'in' | 'out' = 'all';
   tagFilter: 'all' | 'new' | 'best' = 'all';
+  searchQuery = '';
 
   isBrowser: boolean;
   mobileFiltersActive = false;
@@ -78,6 +79,11 @@ export class ProductListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['category']) {
         this.selectedCategory = +params['category'];
+        this.applyFilters();
+        this.updateSEO();
+      } else if (params['search']) {
+        // Handle search query parameter
+        this.searchQuery = params['search'];
         this.applyFilters();
         this.updateSEO();
       } else {
@@ -214,7 +220,12 @@ export class ProductListComponent implements OnInit {
         (this.tagFilter === 'new' && p.is_new) ||
         (this.tagFilter === 'best' && p.is_best_seller);
 
-      return byCat && byStock && byTag;
+      // Add search query filtering
+      const bySearch = !this.searchQuery ||
+        p.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        (p.description && p.description.toLowerCase().includes(this.searchQuery.toLowerCase()));
+
+      return byCat && byStock && byTag && bySearch;
     });
 
     // Update URL with current filters
@@ -226,6 +237,10 @@ export class ProductListComponent implements OnInit {
 
     if (this.selectedCategory !== 'all') {
       queryParams.category = this.selectedCategory;
+    }
+
+    if (this.searchQuery) {
+      queryParams.search = this.searchQuery;
     }
 
     this.router.navigate([], {
@@ -240,6 +255,7 @@ export class ProductListComponent implements OnInit {
     this.selectedCategory = 'all';
     this.stockFilter = 'all';
     this.tagFilter = 'all';
+    this.searchQuery = '';
     this.applyFilters();
   }
 
@@ -251,10 +267,8 @@ export class ProductListComponent implements OnInit {
 
   setActiveImage(pid: number, idx: number) { this.activeImageIndices[pid] = idx; }
 
-
-
   hasActiveFilters() {
-    return this.stockFilter !== 'all' || this.selectedCategory !== 'all' || this.tagFilter !== 'all';
+    return this.stockFilter !== 'all' || this.selectedCategory !== 'all' || this.tagFilter !== 'all' || !!this.searchQuery;
   }
 
   getCategoryName(id: number | 'all'): string {
@@ -262,20 +276,12 @@ export class ProductListComponent implements OnInit {
     return this.categories.find(c => c.id === +id)?.name || 'Unknown';
   }
 
-
-
-
-
-
-
-
-
-
   getActiveFiltersCount(): number {
     let count = 0;
     if (this.selectedCategory !== 'all') count++;
     if (this.stockFilter !== 'all') count++;
     if (this.tagFilter !== 'all') count++;
+    if (this.searchQuery) count++;
     return count;
   }
 
@@ -337,6 +343,4 @@ export class ProductListComponent implements OnInit {
       this.activeImageIndices[pid] = 0;
     }
   }
-
-
 }

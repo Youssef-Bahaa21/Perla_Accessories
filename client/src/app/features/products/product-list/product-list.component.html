@@ -138,6 +138,14 @@
           <option value="best">Best Sellers</option>
         </select>
         
+        <!-- Search indicator -->
+        <div *ngIf="searchQuery" class="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm bg-pink-100 text-pink-800 border-2 border-pink-200 flex items-center gap-1 mx-1">
+          <span>Search: "{{searchQuery}}"</span>
+          <button (click)="searchQuery = ''; applyFilters()" class="ml-1 text-pink-600 hover:text-pink-800">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        
         <button 
           *ngIf="hasActiveFilters()"
           (click)="clearFilters()" 
