@@ -9,14 +9,31 @@ import path from 'path';
 export function sanitizeInputs(req: Request, res: Response, next: NextFunction) {
     try {
         // Apply mongoSanitize to prevent NoSQL injection
-        mongoSanitize.sanitize(req.body);
-        mongoSanitize.sanitize(req.params);
-        mongoSanitize.sanitize(req.query);
+        if (req.body) mongoSanitize.sanitize(req.body);
+        if (req.params) mongoSanitize.sanitize(req.params);
+        if (req.query) mongoSanitize.sanitize(req.query);
 
         // Deep sanitize all request data
-        req.body = deepSanitize(req.body);
-        req.params = deepSanitize(req.params);
-        req.query = deepSanitize(req.query);
+        if (req.body && typeof req.body === 'object') {
+            req.body = deepSanitize(req.body);
+        }
+        if (req.params && typeof req.params === 'object') {
+            req.params = deepSanitize(req.params);
+        }
+        // Handle req.query carefully as it might be read-only
+        if (req.query && typeof req.query === 'object') {
+            try {
+                const sanitizedQuery = deepSanitize(req.query);
+                // Try to assign, but handle read-only case
+                Object.keys(sanitizedQuery).forEach(key => {
+                    if (Object.prototype.hasOwnProperty.call(req.query, key)) {
+                        (req.query as any)[key] = sanitizedQuery[key];
+                    }
+                });
+            } catch (error) {
+                console.warn('Could not sanitize query parameters:', error.message);
+            }
+        }
 
         // Sanitize file uploads if present
         if (req.file) {
@@ -67,7 +84,8 @@ function deepSanitize(obj: any): any {
     if (typeof obj === 'object') {
         const sanitized: any = {};
         for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            // Use Object.prototype.hasOwnProperty for safety
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 const sanitizedKey = sanitizeString(key);
                 sanitized[sanitizedKey] = deepSanitize(obj[key]);
             }
