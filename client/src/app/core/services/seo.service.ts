@@ -151,10 +151,29 @@ export class SeoService {
             'مجوهرات'
         ].join(', ');
 
-        // Use the first available product image or fallback
-        const productImage = product.images?.[0]?.image || product.images?.[0]?.url;
-        const image = productImage || this.defaultData.productShowcaseImage;
-        const fullImageUrl = image.startsWith('http') ? image : `${this.defaultData.domain}${image}`;
+        // Enhanced image selection with fallbacks
+        let productImage = '';
+
+        if (product.images && product.images.length > 0) {
+            // Try to get the first image
+            const firstImage = product.images[0];
+            productImage = firstImage.image || firstImage.url || '';
+
+            // Debug logging
+            console.log('🖼️ Product image found:', productImage);
+            console.log('📋 All product images:', product.images);
+        }
+
+        // If no product image found, use the product showcase image
+        if (!productImage) {
+            productImage = this.defaultData.productShowcaseImage;
+            console.log('⚠️ No product image found, using fallback:', productImage);
+        }
+
+        // Ensure the image URL is absolute
+        const fullImageUrl = productImage.startsWith('http') ? productImage : `${this.defaultData.domain}${productImage}`;
+
+        console.log('✅ Final image URL for sharing:', fullImageUrl);
 
         const structuredData = {
             '@context': 'https://schema.org',

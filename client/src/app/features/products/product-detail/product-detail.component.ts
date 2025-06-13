@@ -222,11 +222,44 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private updateProductSEO(): void {
     if (!this.product) return;
 
+    // Debug: Log product data to see what images are available
+    console.log('🔍 Updating SEO for product:', this.product.name);
+    console.log('📸 Product images:', this.product.images);
+
     const seoData = this.seo.generateProductSEO(this.product, this.category);
+
+    // Debug: Log the generated SEO data
+    console.log('🎯 Generated SEO data:', seoData);
+    console.log('🖼️ Image URL for sharing:', seoData.image);
+
     this.seo.updateSEO(seoData);
 
     // Update social media sharing for product
     this.socialMedia.updateProductSocialMedia(this.product);
+
+    // Force update meta tags for immediate effect
+    if (isPlatformBrowser(this.platformId)) {
+      // Ensure the image meta tag is properly set for WhatsApp
+      const imageMeta = document.querySelector('meta[property="og:image"]');
+      if (imageMeta && seoData.image) {
+        imageMeta.setAttribute('content', seoData.image);
+        console.log('✅ Updated og:image meta tag:', seoData.image);
+      }
+
+      // Also update the general image meta tag for WhatsApp
+      const generalImageMeta = document.querySelector('meta[name="image"]');
+      if (generalImageMeta && seoData.image) {
+        generalImageMeta.setAttribute('content', seoData.image);
+        console.log('✅ Updated image meta tag:', seoData.image);
+      }
+
+      // Update Twitter image
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
+      if (twitterImageMeta && seoData.image) {
+        twitterImageMeta.setAttribute('content', seoData.image);
+        console.log('✅ Updated twitter:image meta tag:', seoData.image);
+      }
+    }
 
     // Add breadcrumb structured data
     const breadcrumbs = [
@@ -248,6 +281,15 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
     const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
     this.seo.updateSEO({ structuredData: breadcrumbData });
+
+    // Log final meta tags for debugging
+    if (isPlatformBrowser(this.platformId)) {
+      console.log('🔍 Final meta tags check:');
+      console.log('- og:image:', document.querySelector('meta[property="og:image"]')?.getAttribute('content'));
+      console.log('- og:title:', document.querySelector('meta[property="og:title"]')?.getAttribute('content'));
+      console.log('- og:description:', document.querySelector('meta[property="og:description"]')?.getAttribute('content'));
+      console.log('- image:', document.querySelector('meta[name="image"]')?.getAttribute('content'));
+    }
   }
 
   private initializeSwiper() {
