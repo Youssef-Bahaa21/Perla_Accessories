@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, inject } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,15 @@ import { SocialMediaService } from '../../core/services/social-media.service';
   templateUrl: './landing.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('heroSection') heroSection!: ElementRef;
+  @ViewChild('categoriesSection') categoriesSection!: ElementRef;
+  @ViewChild('featuredSection') featuredSection!: ElementRef;
+  @ViewChild('whyChooseSection') whyChooseSection!: ElementRef;
+  @ViewChild('brandStorySection') brandStorySection!: ElementRef;
+  @ViewChild('testimonialsSection') testimonialsSection!: ElementRef;
+  @ViewChild('socialSection') socialSection!: ElementRef;
+
   featuredProducts: Product[] = [];
   categories: Category[] = [];
   loading = true;
@@ -25,6 +33,11 @@ export class LandingPageComponent implements OnInit {
   error = '';
   categoriesError = '';
   fallbackImage = 'https://via.placeholder.com/150';
+  foundingYear = 0;
+
+  // Animation observers
+  private observers: IntersectionObserver[] = [];
+  private animatedElements = new Set<Element>();
 
   // Newsletter signup
   newsletterEmail = '';
@@ -75,6 +88,202 @@ export class LandingPageComponent implements OnInit {
   ngOnInit(): void {
     this.loadFeaturedProducts();
     this.loadCategories();
+    this.calculateFoundingYear();
+  }
+
+  ngAfterViewInit(): void {
+    this.initializeScrollAnimations();
+    this.initializeParallaxEffects();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up observers
+    this.observers.forEach(observer => observer.disconnect());
+  }
+
+  private initializeScrollAnimations(): void {
+    // Create intersection observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const animationObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.animatedElements.has(entry.target)) {
+          this.triggerAnimation(entry.target);
+          this.animatedElements.add(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all animatable elements
+    const animatableElements = document.querySelectorAll(
+      '.animate-on-scroll, .stagger-children > *, .fade-in-up, .slide-in-left, .slide-in-right, .scale-in, .rotate-in'
+    );
+
+    animatableElements.forEach(el => {
+      animationObserver.observe(el);
+    });
+
+    this.observers.push(animationObserver);
+
+    // Add scroll progress indicator
+    this.addScrollProgressIndicator();
+  }
+
+  private initializeParallaxEffects(): void {
+    let ticking = false;
+
+    const updateParallax = () => {
+      const scrolled = window.pageYOffset;
+      const parallaxElements = document.querySelectorAll('.parallax-element');
+
+      parallaxElements.forEach((element, index) => {
+        const speed = 0.5 + (index * 0.1);
+        const yPos = -(scrolled * speed);
+        (element as HTMLElement).style.transform = `translateY(${yPos}px)`;
+      });
+
+      ticking = false;
+    };
+
+    const requestParallaxUpdate = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
+  }
+
+  private triggerAnimation(element: Element): void {
+    const animationType = this.getAnimationType(element);
+
+    switch (animationType) {
+      case 'fade-in-up':
+        this.animateFadeInUp(element);
+        break;
+      case 'slide-in-left':
+        this.animateSlideInLeft(element);
+        break;
+      case 'slide-in-right':
+        this.animateSlideInRight(element);
+        break;
+      case 'scale-in':
+        this.animateScaleIn(element);
+        break;
+      case 'rotate-in':
+        this.animateRotateIn(element);
+        break;
+      case 'stagger':
+        this.animateStagger(element);
+        break;
+      default:
+        this.animateDefault(element);
+    }
+  }
+
+  private getAnimationType(element: Element): string {
+    if (element.classList.contains('fade-in-up')) return 'fade-in-up';
+    if (element.classList.contains('slide-in-left')) return 'slide-in-left';
+    if (element.classList.contains('slide-in-right')) return 'slide-in-right';
+    if (element.classList.contains('scale-in')) return 'scale-in';
+    if (element.classList.contains('rotate-in')) return 'rotate-in';
+    if (element.parentElement?.classList.contains('stagger-children')) return 'stagger';
+    return 'default';
+  }
+
+  private animateFadeInUp(element: Element): void {
+    (element as HTMLElement).style.opacity = '0';
+    (element as HTMLElement).style.transform = 'translateY(50px)';
+
+    setTimeout(() => {
+      (element as HTMLElement).style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      (element as HTMLElement).style.opacity = '1';
+      (element as HTMLElement).style.transform = 'translateY(0)';
+    }, 100);
+  }
+
+  private animateSlideInLeft(element: Element): void {
+    (element as HTMLElement).style.opacity = '0';
+    (element as HTMLElement).style.transform = 'translateX(-100px)';
+
+    setTimeout(() => {
+      (element as HTMLElement).style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      (element as HTMLElement).style.opacity = '1';
+      (element as HTMLElement).style.transform = 'translateX(0)';
+    }, 100);
+  }
+
+  private animateSlideInRight(element: Element): void {
+    (element as HTMLElement).style.opacity = '0';
+    (element as HTMLElement).style.transform = 'translateX(100px)';
+
+    setTimeout(() => {
+      (element as HTMLElement).style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      (element as HTMLElement).style.opacity = '1';
+      (element as HTMLElement).style.transform = 'translateX(0)';
+    }, 100);
+  }
+
+  private animateScaleIn(element: Element): void {
+    (element as HTMLElement).style.opacity = '0';
+    (element as HTMLElement).style.transform = 'scale(0.5)';
+
+    setTimeout(() => {
+      (element as HTMLElement).style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      (element as HTMLElement).style.opacity = '1';
+      (element as HTMLElement).style.transform = 'scale(1)';
+    }, 100);
+  }
+
+  private animateRotateIn(element: Element): void {
+    (element as HTMLElement).style.opacity = '0';
+    (element as HTMLElement).style.transform = 'rotate(-180deg) scale(0.5)';
+
+    setTimeout(() => {
+      (element as HTMLElement).style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      (element as HTMLElement).style.opacity = '1';
+      (element as HTMLElement).style.transform = 'rotate(0deg) scale(1)';
+    }, 100);
+  }
+
+  private animateStagger(element: Element): void {
+    const parent = element.parentElement;
+    if (!parent) return;
+
+    const children = Array.from(parent.children);
+    const index = children.indexOf(element);
+
+    setTimeout(() => {
+      this.animateFadeInUp(element);
+    }, index * 150);
+  }
+
+  private animateDefault(element: Element): void {
+    this.animateFadeInUp(element);
+  }
+
+  private addScrollProgressIndicator(): void {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress-bar';
+    document.body.appendChild(progressBar);
+
+    const updateProgress = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = window.pageYOffset;
+      const progress = (scrolled / scrollHeight) * 100;
+      progressBar.style.width = `${progress}%`;
+    };
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  }
+
+  private calculateFoundingYear(): void {
+    const currentYear = new Date().getFullYear();
+    this.foundingYear = currentYear - this.brandInfo.yearsInBusiness;
   }
 
   private loadFeaturedProducts(): void {
@@ -102,15 +311,11 @@ export class LandingPageComponent implements OnInit {
           });
 
         this.loading = false;
-
-        // Update SEO with product collection data after products are loaded
         this.updateSEOWithProducts();
       },
       error: () => {
         this.error = 'Could not load featured products.';
         this.loading = false;
-
-        // Fallback to default homepage SEO if products fail to load
         this.seo.updateSEO(this.seo.generateHomepageSEO());
         this.seo.updateCanonicalUrl('/');
         this.socialMedia.resetToDefault();
@@ -120,15 +325,11 @@ export class LandingPageComponent implements OnInit {
 
   private updateSEOWithProducts(): void {
     if (this.featuredProducts.length > 0) {
-      // Use product collection SEO that showcases actual products
       const seoData = this.seo.generateProductCollectionSEO(this.featuredProducts);
       this.seo.updateSEO(seoData);
       this.seo.updateCanonicalUrl('/');
-
-      // Update social media tags with products
       this.socialMedia.updateHomepageWithProducts(this.featuredProducts);
     } else {
-      // Fallback to homepage SEO if no featured products
       this.seo.updateSEO(this.seo.generateHomepageSEO());
       this.seo.updateCanonicalUrl('/');
       this.socialMedia.resetToDefault();
@@ -158,7 +359,6 @@ export class LandingPageComponent implements OnInit {
     (event.target as HTMLImageElement).src = this.fallbackImage;
   }
 
-  // Newsletter signup functionality
   subscribeToNewsletter(): void {
     if (!this.newsletterEmail || !this.isValidEmail(this.newsletterEmail)) {
       this.notification.show('Please enter a valid email address', 'error');
@@ -167,7 +367,6 @@ export class LandingPageComponent implements OnInit {
 
     this.newsletterLoading = true;
 
-    // Simulate newsletter subscription (replace with actual API call when available)
     setTimeout(() => {
       this.newsletterLoading = false;
       this.notification.show('Thank you for subscribing! Welcome to the Perla family 🌸', 'success');
@@ -180,7 +379,6 @@ export class LandingPageComponent implements OnInit {
     return emailRegex.test(email);
   }
 
-  // Scroll to section functionality
   scrollToSection(sectionId: string): void {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -188,7 +386,6 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
-  // Generate star rating array
   getStars(rating: number): boolean[] {
     return Array(5).fill(false).map((_, i) => i < rating);
   }

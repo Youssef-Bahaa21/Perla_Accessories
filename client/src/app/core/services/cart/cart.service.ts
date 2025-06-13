@@ -76,6 +76,21 @@ export class CartService {
         this.openCartModal();
     }
 
+    // Add to cart without opening the cart modal - for Buy Now functionality
+    addSilently(product: Product) {
+        const items = [...this.items$.value];
+        const found = items.find(i => i.product.id === product.id);
+        if (found) {
+            found.qty++;
+        } else {
+            items.push({ product, qty: 1 });
+        }
+        this.items$.next(items);
+        this.saveToStorage(items);
+
+        // Don't show notification or open cart modal
+    }
+
     updateQuantity(productId: number, qty: number) {
         const items = [...this.items$.value];
         const index = items.findIndex(i => i.product.id === productId);

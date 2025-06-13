@@ -20,12 +20,14 @@
         background: linear-gradient(135deg, #fce7f3, #fbcfe8);
         top: -300px;
         left: -300px;
+        animation: floatAdvanced 15s ease-in-out infinite;
     }
 
     &::after {
         background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
         bottom: -300px;
         right: -300px;
+        animation: floatAdvanced 18s ease-in-out infinite reverse;
     }
 }
 
@@ -306,11 +308,60 @@
                 box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
             }
         }
+
+        // Improved mobile responsiveness for stats cards
+        @media (max-width: 640px) {
+            &:hover {
+                transform: translateY(-4px) scale(1.01);
+            }
+
+            .stat-icon {
+                width: 3rem;
+                height: 3rem;
+
+                svg {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                }
+            }
+        }
     }
 
     .stat-icon {
         transition: all 0.4s ease;
         transform-origin: center;
+    }
+
+    // Enhanced Brand Story Content
+    .bg-white\/60 {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s ease;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(249, 168, 212, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        &:hover::before {
+            opacity: 1;
+        }
+
+        // Mobile optimizations
+        @media (max-width: 768px) {
+            .grid {
+                gap: 1.5rem;
+            }
+        }
     }
 }
 
@@ -674,4 +725,414 @@
         transition: none !important;
         transform: none !important;
     }
+}
+
+/* Enhanced Brand Story Section - Additional Mobile Optimizations */
+@media (max-width: 640px) {
+    .brand-story-section {
+        // Smaller padding on mobile
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+
+        // Optimize decorative elements for mobile
+        .absolute {
+            opacity: 0.4;
+        }
+
+        // Optimize brand story content for mobile
+        .bg-white\/60 {
+            padding: 1.25rem;
+
+            .grid {
+                gap: 1.5rem;
+            }
+
+            // Adjust image height on mobile
+            .h-64 {
+                height: 12rem;
+            }
+
+            // Adjust text size on mobile
+            h3 {
+                font-size: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
+
+            p {
+                font-size: 0.875rem;
+            }
+
+            // Adjust brand logo/watermark on mobile
+            .bottom-4 {
+                bottom: 0.75rem;
+            }
+
+            .left-4 {
+                left: 0.75rem;
+            }
+
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
+
+/* Enhanced image reveal animation for brand story */
+.brand-story-section {
+    .relative.rounded-2xl {
+        overflow: hidden;
+
+        img {
+            transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        &:hover img {
+            transform: scale(1.05);
+        }
+    }
+
+    // Subtle shine effect on hover
+    .bg-white\/60 {
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent);
+            transition: left 0.7s ease;
+        }
+
+        &:hover::after {
+            left: 100%;
+        }
+    }
+}
+
+/* ===== ADVANCED SCROLL ANIMATIONS ===== */
+
+/* Global Scroll Progress Bar */
+::ng-deep .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, #ec4899, #f472b6, #fb7185);
+    z-index: 9999;
+    transition: width 0.2s ease-out;
+    box-shadow: 0 2px 10px rgba(236, 72, 153, 0.3);
+}
+
+/* Base Animation Classes */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Fade In Up Animation */
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(80px);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide In Left Animation */
+.slide-in-left {
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.animated {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Slide In Right Animation */
+.slide-in-right {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.animated {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Scale In Animation */
+.scale-in {
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &.animated {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Rotate In Animation */
+.rotate-in {
+    opacity: 0;
+    transform: rotate(-15deg) scale(0.8);
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &.animated {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+/* Stagger Children Animation */
+.stagger-children>* {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Parallax Elements */
+.parallax-element {
+    will-change: transform;
+    backface-visibility: hidden;
+    transition: transform 0.1s ease-out;
+}
+
+/* Advanced Keyframe Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(80px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes rotateIn {
+    from {
+        opacity: 0;
+        transform: rotate(-15deg) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes floatAdvanced {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-20px) rotate(2deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(-25px) rotate(-2deg);
+    }
+}
+
+@keyframes pulseMagic {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 20px rgba(236, 72, 153, 0);
+    }
+}
+
+@keyframes shimmerAdvanced {
+    0% {
+        background-position: -1000px 0;
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        background-position: 1000px 0;
+        opacity: 0.3;
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(236, 72, 153, 0.6);
+    }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+
+    .enhanced-category-card,
+    .feature-card,
+    .stats-card {
+        &:hover {
+            transform: translateY(-6px) scale(1.01);
+        }
+    }
+
+    .animate-on-scroll,
+    .fade-in-up,
+    .slide-in-left,
+    .slide-in-right,
+    .scale-in,
+    .rotate-in {
+        transform: translateY(30px);
+
+        &.animated {
+            transform: translateY(0);
+        }
+    }
+}
+
+/* Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+
+    .float-element,
+    .float-element-delayed,
+    .parallax-element,
+    *[class*="animate-"],
+    *[class*="transition-"] {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .scroll-progress-bar {
+        transition: width 0.1s linear;
+    }
+}
+
+/* High Performance Mode */
+.enhance-performance {
+    .parallax-element {
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+    }
+
+    .enhanced-category-card,
+    .product-card,
+    .stats-card,
+    .feature-card {
+        will-change: transform, box-shadow;
+        backface-visibility: hidden;
+        transform-style: preserve-3d;
+    }
+}
+
+/* Custom styles for swiper pagination */
+::ng-deep .swiper-pagination-bullet {
+    background-color: rgba(236, 72, 153, 0.6) !important;
+    opacity: 0.6;
+    transition: all 0.4s ease;
+    transform: scale(1);
+}
+
+::ng-deep .swiper-pagination-bullet-active {
+    background-color: rgba(236, 72, 153, 1) !important;
+    opacity: 1;
+    transform: scale(1.3);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+    animation: pulseMagic 2s infinite;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }

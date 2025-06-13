@@ -363,10 +363,12 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Buy Now - Add to cart and redirect to shipping page
+  // Buy Now - Add to cart and redirect to shipping page without opening slide cart
   buyNow() {
     if (this.product) {
-      this.cart.add(this.product);
+      // Add product to cart silently (without opening the slide cart)
+      this.cart.addSilently(this.product);
+      // Navigate directly to shipping page
       this.router.navigate(['/shipping']);
     }
   }
