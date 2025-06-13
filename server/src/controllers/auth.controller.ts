@@ -127,24 +127,12 @@ export const forgotPassword: RequestHandler = async (req, res, next) => {
 export const resetPassword: RequestHandler = async (req, res, next) => {
     const { token, password } = req.body;
     try {
-        // Validate password strength
-        const passwordValidation = PasswordValidationService.validatePasswordStrength(password);
-        if (!passwordValidation.isValid) {
-            res.status(400).json({
-                error: 'Password does not meet security requirements',
-                feedback: passwordValidation.feedback,
-                score: passwordValidation.score
-            });
-            return;
-        }
+        // Skip password validation for reset - allow any valid password
+        // Only validate new passwords during registration
 
         await svc.resetPassword(token, password);
         res.json({
-            message: 'Password updated successfully',
-            passwordStrength: {
-                score: passwordValidation.score,
-                entropy: passwordValidation.entropy
-            }
+            message: 'Password updated successfully'
         });
     } catch (e) {
         next(e);

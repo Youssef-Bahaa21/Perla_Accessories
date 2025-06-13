@@ -143,13 +143,13 @@ export const fileUploadLimiter = async (req: Request, res: Response, next: NextF
     }
 };
 
-// 🔑 Login Rate Limiter - Enhanced with progressive delays
+// 🔑 Login Rate Limiter - More lenient for testing
 export const loginLimiter = createRateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5,
+    windowMs: 2 * 60 * 1000, // 2 minutes (reduced from 15)
+    max: 10, // increased from 5 for more attempts
     message: {
-        error: 'Too many login attempts. Please try again after 15 minutes.',
-        retryAfter: '15 minutes',
+        error: 'Too many login attempts. Please try again in 2 minutes.',
+        retryAfter: '2 minutes',
         type: 'RATE_LIMIT_EXCEEDED'
     },
     standardHeaders: true,

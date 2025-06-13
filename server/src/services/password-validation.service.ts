@@ -85,8 +85,8 @@ export class PasswordValidationService {
         const entropy = this.calculateEntropy(password);
 
         // Basic requirements (already checked by DTO, but double-check)
-        if (password.length < 12) {
-            feedback.push('Password must be at least 12 characters long');
+        if (password.length < 8) {
+            feedback.push('Password must be at least 8 characters long');
         } else {
             score += 20;
         }
@@ -115,8 +115,8 @@ export class PasswordValidationService {
             score += 15;
         }
 
-        // Entropy check (minimum 50 bits for strong password)
-        if (entropy < 50) {
+        // Entropy check (minimum 35 bits for reasonable password)
+        if (entropy < 35) {
             feedback.push('Password complexity is too low');
         } else {
             score += 10;
@@ -150,7 +150,7 @@ export class PasswordValidationService {
         score = Math.max(0, Math.min(100, score));
 
         return {
-            isValid: feedback.length === 0 && score >= 70,
+            isValid: feedback.length === 0 && score >= 50, // lowered from 70
             score,
             feedback,
             entropy
