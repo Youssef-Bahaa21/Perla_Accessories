@@ -1,6 +1,6 @@
 import { Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs';
@@ -22,6 +22,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartCount = 0;
   isScrolled = false;
   showPromoBar = true;
+
+  // Flag to track if we're navigating due to a search action
+  isNavigatingFromSearch = false;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
   @ViewChild('searchInputDesktop') searchInputDesktop!: ElementRef;
@@ -58,14 +61,43 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Check if mobile on init
     this.checkIfMobile();
 
-    // Subscribe to router events to close search bar on navigation
+    // Subscribe to router navigation start events
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      // Keep search bar open during navigation if it's a search-initiated navigation
+      if (this.isNavigatingFromSearch) {
+        // Force search bar to stay visible during transition
+        this.isSearchBarOpen = true;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Subscribe to router navigation end events
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      if (this.isMobile) {
+      // Only close search bar if not navigating from a search action
+      if (this.isMobile && this.isSearchBarOpen && !this.isNavigatingFromSearch) {
         this.isSearchBarOpen = false;
       }
+
+      // If we're on the products page after a search, keep the search bar open
+      if (this.isNavigatingFromSearch && this.router.url.includes('/products')) {
+        this.isSearchBarOpen = true;
+
+        // Focus the search input again after navigation
+        setTimeout(() => {
+          if (this.searchInput && this.searchInput.nativeElement) {
+            this.searchInput.nativeElement.focus();
+          }
+        }, 500);
+      }
+
+      // Reset the flag after navigation completes
+      this.isNavigatingFromSearch = false;
     });
   }
 
@@ -154,6 +186,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.isSearchBarOpen) {
       this.isMobileMenuOpen = false;
 
+      // Reset navigation flag when manually opening search
+      this.isNavigatingFromSearch = false;
+
       // Focus the input after a small delay to ensure the element is visible
       this.ngZone.runOutsideAngular(() => {
         setTimeout(() => {
@@ -188,13 +223,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Perform actual search
   private performSearch(query: string): void {
+    // Set flag that we're navigating due to search
+    this.isNavigatingFromSearch = true;
+
+    // Don't close search immediately, navigation will handle it if needed
+    const wasOnProductsPage = this.router.url.includes('/products');
+
     // Navigate to products page with search query
     this.router.navigate(['/products'], {
       queryParams: { search: query.trim() }
     });
 
-    // Don't close the search bar on mobile while searching
-    // Let it remain open so user can continue typing and refining search
+    // If already on products page, no navigation event will fire
+    // so reset the flag immediately
+    if (wasOnProductsPage) {
+      setTimeout(() => {
+        this.isNavigatingFromSearch = false;
+      }, 100);
+    }
 
     // Only scroll if needed
     if (window.scrollY > 100) {

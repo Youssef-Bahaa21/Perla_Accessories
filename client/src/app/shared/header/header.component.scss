@@ -72,6 +72,41 @@ nav {
     }
 }
 
+// Fix for persistent search bar during navigation
+.search-bar-persistent {
+    // Ensure search bar is visible during navigation transitions
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    // Ensure search bar remains above the spinner/loader
+    z-index: 9999 !important;
+
+    // Keep search bar fixed during navigation
+    position: fixed;
+
+    // Prevent search bar from disappearing during navigation animation
+    transition: none !important;
+
+    &.active {
+        max-height: 100px !important;
+        transform: translateY(0) !important;
+        pointer-events: auto !important;
+    }
+
+    // Ensure the inputs remain interactive
+    input,
+    button {
+        pointer-events: auto !important;
+    }
+}
+
+// Ensure search backdrop stays above loading spinner
+.search-backdrop {
+    position: fixed;
+    z-index: 9998 !important;
+    visibility: visible !important;
+}
+
 @keyframes slideDown {
     from {
         transform: translateY(-20px);

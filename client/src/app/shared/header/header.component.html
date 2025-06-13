@@ -115,10 +115,13 @@
   </div>
 
   <!-- Search Backdrop - Helps with click outside detection -->
-  <div *ngIf="isSearchBarOpen" class="fixed inset-0 bg-black bg-opacity-30 sm:hidden z-40" (click)="isSearchBarOpen = false"></div>
+  <div *ngIf="isSearchBarOpen" class="fixed inset-0 bg-black bg-opacity-30 sm:hidden z-40 search-backdrop" (click)="isSearchBarOpen = false"></div>
 
   <!-- Enhanced Mobile Search Bar - Fixed positioning for iOS compatibility -->
-  <div *ngIf="isSearchBarOpen" class="fixed sm:hidden bg-white border-t border-gray-200 py-3 px-4 shadow-lg w-full left-0 top-16 z-50 search-bar active" style="position: fixed; top: 4rem;">
+  <div *ngIf="isSearchBarOpen" 
+       [class.search-bar-persistent]="isNavigatingFromSearch"
+       class="fixed sm:hidden bg-white border-t border-gray-200 py-3 px-4 shadow-lg w-full left-0 top-16 z-50 search-bar active" 
+       style="position: fixed; top: 4rem;">
     <div class="relative max-w-lg mx-auto">
       <input 
         type="text" 
