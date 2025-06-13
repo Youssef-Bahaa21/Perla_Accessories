@@ -1,20 +1,9 @@
-/* Advanced AOS Custom Animations */
-[data-aos="fade-up-scale"] {
-    transform: translateY(100px) scale(0.8);
-    opacity: 0;
-    transition-property: transform, opacity, scale;
-
-    &.aos-animate {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-}
-
-[data-aos="slide-up-bounce"] {
-    transform: translateY(150px);
+/* Professional E-commerce Animations */
+[data-aos="fade-up-smooth"] {
+    transform: translateY(30px);
     opacity: 0;
     transition-property: transform, opacity;
-    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition-timing-function: ease-out;
 
     &.aos-animate {
         transform: translateY(0);
@@ -22,46 +11,23 @@
     }
 }
 
-[data-aos="zoom-in-rotate"] {
-    transform: scale(0.3) rotate(-45deg);
+[data-aos="fade-in-up"] {
+    transform: translateY(20px);
     opacity: 0;
     transition-property: transform, opacity;
+    transition-timing-function: ease-out;
 
     &.aos-animate {
-        transform: scale(1) rotate(0deg);
+        transform: translateY(0);
         opacity: 1;
     }
 }
 
-[data-aos="flip-left-3d"] {
-    transform: perspective(1000px) rotateY(-90deg);
+[data-aos="scale-in"] {
+    transform: scale(0.95);
     opacity: 0;
     transition-property: transform, opacity;
-
-    &.aos-animate {
-        transform: perspective(1000px) rotateY(0deg);
-        opacity: 1;
-    }
-}
-
-[data-aos="slide-in-blur"] {
-    transform: translateX(-100px);
-    filter: blur(10px);
-    opacity: 0;
-    transition-property: transform, filter, opacity;
-
-    &.aos-animate {
-        transform: translateX(0);
-        filter: blur(0px);
-        opacity: 1;
-    }
-}
-
-[data-aos="elastic-scale"] {
-    transform: scale(0.1);
-    opacity: 0;
-    transition-property: transform, opacity;
-    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition-timing-function: ease-out;
 
     &.aos-animate {
         transform: scale(1);
@@ -69,13 +35,26 @@
     }
 }
 
-[data-aos="wave-slide"] {
-    transform: translateY(100px) skewY(5deg);
+[data-aos="slide-right"] {
+    transform: translateX(-30px);
     opacity: 0;
     transition-property: transform, opacity;
+    transition-timing-function: ease-out;
 
     &.aos-animate {
-        transform: translateY(0) skewY(0deg);
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+[data-aos="slide-left"] {
+    transform: translateX(30px);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-timing-function: ease-out;
+
+    &.aos-animate {
+        transform: translateX(0);
         opacity: 1;
     }
 }

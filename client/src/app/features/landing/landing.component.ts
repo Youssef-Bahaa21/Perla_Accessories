@@ -82,26 +82,26 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Initialize AOS with advanced configuration for perfect mobile and PC experience
+    // Initialize AOS with professional e-commerce configuration
     AOS.init({
-      duration: 1200, // Animation duration
-      easing: 'ease-out-cubic', // Smooth easing
-      once: false, // Allow animations to happen multiple times
-      mirror: true, // Mirror animations on scroll up
-      offset: 120, // Offset from the original trigger point
-      delay: 0, // Global delay
-      anchorPlacement: 'top-bottom', // Defines which position of the element is taken
-      disable: false, // Disable AOS on specific conditions
-      startEvent: 'DOMContentLoaded', // Start AOS when DOM is loaded
-      animatedClassName: 'aos-animate', // Class applied on animation
-      initClassName: 'aos-init', // Class applied after initialization
-      useClassNames: false, // Use data-aos as classes
-      disableMutationObserver: false, // Disables automatic mutations' detections
-      debounceDelay: 50, // Delay on debounce used while resizing window
-      throttleDelay: 99, // Delay on throttle used while scrolling the page
+      duration: 600, // Faster, snappier animations
+      easing: 'ease-out', // Professional, smooth easing
+      once: true, // Animate only once for better performance
+      mirror: false, // No mirror animations for cleaner experience
+      offset: 100, // Earlier trigger point for smoother experience
+      delay: 0, // No global delay
+      anchorPlacement: 'top-bottom', // Professional trigger point
+      disable: 'mobile', // Disable on mobile for performance (optional)
+      startEvent: 'DOMContentLoaded',
+      animatedClassName: 'aos-animate',
+      initClassName: 'aos-init',
+      useClassNames: false,
+      disableMutationObserver: false,
+      debounceDelay: 50,
+      throttleDelay: 99,
     });
 
-    // Refresh AOS when page loads to ensure all elements are detected
+    // Refresh AOS when page loads
     setTimeout(() => {
       AOS.refresh();
     }, 100);
