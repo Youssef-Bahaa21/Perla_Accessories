@@ -38,20 +38,84 @@ nav {
     transform: translateX(0);
 }
 
-// Enhanced search animations
+// Enhanced search animations - make sure it's visible and works properly
 .search-bar {
     transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
         opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
         transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     max-height: 0;
-    overflow: hidden;
     opacity: 0;
     transform: translateY(-10px);
+    overflow: hidden;
+    z-index: 30;
 
     &.active {
         max-height: 70px;
         opacity: 1;
         transform: translateY(0);
+        animation: slideDown 0.3s forwards;
+    }
+
+    // Make sure the z-index is high enough
+    position: relative;
+    z-index: 40;
+
+    input {
+        // Ensure input is tappable on iOS
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    // Fix iOS focus issues
+    input:focus {
+        font-size: 16px; // Prevent iOS zoom on focus
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+// Ensure touches are properly registered on iOS
+input[type="text"],
+button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+// Force hardware acceleration for smoother animations
+.search-bar,
+.mobile-menu-right {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+// Ensure search input is visible and works in mobile
+@media (max-width: 639px) {
+    .search-bar {
+        // Override any hidden overflow that might be preventing display
+        display: block !important;
+
+        &.active {
+            overflow: visible;
+        }
+    }
+
+    // Make sure inputs are properly clickable on mobile
+    input,
+    button {
+        pointer-events: auto !important;
+        touch-action: auto !important;
     }
 }
 

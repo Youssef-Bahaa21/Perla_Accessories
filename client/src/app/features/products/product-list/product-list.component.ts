@@ -209,7 +209,8 @@ export class ProductListComponent implements OnInit {
   }
 
   applyFilters() {
-    this.filteredProducts = this.products.filter(p => {
+    // First filter products by all criteria except search
+    const filteredByOtherCriteria = this.products.filter(p => {
       const byCat = this.selectedCategory === 'all' || p.category_id === +this.selectedCategory;
       const byStock =
         this.stockFilter === 'all' ||
@@ -220,13 +221,41 @@ export class ProductListComponent implements OnInit {
         (this.tagFilter === 'new' && p.is_new) ||
         (this.tagFilter === 'best' && p.is_best_seller);
 
-      // Add search query filtering
-      const bySearch = !this.searchQuery ||
-        p.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        (p.description && p.description.toLowerCase().includes(this.searchQuery.toLowerCase()));
-
-      return byCat && byStock && byTag && bySearch;
+      return byCat && byStock && byTag;
     });
+
+    // If there's a search query, prioritize by search terms
+    if (this.searchQuery) {
+      const searchTerm = this.searchQuery.toLowerCase().trim();
+
+      // Products starting with search term (high priority)
+      const startsWithResults = filteredByOtherCriteria.filter(p =>
+        p.name.toLowerCase().startsWith(searchTerm)
+      );
+
+      // Products containing search term but not starting with it (medium priority)
+      const containsResults = filteredByOtherCriteria.filter(p =>
+        !p.name.toLowerCase().startsWith(searchTerm) &&
+        p.name.toLowerCase().includes(searchTerm)
+      );
+
+      // Products with search term in description (low priority)
+      const descriptionResults = filteredByOtherCriteria.filter(p =>
+        !p.name.toLowerCase().includes(searchTerm) &&
+        p.description &&
+        p.description.toLowerCase().includes(searchTerm)
+      );
+
+      // Combine results in priority order
+      this.filteredProducts = [
+        ...startsWithResults,
+        ...containsResults,
+        ...descriptionResults
+      ];
+    } else {
+      // No search term, just use other filters
+      this.filteredProducts = filteredByOtherCriteria;
+    }
 
     // Update URL with current filters
     this.updateUrlParams();

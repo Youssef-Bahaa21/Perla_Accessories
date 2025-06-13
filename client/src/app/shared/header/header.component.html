@@ -54,7 +54,7 @@
       <!-- Enhanced Search, User & Cart Actions -->
       <div class="flex items-center space-x-3 sm:space-x-4">
         <!-- Search Button (Mobile) with hover animation -->
-        <button (click)="toggleSearchBar()" class="sm:hidden relative text-gray-600 hover:text-pink-600 transition-colors p-2 hover:bg-pink-50 rounded-full">
+        <button (click)="toggleSearchBar(); $event.stopPropagation()" class="sm:hidden relative text-gray-600 hover:text-pink-600 transition-colors p-2 hover:bg-pink-50 rounded-full z-20">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -62,7 +62,7 @@
         
         <!-- Enhanced Search Bar (Desktop) -->
         <div class="hidden sm:block relative">
-          <div class="relative">
+          <div class="relative" (clickOutside)="closeSearchIfNotFocused()">
             <input 
               type="text" 
               [(ngModel)]="searchQuery" 
@@ -71,6 +71,7 @@
               name="searchQuery"
               placeholder="Search products..." 
               class="bg-gray-100 hover:bg-white focus:bg-white rounded-full py-2 pr-8 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 border border-transparent focus:border-pink-200 w-36 lg:w-48 transition-all duration-300"
+              #searchInputDesktop
             />
             <button *ngIf="searchQuery" (click)="clearSearch(); $event.stopPropagation()" class="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600">
               <i class="fa-solid fa-xmark text-xs"></i>
@@ -113,19 +114,24 @@
     </div>
   </div>
 
-  <!-- Enhanced Mobile Search Bar -->
-  <div *ngIf="isSearchBarOpen" class="search-bar sm:hidden bg-white border-t border-gray-100 py-3 px-4 shadow-lg" [class.active]="isSearchBarOpen">
-    <div class="relative">
+  <!-- Search Backdrop - Helps with click outside detection -->
+  <div *ngIf="isSearchBarOpen" class="fixed inset-0 bg-black bg-opacity-30 sm:hidden z-40" (click)="isSearchBarOpen = false"></div>
+
+  <!-- Enhanced Mobile Search Bar - Fixed positioning for iOS compatibility -->
+  <div *ngIf="isSearchBarOpen" class="fixed sm:hidden bg-white border-t border-gray-200 py-3 px-4 shadow-lg w-full left-0 top-16 z-50 search-bar active" style="position: fixed; top: 4rem;">
+    <div class="relative max-w-lg mx-auto">
       <input 
         type="text" 
         [(ngModel)]="searchQuery" 
-        (input)="searchProductsAsYouType()"
-        name="searchQuery"
-        placeholder="Search products..." 
-        class="bg-gray-100 rounded-full py-2.5 px-4 pr-12 text-sm w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-pink-200 border border-transparent focus:border-pink-200"
-        autocomplete="off"
+        (input)="searchProductsAsYouType()" 
         (keydown.enter)="$event.preventDefault()"
         (keydown.escape)="isSearchBarOpen = false"
+        name="searchQuery"
+        placeholder="Search products..." 
+        class="bg-gray-100 rounded-full py-3 px-4 pr-12 text-base w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-pink-200 border border-transparent focus:border-pink-200"
+        autocomplete="off"
+        #searchInput
+        (click)="$event.stopPropagation()"
       />
       <button *ngIf="searchQuery" (click)="clearSearch(); $event.stopPropagation()" class="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 p-1">
         <i class="fa-solid fa-xmark text-sm"></i>
