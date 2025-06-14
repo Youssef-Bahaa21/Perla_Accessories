@@ -20,46 +20,76 @@ export default async function handler(req, res) {
     let metaData = {
       title: 'Perla Accessories - Premium Handcrafted Accessories & Jewelry',
       description: 'Discover Perla\'s exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
-      image: `${baseUrl}/landing2.png`,
+      image: `${baseUrl}/logo.png`,
       url: baseUrl,
       type: 'website'
     };
 
     // Parse URL to extract route information
     if (url && url.includes('/products/')) {
-      const productId = url.split('/products/')[1];
+      const productId = url.split('/products/')[1].split('?')[0];
       
       if (productId && !isNaN(parseInt(productId))) {
         // Fetch product data from your API
         try {
-          const apiUrl = process.env.API_URL || 'https://web-production-cab5a.up.railway.app';
-          const response = await fetch(`${apiUrl}/api/products/${productId}`);
+          console.log(`🔍 Fetching product data for ID: ${productId}`);
+          const apiUrl = process.env.API_URL || API_BASE_URL;
+          const response = await fetch(`${apiUrl}/api/products/${productId}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
           
           if (response.ok) {
             const product = await response.json();
+            console.log(`✅ Product data fetched: ${product.name}`);
+            console.log(`🖼️ Product images:`, product.images?.length || 0);
+            
+            // Get the best image for sharing
+            let productImage = `${baseUrl}/logo.png`;
+            
+            if (product.images && product.images.length > 0) {
+              const firstImage = product.images[0];
+              // Handle different image object structures
+              productImage = firstImage.url || firstImage.image || productImage;
+              
+              // Ensure full URL
+              if (productImage && !productImage.startsWith('http')) {
+                productImage = `${baseUrl}${productImage}`;
+              }
+              
+              console.log(`🎯 Selected product image: ${productImage}`);
+            }
             
             metaData = {
-              title: `${product.name} - Premium Accessory by Perla`,
+              title: `${product.name} - Premium ${product.category?.name || 'Accessory'} by Perla`,
               description: product.description || `Shop ${product.name} from Perla's exclusive collection. Handcrafted with premium materials, this unique accessory is perfect for expressing your individual style. Price: ${product.price} EGP.`,
-              image: product.images?.[0]?.url || product.images?.[0]?.image || `${baseUrl}/landing2.png`,
+              image: productImage,
               url: `${baseUrl}/products/${productId}`,
               type: 'product',
               price: product.price,
-              currency: 'EGP'
+              currency: 'EGP',
+              availability: product.stock > 0 ? 'in stock' : 'out of stock'
             };
+            
+            console.log(`🎉 Final meta data:`, metaData);
+          } else {
+            console.warn(`⚠️ Failed to fetch product ${productId}: ${response.status}`);
           }
         } catch (error) {
-          console.error('Error fetching product data:', error);
+          console.error('❌ Error fetching product data:', error.message);
           // Fall back to default meta data
         }
       }
-    } else if (url && url.includes('/products?category=')) {
+    } else if (url && url.includes('/products') && url.includes('category=')) {
+      // Handle category pages
       const categoryMatch = url.match(/category=(\d+)/);
       if (categoryMatch) {
         const categoryId = categoryMatch[1];
         
         try {
-          const apiUrl = process.env.API_URL || 'https://web-production-cab5a.up.railway.app';
+          const apiUrl = process.env.API_URL || API_BASE_URL;
           const response = await fetch(`${apiUrl}/api/categories/${categoryId}`);
           
           if (response.ok) {
@@ -68,7 +98,7 @@ export default async function handler(req, res) {
             metaData = {
               title: `${category.name} Collection - Handcrafted Accessories`,
               description: category.description || `Explore our ${category.name.toLowerCase()} collection. Handcrafted accessories and jewelry designed to elevate your style.`,
-              image: `${baseUrl}/landing2.png`,
+              image: `${baseUrl}/logo.png`,
               url: `${baseUrl}/products?category=${categoryId}`,
               type: 'website'
             };
@@ -115,7 +145,7 @@ export default async function handler(req, res) {
       meta: {
         title: 'Perla Accessories',
         description: 'Premium handcrafted accessories and jewelry',
-        image: 'https://perla-accessories.vercel.app/landing2.png'
+        image: 'https://perla-accessories.vercel.app/logo.png'
       }
     });
   }

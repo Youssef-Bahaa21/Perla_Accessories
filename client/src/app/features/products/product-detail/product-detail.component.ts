@@ -9,7 +9,7 @@ import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SEOData } from '../../../core/services/seo.service';
 import { SocialMediaService } from '../../../core/services/social-media.service';
 
 // Import Swiper styles
@@ -50,6 +50,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   relatedProducts: Product[] = [];
   activeSlideIndex = 0;
   category?: Category;
+  productId: number = 0;
 
   private routeSubscription?: Subscription;
   private syncInterval?: any;
@@ -137,20 +138,24 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
-  ngOnInit() {
-    // Subscribe to route parameter changes to handle navigation between products
-    this.routeSubscription = this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
-      if (!id) {
-        this.error = 'Invalid product ID.';
-        this.loading = false;
-        return;
-      }
+  ngOnInit(): void {
+    // Get product ID from route immediately
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.productId = +id;
 
-      // Reset component state for new product
-      this.resetComponentState();
-      this.loadProduct(id);
-      this.loadReviews(id);
+        // Clear previous product data
+        this.product = undefined;
+        this.category = undefined;
+
+        // Set a basic SEO placeholder immediately for social media crawlers
+        this.setImmediateSEO(this.productId);
+
+        // Load product details
+        this.loadProduct(this.productId);
+        this.loadReviews(this.productId);
+      }
     });
   }
 
@@ -538,5 +543,20 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
     }
+  }
+
+  private setImmediateSEO(productId: number): void {
+    // Set placeholder SEO immediately for social media crawlers
+    // This prevents Facebook from seeing landing2.png while we wait for API response
+    const placeholderSEO: SEOData = {
+      title: `Product #${productId} - Premium Accessory by Perla`,
+      description: 'Beautiful handcrafted accessory from Perla\'s exclusive collection. Premium quality with unique design.',
+      image: 'https://perla-accessories.vercel.app/logo.png', // Use logo as safe fallback
+      url: `/products/${productId}`,
+      type: 'product'
+    };
+
+    console.log('🚀 Setting immediate SEO for product:', productId);
+    this.seo.updateSEO(placeholderSEO);
   }
 }

@@ -30,10 +30,11 @@
   <meta property="og:title" content="Perla Accessories - Premium Handcrafted Accessories &amp; Jewelry">
   <meta property="og:description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Shop premium quality accessories.">
   <meta property="og:url" content="https://perla-accessories.vercel.app">
-  <meta property="og:image" content="https://perla-accessories.vercel.app/landing2.png">
-  <meta property="og:image:secure_url" content="https://perla-accessories.vercel.app/landing2.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <!-- Default image will be updated by Angular SEO service -->
+  <meta property="og:image" content="https://perla-accessories.vercel.app/logo.png">
+  <meta property="og:image:secure_url" content="https://perla-accessories.vercel.app/logo.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:alt" content="Perla Accessories - Beautiful handcrafted jewelry and accessories collection">
   
@@ -44,7 +45,7 @@
   <meta property="product:price:currency" content="EGP">
   
   <!-- WhatsApp specific (uses Open Graph but these help) -->
-  <meta name="image" content="https://perla-accessories.vercel.app/landing2.png">
+  <meta name="image" content="https://perla-accessories.vercel.app/logo.png">
   <meta property="og:image:user_generated" content="false">
   
   <!-- Facebook App ID (add when available) -->
@@ -56,7 +57,7 @@
   <meta name="twitter:creator" content="@perlaaccesories0">
   <meta name="twitter:title" content="Perla Accessories - Premium Handcrafted Accessories &amp; Jewelry">
   <meta name="twitter:description" content="Discover Perla's exclusive collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.">
-  <meta name="twitter:image" content="https://perla-accessories.vercel.app/landing2.png">
+  <meta name="twitter:image" content="https://perla-accessories.vercel.app/logo.png">
   <meta name="twitter:image:alt" content="Perla Accessories - Beautiful handcrafted jewelry and accessories">
   <meta name="twitter:domain" content="perla-accessories.vercel.app">
   
@@ -105,6 +106,9 @@
   
   <!-- Preload critical images - Only for landing page -->
   <script>
+    // Check if we're in development (localhost) vs production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
     // Only preload landing images if we're on the home page
     if (window.location.pathname === '/' || window.location.pathname === '/landing') {
       const landing2Link = document.createElement('link');
@@ -116,14 +120,25 @@
       document.head.appendChild(landing2Link);
     }
     
-    // Always preload logo as it's used site-wide - fix crossorigin issue
-    const logoLink = document.createElement('link');
-    logoLink.rel = 'preload';
-    logoLink.as = 'image';
-    logoLink.href = '/logo.png';
-    logoLink.setAttribute('importance', 'high');
-    // Don't set crossorigin for same-origin requests to avoid credential mode mismatch
-    document.head.appendChild(logoLink);
+    // Preload logo - different handling for dev vs prod
+    if (isDevelopment) {
+      // For development, don't set crossorigin to avoid mismatch
+      const logoLink = document.createElement('link');
+      logoLink.rel = 'preload';
+      logoLink.as = 'image';
+      logoLink.href = '/logo.png';
+      logoLink.setAttribute('importance', 'high');
+      document.head.appendChild(logoLink);
+    } else {
+      // For production, use proper crossorigin handling
+      const logoLink = document.createElement('link');
+      logoLink.rel = 'preload';
+      logoLink.as = 'image';
+      logoLink.href = 'https://perla-accessories.vercel.app/logo.png';
+      logoLink.setAttribute('importance', 'high');
+      logoLink.crossOrigin = 'anonymous';
+      document.head.appendChild(logoLink);
+    }
   </script>
   
   <!-- AOS (Animate On Scroll) CSS -->
