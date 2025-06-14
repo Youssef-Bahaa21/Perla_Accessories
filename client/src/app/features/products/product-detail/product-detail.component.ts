@@ -9,8 +9,6 @@ import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
-import { SeoService, SEOData } from '../../../core/services/seo.service';
-import { SocialMediaService } from '../../../core/services/social-media.service';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -133,8 +131,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private confirmationModal = inject(ConfirmationModalService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
-  private seo = inject(SeoService);
-  private socialMedia = inject(SocialMediaService);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -148,9 +144,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         // Clear previous product data
         this.product = undefined;
         this.category = undefined;
-
-        // Set a basic SEO placeholder immediately for social media crawlers
-        this.setImmediateSEO(this.productId);
 
         // Load product details
         this.loadProduct(this.productId);
@@ -192,237 +185,121 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
         this.loading = false;
 
-        // Load category for SEO
+        // Load category for additional data
         if (this.product.category_id) {
           this.api.categories.get(this.product.category_id).subscribe({
             next: category => {
               this.category = category;
-              // Update SEO with product and category data
-              this.updateProductSEO();
             },
             error: () => {
-              // Still update SEO without category
-              this.updateProductSEO();
+              // Continue even if category fails to load
             }
           });
-        } else {
-          this.updateProductSEO();
         }
 
-        // Load related products - products in the same category
-        if (this.product && this.product.category_id) {
-          this.loadRelatedProducts(this.product.category_id, this.product.id);
-        }
+        this.loadRelatedProducts(this.product.category_id, this.product.id);
 
-        // Initialize swiper after product is loaded
-        setTimeout(() => this.initializeSwiper(), 100);
+        setTimeout(() => {
+          if (isPlatformBrowser(this.platformId)) {
+            this.initializeSwiper();
+          }
+        }, 100);
       },
-      error: () => {
-        this.error = 'Could not load product.';
+      error: err => {
+        this.error = 'Product not found.';
         this.loading = false;
-      }
+      },
     });
-  }
-
-  private updateProductSEO(): void {
-    if (!this.product) return;
-
-    // Skip app-level SEO update to let product page handle its own SEO
-    console.log('🚫 Skipping app-level SEO update for:', this.router.url, '(page handles its own SEO)');
-
-    // Debug: Log product data to see what images are available
-    console.log('🔍 Updating SEO for product:', this.product.name);
-    console.log('📸 Product images:', this.product.images);
-
-    const seoData = this.seo.generateProductSEO(this.product, this.category);
-
-    // Debug: Log the generated SEO data
-    console.log('🎯 Generated SEO data:', seoData);
-    console.log('🖼️ Image URL for sharing:', seoData.image);
-
-    // Clear any existing conflicting meta tags first
-    this.clearConflictingMetaTags();
-
-    // Apply product SEO immediately
-    this.seo.updateSEO(seoData);
-
-    // Delay to ensure proper application, then lock in the product SEO
-    setTimeout(() => {
-      console.log('🔒 Final product SEO lock-in');
-      this.seo.updateSEO(seoData);
-
-      // Verify meta tags after final update
-      this.verifyFinalMetaTags();
-    }, 300);
-  }
-
-  private clearConflictingMetaTags(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    // Remove potentially conflicting meta tags
-    const conflictingSelectors = [
-      'meta[property="og:image"]',
-      'meta[name="image"]',
-      'meta[name="twitter:image"]'
-    ];
-
-    conflictingSelectors.forEach(selector => {
-      const existingTags = document.querySelectorAll(selector);
-      existingTags.forEach(tag => tag.remove());
-    });
-  }
-
-  private verifyFinalMetaTags(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    console.log('🔍 FINAL VERIFICATION - Meta tags after lock-in:');
-
-    const ogImage = document.querySelector('meta[property="og:image"]')?.getAttribute('content');
-    const twitterImage = document.querySelector('meta[name="twitter:image"]')?.getAttribute('content');
-    const image = document.querySelector('meta[name="image"]')?.getAttribute('content');
-
-    console.log('- og:image:', ogImage);
-    console.log('- twitter:image:', twitterImage);
-    console.log('- image:', image);
   }
 
   private initializeSwiper() {
-    if (isPlatformBrowser(this.platformId) && this.mainSwiper && this.thumbsSwiper) {
-      const mainSwiperEl = this.mainSwiper.nativeElement;
-      const thumbsSwiperEl = this.thumbsSwiper.nativeElement;
+    try {
+      const mainSwiperEl = this.mainSwiper?.nativeElement;
+      const thumbsSwiperEl = this.thumbsSwiper?.nativeElement;
 
-      // Configure main swiper
-      Object.assign(mainSwiperEl, this.mainSwiperConfig);
+      if (mainSwiperEl && thumbsSwiperEl) {
+        // First initialize thumbnails swiper
+        Object.assign(thumbsSwiperEl, this.thumbsSwiperConfig);
+        thumbsSwiperEl.initialize();
 
-      // Configure thumbs swiper
-      Object.assign(thumbsSwiperEl, this.thumbsSwiperConfig);
-
-      // Initialize both swipers
-      mainSwiperEl.initialize();
-      thumbsSwiperEl.initialize();
-
-      // Set up thumbs connection after initialization
-      setTimeout(() => {
-        if (mainSwiperEl.swiper && thumbsSwiperEl.swiper) {
-          mainSwiperEl.swiper.thumbs.swiper = thumbsSwiperEl.swiper;
-          mainSwiperEl.swiper.thumbs.init();
-          mainSwiperEl.swiper.thumbs.update();
-        }
-      }, 100);
-
-      // Add multiple event listeners for all possible slide change scenarios
-      const updateActiveIndex = (event: any) => {
-        this.ngZone.run(() => {
-          const swiperInstance = event.detail?.[0] || mainSwiperEl.swiper;
-          if (swiperInstance) {
-            this.activeSlideIndex = swiperInstance.activeIndex;
-            this.cdr.detectChanges();
+        // Then initialize main swiper with thumbs reference
+        Object.assign(mainSwiperEl, {
+          ...this.mainSwiperConfig,
+          thumbs: {
+            swiper: thumbsSwiperEl.swiper
           }
         });
-      };
+        mainSwiperEl.initialize();
 
-      // Listen to all swiper events that indicate slide changes
-      mainSwiperEl.addEventListener('slidechange', updateActiveIndex);
-      mainSwiperEl.addEventListener('slidechangetransitionend', updateActiveIndex);
-      mainSwiperEl.addEventListener('slidechangetransitionstart', updateActiveIndex);
-      mainSwiperEl.addEventListener('slidernextend', updateActiveIndex);
-      mainSwiperEl.addEventListener('sliderprevend', updateActiveIndex);
-      mainSwiperEl.addEventListener('touchend', () => {
-        // For touch/drag events, we need a slight delay to get the correct index
-        setTimeout(() => {
+        // Add event listeners for slide changes
+        const updateActiveIndex = (event: any) => {
+          this.ngZone.run(() => {
+            this.activeSlideIndex = event.detail[0].activeIndex;
+            this.cdr.detectChanges();
+          });
+        };
+
+        mainSwiperEl.addEventListener('swiperslidechange', updateActiveIndex);
+        mainSwiperEl.addEventListener('slidetransitionend', updateActiveIndex);
+
+        // Sync slides periodically to ensure accuracy
+        this.syncInterval = setInterval(() => {
           if (mainSwiperEl.swiper) {
             this.ngZone.run(() => {
               this.activeSlideIndex = mainSwiperEl.swiper.activeIndex;
               this.cdr.detectChanges();
             });
           }
-        }, 50);
-      });
-
-      // Also listen to the swiper's internal progress change
-      mainSwiperEl.addEventListener('progress', () => {
-        if (mainSwiperEl.swiper) {
-          this.ngZone.run(() => {
-            this.activeSlideIndex = mainSwiperEl.swiper.activeIndex;
-            this.cdr.detectChanges();
-          });
-        }
-      });
-
-      // Set up a periodic sync to ensure the index is always correct
-      this.syncInterval = setInterval(() => {
-        if (mainSwiperEl.swiper && this.activeSlideIndex !== mainSwiperEl.swiper.activeIndex) {
-          this.ngZone.run(() => {
-            this.activeSlideIndex = mainSwiperEl.swiper.activeIndex;
-            this.cdr.detectChanges();
-          });
-        }
-      }, 100);
+        }, 100);
+      }
+    } catch (error) {
+      console.warn('Swiper initialization failed:', error);
     }
   }
 
   private loadReviews(id: number) {
-    console.log(`🔍 Loading reviews for product ${id}...`);
     this.api.reviews.list().subscribe({
-      next: all => {
-        console.log(`✅ Loaded ${all.length} total reviews`);
-        this.reviews = all.filter(r => r.product_id === id);
-        console.log(`📋 Found ${this.reviews.length} reviews for product ${id}`);
+      next: reviews => {
+        this.reviews = reviews.filter(r => r.product_id === id);
       },
-      error: (error) => {
-        console.error('❌ Failed to load reviews:', error);
-
-        // Handle different types of errors gracefully
-        if (error.status === 400) {
-          console.warn('⚠️ Reviews API returned 400 - possibly no reviews table or bad request');
-        } else if (error.status === 500) {
-          console.warn('⚠️ Reviews API server error - database might not be set up');
-        } else if (error.status === 0) {
-          console.warn('⚠️ Reviews API unreachable - server might be down');
-        }
-
-        // Set empty reviews array so the UI doesn't break
-        this.reviews = [];
-      }
+      error: () => {
+        // Reviews are optional, don't show error
+      },
     });
   }
 
   private loadRelatedProducts(categoryId: number, currentProductId: number) {
-    this.productSvc.getProducts<Product>(1, 50).subscribe({
+    this.productSvc.getProducts<Product>(1, 8).subscribe({
       next: resp => {
-        // Find products in the same category, excluding the current product
-        let relatedInCategory = resp.data
-          .filter(p => p.category_id === categoryId && p.id !== currentProductId);
-
-        // If we don't have enough products in the same category, add random products
-        if (relatedInCategory.length < 3) {
-          const otherProducts = resp.data
-            .filter(p => p.id !== currentProductId && !relatedInCategory.includes(p))
-            .slice(0, 3 - relatedInCategory.length);
-          relatedInCategory = [...relatedInCategory, ...otherProducts];
-        }
-
-        this.relatedProducts = relatedInCategory.slice(0, 3); // Show exactly 3 products
+        this.relatedProducts = resp.data
+          .filter(p => p.category_id === categoryId && p.id !== currentProductId)
+          .slice(0, 4)
+          .map(p => ({
+            ...p,
+            images: (p.images || []).map(img => ({
+              id: img.id,
+              url: img.url,
+            })),
+          }));
       },
-      error: () => { }
+      error: () => {
+        // Related products are optional
+      },
     });
   }
 
   addToCart() {
     if (this.product) {
       this.cart.add(this.product);
-      this.cartMessage = 'Added to your cart';
-      setTimeout(() => (this.cartMessage = ''), 3000);
+      this.cartMessage = 'Added to cart!';
+      setTimeout(() => (this.cartMessage = ''), 2000);
     }
   }
 
-  // Buy Now - Add to cart and redirect to shipping page without opening slide cart
   buyNow() {
     if (this.product) {
-      // Add product to cart silently (without opening the slide cart)
-      this.cart.addSilently(this.product);
-      // Navigate directly to shipping page
-      this.router.navigate(['/shipping']);
+      this.cart.add(this.product);
+      this.router.navigate(['/cart']);
     }
   }
 
@@ -431,108 +308,99 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   isLoggedIn(): boolean {
-    const currentUser = this.auth.currentUser$.value;
-    return !!currentUser;
+    return !!this.auth.currentUser$.value;
   }
 
   isAdmin(): boolean {
-    const currentUser = this.auth.currentUser$.value;
-    return currentUser?.role === 'admin';
+    const user = this.auth.currentUser$.value;
+    return !!user && user.role === 'admin';
   }
 
   async deleteReview(id: number) {
     const confirmed = await this.confirmationModal.confirm({
       title: 'Delete Review',
       message: 'Are you sure you want to delete this review? This action cannot be undone.',
-      confirmText: 'Delete Review',
+      confirmText: 'Delete',
       cancelText: 'Cancel',
-      type: 'danger',
-      icon: 'fa-solid fa-trash'
+      type: 'danger'
     });
 
-    if (!confirmed) return;
-
-    this.api.reviews.delete(id).subscribe({
-      next: () => this.product && this.loadReviews(this.product.id),
-      error: () => {
-        // Use toast notification instead of alert
-        console.error('Failed to delete review');
-      }
-    });
+    if (confirmed) {
+      this.api.reviews.delete(id).subscribe({
+        next: () => {
+          this.reviews = this.reviews.filter(r => r.id !== id);
+        },
+        error: () => {
+          // Handle error if needed
+        }
+      });
+    }
   }
 
   getStockPhrase(stock: number): string {
-    if (stock === 0) return 'Out of stock';
-    if (stock > 0 && stock <= 5) return 'Only a few left!';
+    if (stock <= 0) return 'Out of stock';
+    if (stock <= 5) return `Only ${stock} left!`;
     return 'In stock';
   }
 
   onReviewSubmitted() {
+    this.showReviewForm = false;
     if (this.product) {
       this.loadReviews(this.product.id);
-      this.showReviewForm = false; // Hide the form after submission
     }
   }
 
   onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = this.fallbackImage;
+    const target = event.target as HTMLImageElement;
+    target.src = this.fallbackImage;
   }
 
-  // Calculate average rating for reviews
   getAverageRating(): number {
-    if (!this.reviews || this.reviews.length === 0) return 0;
-    const sum = this.reviews.reduce((total, review) => total + review.rating, 0);
-    return sum / this.reviews.length;
+    if (!this.reviews.length) return 0;
+    const sum = this.reviews.reduce((acc, r) => acc + r.rating, 0);
+    return Number((sum / this.reviews.length).toFixed(1));
   }
 
-  // Scroll to top when navigating to product detail
   scrollToTop() {
-    if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo(0, 0);
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Add related product to cart
   addRelatedProductToCart(product: Product) {
-    if (product && product.stock && product.stock > 0) {
-      this.cart.add(product);
-      this.cartMessage = `Added ${product.name} to your cart`;
-      setTimeout(() => (this.cartMessage = ''), 3000);
-    }
+    this.cart.add(product);
+    // Brief feedback without message persistence
+    setTimeout(() => { }, 1000);
   }
 
-  // Swiper navigation methods
   goToSlide(index: number) {
-    if (this.mainSwiper && this.mainSwiper.nativeElement.swiper) {
-      this.activeSlideIndex = index;
-      this.mainSwiper.nativeElement.swiper.slideTo(index);
-      this.cdr.detectChanges();
+    const mainSwiperEl = this.mainSwiper?.nativeElement;
+    if (mainSwiperEl && mainSwiperEl.swiper) {
+      mainSwiperEl.swiper.slideTo(index);
     }
   }
 
   nextSlide() {
-    if (this.mainSwiper && this.mainSwiper.nativeElement.swiper) {
-      this.mainSwiper.nativeElement.swiper.slideNext();
-      // Force update the active index
-      setTimeout(() => {
-        if (this.mainSwiper && this.mainSwiper.nativeElement.swiper) {
-          this.activeSlideIndex = this.mainSwiper.nativeElement.swiper.activeIndex;
-          this.cdr.detectChanges();
-        }
-      }, 100);
+    const mainSwiperEl = this.mainSwiper?.nativeElement;
+    if (mainSwiperEl && mainSwiperEl.swiper) {
+      mainSwiperEl.swiper.slideNext();
+    } else {
+      // Fallback for manual control
+      if (this.product && this.product.images && this.product.images.length > 0) {
+        this.activeSlideIndex = (this.activeSlideIndex + 1) % this.product.images.length;
+      }
     }
   }
 
   prevSlide() {
-    if (this.mainSwiper && this.mainSwiper.nativeElement.swiper) {
-      this.mainSwiper.nativeElement.swiper.slidePrev();
-      // Force update the active index
-      setTimeout(() => {
-        if (this.mainSwiper && this.mainSwiper.nativeElement.swiper) {
-          this.activeSlideIndex = this.mainSwiper.nativeElement.swiper.activeIndex;
-          this.cdr.detectChanges();
-        }
-      }, 100);
+    const mainSwiperEl = this.mainSwiper?.nativeElement;
+    if (mainSwiperEl && mainSwiperEl.swiper) {
+      mainSwiperEl.swiper.slidePrev();
+    } else {
+      // Fallback for manual control
+      if (this.product && this.product.images && this.product.images.length > 0) {
+        this.activeSlideIndex = this.activeSlideIndex === 0
+          ? this.product.images.length - 1
+          : this.activeSlideIndex - 1;
+      }
     }
   }
 
@@ -543,20 +411,5 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
     }
-  }
-
-  private setImmediateSEO(productId: number): void {
-    // Set placeholder SEO immediately for social media crawlers
-    // This prevents Facebook from seeing landing2.png while we wait for API response
-    const placeholderSEO: SEOData = {
-      title: `Product #${productId} - Premium Accessory by Perla`,
-      description: 'Beautiful handcrafted accessory from Perla\'s exclusive collection. Premium quality with unique design.',
-      image: 'https://perla-accessories.vercel.app/logo.png', // Use logo as safe fallback
-      url: `/products/${productId}`,
-      type: 'product'
-    };
-
-    console.log('🚀 Setting immediate SEO for product:', productId);
-    this.seo.updateSEO(placeholderSEO);
   }
 }

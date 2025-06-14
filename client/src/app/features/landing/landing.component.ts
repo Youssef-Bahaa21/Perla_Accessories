@@ -7,8 +7,6 @@ import { Product, Category } from '../../core/models';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { ProductService } from '../../core/services/product.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { SeoService } from '../../core/services/seo.service';
-import { SocialMediaService } from '../../core/services/social-media.service';
 import AOS from 'aos';
 
 @Component({
@@ -72,8 +70,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private api = inject(ApiService);
   private router = inject(Router);
   private notification = inject(NotificationService);
-  private seo = inject(SeoService);
-  private socialMedia = inject(SocialMediaService);
 
   ngOnInit(): void {
     this.loadFeaturedProducts();
@@ -151,37 +147,12 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
         this.loading = false;
-
-        // Update SEO with product collection data after products are loaded
-        this.updateSEOWithProducts();
       },
       error: () => {
         this.error = 'Could not load featured products.';
         this.loading = false;
-
-        // Fallback to default homepage SEO if products fail to load
-        this.seo.updateSEO(this.seo.generateHomepageSEO());
-        this.seo.updateCanonicalUrl('/');
-        this.socialMedia.resetToDefault();
       },
     });
-  }
-
-  private updateSEOWithProducts(): void {
-    if (this.featuredProducts.length > 0) {
-      // Use product collection SEO that showcases actual products
-      const seoData = this.seo.generateProductCollectionSEO(this.featuredProducts);
-      this.seo.updateSEO(seoData);
-      this.seo.updateCanonicalUrl('/');
-
-      // Update social media tags with products
-      this.socialMedia.updateHomepageWithProducts(this.featuredProducts);
-    } else {
-      // Fallback to homepage SEO if no featured products
-      this.seo.updateSEO(this.seo.generateHomepageSEO());
-      this.seo.updateCanonicalUrl('/');
-      this.socialMedia.resetToDefault();
-    }
   }
 
   private loadCategories(): void {
@@ -198,11 +169,17 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
           AOS.refresh();
         }, 100);
       },
-      error: (error) => {
+      error: () => {
         this.categoriesError = 'Could not load categories.';
         this.categoriesLoading = false;
-        console.error('Categories loading error:', error);
       },
+    });
+  }
+
+  // Navigation methods
+  navigateToProduct(productId: number): void {
+    this.router.navigate(['/products', productId]).then(() => {
+      this.scrollToTop();
     });
   }
 
@@ -214,7 +191,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Navigate to products page and scroll to top
   navigateToProducts(): void {
     this.router.navigate(['/products']).then(() => {
       this.scrollToTop();
@@ -228,20 +204,16 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Smooth scroll to top function
   private scrollToTop(): void {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Handle image load errors
   onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = this.fallbackImage;
+    const target = event.target as HTMLImageElement;
+    target.src = this.fallbackImage;
   }
 
-  // Newsletter signup functionality
   subscribeToNewsletter(): void {
     if (!this.newsletterEmail || !this.isValidEmail(this.newsletterEmail)) {
       this.notification.show('Please enter a valid email address', 'error');
@@ -249,13 +221,15 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.newsletterLoading = true;
+    this.newsletterMessage = '';
 
-    // Simulate newsletter subscription (replace with actual API call when available)
+    // Simulate newsletter subscription
     setTimeout(() => {
       this.newsletterLoading = false;
-      this.notification.show('Thank you for subscribing! Welcome to the Perla family 🌸', 'success');
+      this.newsletterMessage = 'Thank you for subscribing!';
+      this.notification.show('Successfully subscribed to newsletter!', 'success');
       this.newsletterEmail = '';
-    }, 1500);
+    }, 1000);
   }
 
   private isValidEmail(email: string): boolean {
@@ -263,7 +237,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     return emailRegex.test(email);
   }
 
-  // Scroll to section functionality
   scrollToSection(sectionId: string): void {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -271,7 +244,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Generate star rating array
   getStars(rating: number): boolean[] {
     return Array(5).fill(false).map((_, i) => i < rating);
   }

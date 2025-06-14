@@ -15,8 +15,6 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { CartComponent } from './features/cart/cart.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { SeoService } from './core/services/seo.service';
-import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -47,19 +45,11 @@ export class AppComponent implements OnInit {
     private confirmationModal: ConfirmationModalService,
     private http: HttpClient,
     private router: Router,
-    private viewContainerRef: ViewContainerRef,
-    private seo: SeoService
+    private viewContainerRef: ViewContainerRef
   ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Subscribe to router events to update SEO for each page
-      this.router.events.subscribe(event => {
-        if (event instanceof NavigationEnd) {
-          this.updatePageSEO(event.url);
-        }
-      });
-
       // Initialize authentication and user state
       this.authService.currentUser$.subscribe((user: any) => {
         this.user = user;
@@ -77,43 +67,6 @@ export class AppComponent implements OnInit {
 
       this.confirmationModal.setViewContainerRef(this.viewContainerRef);
     }
-  }
-
-  private updatePageSEO(url: string): void {
-    // Skip SEO updates for routes that handle their own SEO
-    if (url.includes('/products/') ||
-      url.includes('/landing') ||
-      url.includes('/category') ||
-      url.includes('/cart') ||
-      url.includes('/checkout') ||
-      url.includes('/admin') ||
-      url.includes('/login') ||
-      url.includes('/register')) {
-      console.log('🚫 Skipping app-level SEO update for:', url, '(page handles its own SEO)');
-      return;
-    }
-
-    // Update SEO based on the current route
-    if (url === '/') {
-      console.log('🏠 Updating homepage SEO');
-      this.seo.updateSEO(this.seo.generateHomepageSEO());
-    } else if (url === '/about') {
-      console.log('ℹ️ Updating about page SEO');
-      this.seo.updateSEO(this.seo.generateAboutSEO());
-    } else if (url === '/privacy-policy') {
-      console.log('🔒 Updating privacy policy SEO');
-      this.seo.updateSEO(this.seo.generatePrivacyPolicySEO());
-    } else if (url === '/terms-of-service') {
-      console.log('📋 Updating terms of service SEO');
-      this.seo.updateSEO(this.seo.generateTermsOfServiceSEO());
-    } else if (url.includes('/returns-policy')) {
-      console.log('↩️ Updating returns policy SEO');
-      this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('returns'));
-    } else if (url.includes('/shipping-details')) {
-      console.log('🚚 Updating shipping details SEO');
-      this.seo.updateSEO(this.seo.generateReturnsOrShippingPolicySEO('shipping'));
-    }
-    // All other pages use default homepage SEO or handle their own
   }
 
   @HostListener('document:click', ['$event'])

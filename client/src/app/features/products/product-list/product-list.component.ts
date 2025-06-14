@@ -17,8 +17,6 @@ import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { SearchService } from '../../../core/services/search.service';
 import { Product, Category } from '../../../core/models';
-import { SeoService } from '../../../core/services/seo.service';
-import { SocialMediaService } from '../../../core/services/social-media.service';
 
 @Component({
   selector: 'app-product-list',
@@ -63,8 +61,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private searchService = inject(SearchService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private seo = inject(SeoService);
-  private socialMedia = inject(SocialMediaService);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -76,7 +72,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.api.categories.list().subscribe({
       next: cats => {
         this.categories = cats;
-        this.updateSEO();
       },
       error: () => (this.error = 'Could not load categories.'),
     });
@@ -86,14 +81,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
       if (params['category']) {
         this.selectedCategory = +params['category'];
         this.applyFilters();
-        this.updateSEO();
       } else if (params['search']) {
         // Handle search query parameter
         this.searchQuery = params['search'];
         this.applyFilters();
-        this.updateSEO();
-      } else {
-        this.updateSEO();
       }
     });
 
@@ -121,65 +112,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private updateSEO(): void {
-    if (this.selectedCategory !== 'all') {
-      // Category-specific SEO
-      const category = this.categories.find(cat => cat.id === +this.selectedCategory);
-      if (category) {
-        const seoData = this.seo.generateCategorySEO(category);
-        this.seo.updateSEO(seoData);
-        this.seo.updateCanonicalUrl(`/products?category=${category.id}`);
-
-        // Update social media tags for category
-        this.socialMedia.updateCategorySocialMedia(category.name, this.filteredProducts);
-
-        // Add breadcrumb for category
-        const breadcrumbs = [
-          { name: 'Home', url: '/' },
-          { name: 'Products', url: '/products' },
-          { name: category.name, url: `/products?category=${category.id}` }
-        ];
-        const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
-        this.seo.updateSEO({ structuredData: breadcrumbData });
-      }
-    } else {
-      // General products page SEO
-      const seoData = {
-        title: 'Premium Handcrafted Accessories Collection',
-        description: 'Discover Perla\'s complete collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style. Premium quality with 3 years of craftsmanship excellence.',
-        keywords: 'accessories collection, handcrafted jewelry, premium accessories, perla accessories, unique style, limited edition, fashion accessories',
-        url: '/products',
-        type: 'website' as const,
-        structuredData: {
-          '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          name: 'Perla Accessories Collection',
-          description: 'Complete collection of handcrafted accessories and jewelry',
-          url: 'https://perla-accessories.vercel.app/products'
-        }
-      };
-      this.seo.updateSEO(seoData);
-      this.seo.updateCanonicalUrl('/products');
-
-      // Update social media tags for general products page
-      this.socialMedia.updateSocialMediaTags({
-        title: 'Premium Handcrafted Accessories Collection - Perla Accessories',
-        description: 'Discover Perla\'s complete collection of handcrafted accessories and jewelry. Unique, limited edition pieces designed to express your individual style.',
-        image: 'https://perla-accessories.vercel.app/landing.png',
-        url: 'https://perla-accessories.vercel.app/products',
-        imageAlt: 'Perla Accessories - Beautiful handcrafted jewelry collection'
-      });
-
-      // Add breadcrumb for products page
-      const breadcrumbs = [
-        { name: 'Home', url: '/' },
-        { name: 'Products', url: '/products' }
-      ];
-      const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
-      this.seo.updateSEO({ structuredData: breadcrumbData });
-    }
-  }
-
   private loadPage() {
     this.loading = true;
 
@@ -198,16 +130,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
           };
         });
         this.products.push(...newItems);
+        this.filteredProducts = [...this.products];
 
-        newItems.forEach(p => {
-          this.activeImageIndices[p.id] = 0;
-        });
-
-        this.applyFilters();
         this.loading = false;
 
-        const totalPages = Math.ceil(resp.total / this.pageSize);
-        this.allProductsLoaded = this.page >= totalPages;
+        if (newItems.length < this.pageSize) {
+          this.allProductsLoaded = true;
+        }
+
+        this.applyFilters();
       },
       error: () => {
         this.error = 'Could not load products.';
@@ -216,69 +147,55 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:scroll', [])
+  @HostListener('window:scroll', ['$event'])
   onScroll(): void {
-    if (!this.isBrowser) return;
+    if (this.isBrowser && !this.loading && !this.allProductsLoaded) {
+      const threshold = 300;
+      const scrollPosition = window.pageYOffset + window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
 
-    const threshold = document.documentElement.scrollHeight - 300;
-    const position = window.pageYOffset + window.innerHeight;
-
-    if (position > threshold && !this.loading && !this.allProductsLoaded) {
-      this.page++;
-      this.loadPage();
+      if (scrollPosition >= documentHeight - threshold) {
+        this.page++;
+        this.loadPage();
+      }
     }
   }
 
   applyFilters() {
-    // First filter products by all criteria except search
-    const filteredByOtherCriteria = this.products.filter(p => {
-      const byCat = this.selectedCategory === 'all' || p.category_id === +this.selectedCategory;
-      const byStock =
-        this.stockFilter === 'all' ||
-        (this.stockFilter === 'in' && p.stock > 0) ||
-        (this.stockFilter === 'out' && p.stock === 0);
-      const byTag =
-        this.tagFilter === 'all' ||
-        (this.tagFilter === 'new' && p.is_new) ||
-        (this.tagFilter === 'best' && p.is_best_seller);
+    let filtered = [...this.products];
 
-      return byCat && byStock && byTag;
-    });
-
-    // If there's a search query, prioritize by search terms
-    if (this.searchQuery) {
-      const searchTerm = this.searchQuery.toLowerCase().trim();
-
-      // Products starting with search term (high priority)
-      const startsWithResults = filteredByOtherCriteria.filter(p =>
-        p.name.toLowerCase().startsWith(searchTerm)
-      );
-
-      // Products containing search term but not starting with it (medium priority)
-      const containsResults = filteredByOtherCriteria.filter(p =>
-        !p.name.toLowerCase().startsWith(searchTerm) &&
-        p.name.toLowerCase().includes(searchTerm)
-      );
-
-      // Products with search term in description (low priority)
-      const descriptionResults = filteredByOtherCriteria.filter(p =>
-        !p.name.toLowerCase().includes(searchTerm) &&
-        p.description &&
-        p.description.toLowerCase().includes(searchTerm)
-      );
-
-      // Combine results in priority order
-      this.filteredProducts = [
-        ...startsWithResults,
-        ...containsResults,
-        ...descriptionResults
-      ];
-    } else {
-      // No search term, just use other filters
-      this.filteredProducts = filteredByOtherCriteria;
+    // Category filter
+    if (this.selectedCategory !== 'all') {
+      filtered = filtered.filter(p => p.category_id === +this.selectedCategory);
     }
 
-    // Update URL with current filters
+    // Stock filter
+    if (this.stockFilter === 'in') {
+      filtered = filtered.filter(p => p.stock > 0);
+    } else if (this.stockFilter === 'out') {
+      filtered = filtered.filter(p => p.stock === 0);
+    }
+
+    // Tag filter
+    if (this.tagFilter === 'new') {
+      filtered = filtered.filter(p => p.is_new === 1);
+    } else if (this.tagFilter === 'best') {
+      filtered = filtered.filter(p => p.is_best_seller === 1);
+    }
+
+    // Search filter
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        p =>
+          p.name.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query)
+      );
+    }
+
+    this.filteredProducts = filtered;
+
+    // Update URL parameters
     this.updateUrlParams();
   }
 
@@ -293,11 +210,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
       queryParams.search = this.searchQuery;
     }
 
+    // Update the URL without reloading the page
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: queryParams,
-      queryParamsHandling: 'merge',
-      replaceUrl: true
+      queryParams,
+      queryParamsHandling: 'merge'
     });
   }
 
@@ -312,18 +229,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
   addToCart(p: Product) {
     this.cart.add(p);
     this.addedToCartMessage[p.id] = 'Added to cart!';
-    setTimeout(() => (this.addedToCartMessage[p.id] = ''), 2000);
+    setTimeout(() => delete this.addedToCartMessage[p.id], 2000);
   }
 
   setActiveImage(pid: number, idx: number) { this.activeImageIndices[pid] = idx; }
 
   hasActiveFilters() {
-    return this.stockFilter !== 'all' || this.selectedCategory !== 'all' || this.tagFilter !== 'all' || !!this.searchQuery;
+    return this.selectedCategory !== 'all' || this.stockFilter !== 'all' || this.tagFilter !== 'all' || this.searchQuery !== '';
   }
 
   getCategoryName(id: number | 'all'): string {
-    if (id === 'all') return '';
-    return this.categories.find(c => c.id === +id)?.name || 'Unknown';
+    if (id === 'all') return 'All Categories';
+    return this.categories.find(c => c.id === id)?.name || 'Unknown';
   }
 
   getActiveFiltersCount(): number {
@@ -331,7 +248,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (this.selectedCategory !== 'all') count++;
     if (this.stockFilter !== 'all') count++;
     if (this.tagFilter !== 'all') count++;
-    if (this.searchQuery) count++;
+    if (this.searchQuery !== '') count++;
     return count;
   }
 
@@ -355,42 +272,36 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   getWindowWidth(): number {
-    if (this.isBrowser && typeof window !== 'undefined') {
-      return window.innerWidth;
-    }
-    return 1200; // Default width for SSR
+    return this.isBrowser ? window.innerWidth : 1024;
   }
 
-  // Enhanced mobile detection method - ultra-reliable for Android/iPhone
+  // Mobile-specific methods
   isMobileDevice(): boolean {
     if (!this.isBrowser) return false;
 
-    // Multiple detection methods for 100% accuracy
     const userAgent = navigator.userAgent.toLowerCase();
-    const isMobileUserAgent = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const isSmallScreen = this.getWindowWidth() < 768;
+    const mobileKeywords = [
+      'android', 'webos', 'iphone', 'ipad', 'ipod',
+      'blackberry', 'windows phone', 'mobile'
+    ];
 
-    // Additional checks for Android and iOS specifically
-    const isAndroid = /android/i.test(userAgent);
-    const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+    const isMobileUserAgent = mobileKeywords.some(keyword =>
+      userAgent.includes(keyword)
+    );
 
-    // Return true if ANY mobile indicator is detected
-    return isMobileUserAgent || isTouchDevice || isSmallScreen || isAndroid || isIOS;
+    const isMobileViewport = window.innerWidth <= 768;
+
+    return isMobileUserAgent || isMobileViewport;
   }
 
-  // Completely disabled methods for mobile - only work on desktop
   showNextImageDesktop(pid: number, count: number) {
-    // ONLY trigger on desktop devices - completely disabled on mobile
-    if (!this.isMobileDevice() && count > 1) {
-      this.activeImageIndices[pid] = 1;
+    if (!this.activeImageIndices[pid]) {
+      this.activeImageIndices[pid] = 0;
     }
+    this.activeImageIndices[pid] = (this.activeImageIndices[pid] + 1) % count;
   }
 
   resetImageDesktop(pid: number) {
-    // ONLY trigger on desktop devices - completely disabled on mobile
-    if (!this.isMobileDevice()) {
-      this.activeImageIndices[pid] = 0;
-    }
+    this.activeImageIndices[pid] = 0;
   }
 }
