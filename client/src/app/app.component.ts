@@ -53,9 +53,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Initialize SEO with default homepage data
-      this.seo.updateSEO(this.seo.generateHomepageSEO());
-
       // Subscribe to router events to update SEO for each page
       this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
@@ -69,7 +66,7 @@ export class AppComponent implements OnInit {
       });
 
       // Fetch CSRF token with debugging
-      this.http.get('/api/csrf-token', { withCredentials: true }).subscribe({
+      this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe({
         next: (response) => {
           console.log('✅ CSRF token fetched successfully');
         },
