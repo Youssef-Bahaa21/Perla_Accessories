@@ -103,9 +103,29 @@
   <!-- Resource hints for landing images -->
   <link rel="dns-prefetch" href="//perla-accessories.vercel.app">
   
-  <!-- Preload critical images -->
-  <link rel="preload" as="image" href="/landing2.png" media="(min-width: 768px)" importance="high" crossorigin="anonymous">
-  <link rel="preload" as="image" href="/logo.png" importance="high" crossorigin="anonymous">
+  <!-- Preload critical images - Only for landing page -->
+  <script>
+    // Only preload landing images if we're on the home page
+    if (window.location.pathname === '/' || window.location.pathname === '/landing') {
+      const landing2Link = document.createElement('link');
+      landing2Link.rel = 'preload';
+      landing2Link.as = 'image';
+      landing2Link.href = '/landing2.png';
+      landing2Link.media = '(min-width: 768px)';
+      landing2Link.setAttribute('importance', 'high');
+      landing2Link.crossOrigin = 'anonymous';
+      document.head.appendChild(landing2Link);
+    }
+    
+    // Always preload logo as it's used site-wide
+    const logoLink = document.createElement('link');
+    logoLink.rel = 'preload';
+    logoLink.as = 'image';
+    logoLink.href = '/logo.png';
+    logoLink.setAttribute('importance', 'high');
+    logoLink.crossOrigin = 'anonymous';
+    document.head.appendChild(logoLink);
+  </script>
   
   <!-- AOS (Animate On Scroll) CSS -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />

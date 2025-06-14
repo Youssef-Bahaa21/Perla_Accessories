@@ -213,21 +213,36 @@ export function sanitizeUrl(url: string): string {
  */
 export function sanitizeUserContent(req: Request, res: Response, next: NextFunction) {
     try {
-        // Apply general sanitization first
-        sanitizeInputs(req, res, () => { });
+        console.log('🧹 Sanitizing user content for:', req.method, req.path);
 
-        // Additional sanitization for user content fields
-        const contentFields = ['content', 'comment', 'description', 'message', 'text'];
+        // For GET requests, we don't need to sanitize body content
+        if (req.method === 'GET') {
+            console.log('✅ GET request - skipping body sanitization');
+            return next();
+        }
 
-        for (const field of contentFields) {
-            if (req.body[field]) {
-                req.body[field] = sanitizeUserContentString(req.body[field]);
+        // Apply general sanitization for non-GET requests
+        if (req.body && typeof req.body === 'object') {
+            // Apply mongoSanitize to prevent NoSQL injection
+            if (req.body) mongoSanitize.sanitize(req.body);
+
+            // Deep sanitize body data
+            req.body = deepSanitize(req.body);
+
+            // Additional sanitization for user content fields
+            const contentFields = ['content', 'comment', 'description', 'message', 'text'];
+
+            for (const field of contentFields) {
+                if (req.body[field]) {
+                    req.body[field] = sanitizeUserContentString(req.body[field]);
+                }
             }
         }
 
+        console.log('✅ User content sanitization completed');
         next();
     } catch (error) {
-        console.error('User content sanitization error:', error);
+        console.error('❌ User content sanitization error:', error);
         res.status(400).json({ error: 'Invalid content data' });
     }
 }

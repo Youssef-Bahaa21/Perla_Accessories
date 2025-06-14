@@ -16,15 +16,33 @@ export interface UpdateReviewDTO {
 export class ReviewService {
     async findAll() {
         try {
+            // Test database connection first
+            await pool.query('SELECT 1');
+
             const [rows] = await pool.query<RowDataPacket[]>(`
                 SELECT id, product_id, user_id, rating, comment, created_at
                 FROM review
                 ORDER BY created_at DESC;
             `);
+
+            console.log(`✅ Found ${Array.isArray(rows) ? rows.length : 0} reviews`);
             return rows;
         } catch (error) {
-            console.error('Error fetching reviews:', error);
-            throw new Error('Failed to fetch reviews');
+            console.error('❌ Error fetching reviews:', error);
+            console.error('Error details:', {
+                code: (error as any).code,
+                errno: (error as any).errno,
+                sqlMessage: (error as any).sqlMessage,
+                sql: (error as any).sql
+            });
+
+            // Check if it's a table existence issue
+            if ((error as any).code === 'ER_NO_SUCH_TABLE') {
+                console.error('❌ Review table does not exist in database');
+                throw new Error('Review table not found - database needs to be set up');
+            }
+
+            throw new Error(`Failed to fetch reviews: ${(error as any).message}`);
         }
     }
 

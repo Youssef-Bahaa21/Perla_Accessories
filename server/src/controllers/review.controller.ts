@@ -9,12 +9,33 @@ const svc = new ReviewService();
 
 export const getReviews: RequestHandler = async (_req, res, next) => {
     try {
+        console.log('📝 GET /api/reviews - Attempting to fetch reviews...');
         const reviews = await svc.findAll();
+        console.log(`✅ Successfully fetched ${reviews.length} reviews`);
         res.json(reviews);
     }
     catch (error) {
-        console.error('Error in getReviews:', error);
-        next(error);
+        console.error('❌ Error in getReviews controller:', error);
+
+        // Send a proper error response
+        const errorMessage = (error as Error).message || 'Unknown error occurred';
+
+        if (errorMessage.includes('table not found') || errorMessage.includes('ER_NO_SUCH_TABLE')) {
+            res.status(500).json({
+                message: "Database table 'review' not found. Please run database migrations.",
+                error: 'MISSING_TABLE'
+            });
+        } else if (errorMessage.includes('connection')) {
+            res.status(500).json({
+                message: "Database connection failed",
+                error: 'CONNECTION_ERROR'
+            });
+        } else {
+            res.status(500).json({
+                message: "Failed to fetch reviews",
+                error: errorMessage
+            });
+        }
     }
 };
 

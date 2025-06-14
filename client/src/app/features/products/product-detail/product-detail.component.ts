@@ -357,11 +357,28 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   private loadReviews(id: number) {
+    console.log(`🔍 Loading reviews for product ${id}...`);
     this.api.reviews.list().subscribe({
       next: all => {
+        console.log(`✅ Loaded ${all.length} total reviews`);
         this.reviews = all.filter(r => r.product_id === id);
+        console.log(`📋 Found ${this.reviews.length} reviews for product ${id}`);
       },
-      error: () => { }
+      error: (error) => {
+        console.error('❌ Failed to load reviews:', error);
+
+        // Handle different types of errors gracefully
+        if (error.status === 400) {
+          console.warn('⚠️ Reviews API returned 400 - possibly no reviews table or bad request');
+        } else if (error.status === 500) {
+          console.warn('⚠️ Reviews API server error - database might not be set up');
+        } else if (error.status === 0) {
+          console.warn('⚠️ Reviews API unreachable - server might be down');
+        }
+
+        // Set empty reviews array so the UI doesn't break
+        this.reviews = [];
+      }
     });
   }
 
