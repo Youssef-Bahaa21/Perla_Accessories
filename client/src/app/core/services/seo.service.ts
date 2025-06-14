@@ -601,43 +601,46 @@ export class SeoService {
         this.document.head.appendChild(script);
     }
 
-    private forceRemoveMetaTags(tags: string[]): void {
+    private forceRemoveMetaTags(tagNames: string[]): void {
         if (!isPlatformBrowser(this.platformId)) return;
 
-        tags.forEach(tag => {
-            // Remove meta tags with 'name' attribute
-            const nameTag = this.document.querySelector(`meta[name="${tag}"]`);
-            if (nameTag) {
-                nameTag.remove();
-            }
+        console.log('🗑️ Removed existing meta tags for:', tagNames);
 
-            // Remove meta tags with 'property' attribute
-            const propertyTag = this.document.querySelector(`meta[property="${tag}"]`);
-            if (propertyTag) {
-                propertyTag.remove();
-            }
+        tagNames.forEach(tagName => {
+            // Remove Open Graph properties
+            this.meta.removeTag(`property="${tagName}"`);
+            // Remove name-based meta tags
+            this.meta.removeTag(`name="${tagName}"`);
+
+            // Also remove from DOM directly for guaranteed removal
+            const selectors = [
+                `meta[property="${tagName}"]`,
+                `meta[name="${tagName}"]`
+            ];
+
+            selectors.forEach(selector => {
+                const elements = this.document.querySelectorAll(selector);
+                elements.forEach(el => el.remove());
+            });
         });
-
-        console.log('🗑️ Removed existing meta tags for:', tags);
     }
 
     private forceMetaTagUpdate(): void {
         if (!isPlatformBrowser(this.platformId)) return;
 
-        // Wait a brief moment to ensure DOM is ready
+        // Force DOM refresh for social media crawlers
         setTimeout(() => {
-            // Force a layout recalculation
-            this.document.head.offsetHeight;
-
-            // Trigger a reparse of meta tags by touching the DOM
-            const tempMeta = this.document.createElement('meta');
-            tempMeta.setAttribute('name', 'temp-meta-tag');
-            tempMeta.setAttribute('content', 'temp');
-            this.document.head.appendChild(tempMeta);
-            this.document.head.removeChild(tempMeta);
-
-            console.log('🔄 Forced meta tag DOM update');
+            this.verifyMetaTags();
         }, 100);
+
+        // Multiple verification rounds for better reliability
+        setTimeout(() => {
+            this.verifyMetaTags();
+        }, 200);
+
+        setTimeout(() => {
+            this.verifyMetaTags();
+        }, 500);
     }
 
     private verifyMetaTags(): void {

@@ -26,6 +26,12 @@ export class SocialMediaService {
     ) { }
 
     updateSocialMediaTags(data: SocialMediaData): void {
+        // Check if we're on a product page and skip update to avoid conflicts
+        if (typeof window !== 'undefined' && window.location.pathname.includes('/products/')) {
+            console.log('🚫 Social media service skipping update on product page to avoid SEO conflicts');
+            return;
+        }
+
         // Update page title
         this.titleService.setTitle(data.title);
 

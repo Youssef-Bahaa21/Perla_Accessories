@@ -222,6 +222,9 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private updateProductSEO(): void {
     if (!this.product) return;
 
+    // Skip app-level SEO update to let product page handle its own SEO
+    console.log('🚫 Skipping app-level SEO update for:', this.router.url, '(page handles its own SEO)');
+
     // Debug: Log product data to see what images are available
     console.log('🔍 Updating SEO for product:', this.product.name);
     console.log('📸 Product images:', this.product.images);
@@ -232,86 +235,50 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     console.log('🎯 Generated SEO data:', seoData);
     console.log('🖼️ Image URL for sharing:', seoData.image);
 
+    // Clear any existing conflicting meta tags first
+    this.clearConflictingMetaTags();
+
+    // Apply product SEO immediately
     this.seo.updateSEO(seoData);
 
-    // Update social media sharing for product (but don't let it override our SEO)
-    this.socialMedia.updateProductSocialMedia(this.product);
-
-    // IMPORTANT: Re-apply our SEO after social media service to prevent conflicts
-    setTimeout(() => {
-      console.log('🛡️ Re-applying product SEO to prevent conflicts');
-      this.seo.updateSEO(seoData);
-    }, 100);
-
-    // Force update meta tags for immediate effect
-    if (isPlatformBrowser(this.platformId)) {
-      // Ensure the image meta tag is properly set for WhatsApp
-      const imageMeta = document.querySelector('meta[property="og:image"]');
-      if (imageMeta && seoData.image) {
-        imageMeta.setAttribute('content', seoData.image);
-        console.log('✅ Updated og:image meta tag:', seoData.image);
-      }
-
-      // Also update the general image meta tag for WhatsApp
-      const generalImageMeta = document.querySelector('meta[name="image"]');
-      if (generalImageMeta && seoData.image) {
-        generalImageMeta.setAttribute('content', seoData.image);
-        console.log('✅ Updated image meta tag:', seoData.image);
-      }
-
-      // Update Twitter image
-      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]');
-      if (twitterImageMeta && seoData.image) {
-        twitterImageMeta.setAttribute('content', seoData.image);
-        console.log('✅ Updated twitter:image meta tag:', seoData.image);
-      }
-    }
-
-    // Add breadcrumb structured data
-    const breadcrumbs = [
-      { name: 'Home', url: '/' },
-      { name: 'Products', url: '/products' }
-    ];
-
-    if (this.category) {
-      breadcrumbs.push({
-        name: this.category.name,
-        url: `/products?category=${this.category.id}`
-      });
-    }
-
-    breadcrumbs.push({
-      name: this.product.name,
-      url: `/products/${this.product.id}`
-    });
-
-    const breadcrumbData = this.seo.generateBreadcrumbStructuredData(breadcrumbs);
-    this.seo.updateSEO({ structuredData: breadcrumbData });
-
-    // Log final meta tags for debugging
-    if (isPlatformBrowser(this.platformId)) {
-      console.log('🔍 Final meta tags check:');
-      console.log('- og:image:', document.querySelector('meta[property="og:image"]')?.getAttribute('content'));
-      console.log('- og:title:', document.querySelector('meta[property="og:title"]')?.getAttribute('content'));
-      console.log('- og:description:', document.querySelector('meta[property="og:description"]')?.getAttribute('content'));
-      console.log('- image:', document.querySelector('meta[name="image"]')?.getAttribute('content'));
-    }
-
-    // Final defensive mechanism: Re-apply SEO after everything else is done
+    // Delay to ensure proper application, then lock in the product SEO
     setTimeout(() => {
       console.log('🔒 Final product SEO lock-in');
       this.seo.updateSEO(seoData);
 
-      // Force immediate DOM verification
-      setTimeout(() => {
-        if (isPlatformBrowser(this.platformId)) {
-          console.log('🔍 FINAL VERIFICATION - Meta tags after lock-in:');
-          console.log('- og:image:', document.querySelector('meta[property="og:image"]')?.getAttribute('content'));
-          console.log('- twitter:image:', document.querySelector('meta[name="twitter:image"]')?.getAttribute('content'));
-          console.log('- image:', document.querySelector('meta[name="image"]')?.getAttribute('content'));
-        }
-      }, 50);
-    }, 500);
+      // Verify meta tags after final update
+      this.verifyFinalMetaTags();
+    }, 300);
+  }
+
+  private clearConflictingMetaTags(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Remove potentially conflicting meta tags
+    const conflictingSelectors = [
+      'meta[property="og:image"]',
+      'meta[name="image"]',
+      'meta[name="twitter:image"]'
+    ];
+
+    conflictingSelectors.forEach(selector => {
+      const existingTags = document.querySelectorAll(selector);
+      existingTags.forEach(tag => tag.remove());
+    });
+  }
+
+  private verifyFinalMetaTags(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    console.log('🔍 FINAL VERIFICATION - Meta tags after lock-in:');
+
+    const ogImage = document.querySelector('meta[property="og:image"]')?.getAttribute('content');
+    const twitterImage = document.querySelector('meta[name="twitter:image"]')?.getAttribute('content');
+    const image = document.querySelector('meta[name="image"]')?.getAttribute('content');
+
+    console.log('- og:image:', ogImage);
+    console.log('- twitter:image:', twitterImage);
+    console.log('- image:', image);
   }
 
   private initializeSwiper() {

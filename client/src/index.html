@@ -100,9 +100,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link rel="preconnect" href="https://res.cloudinary.com">
   
+  <!-- Resource hints for landing images -->
+  <link rel="dns-prefetch" href="//perla-accessories.vercel.app">
+  
   <!-- Preload critical images -->
-  <link rel="preload" as="image" href="/landing2.png" media="(min-width: 768px)">
-  <link rel="preload" as="image" href="/logo.png">
+  <link rel="preload" as="image" href="/landing2.png" media="(min-width: 768px)" importance="high" crossorigin="anonymous">
+  <link rel="preload" as="image" href="/logo.png" importance="high" crossorigin="anonymous">
   
   <!-- AOS (Animate On Scroll) CSS -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
