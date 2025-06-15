@@ -137,18 +137,178 @@
     background: #db2777;
 }
 
-// Modern Product card effects
+// Enhanced Product card effects with glass morphism
 .product-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid #f3f4f6;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(243, 244, 246, 0.5);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+        border-radius: 1.5rem;
+    }
 }
 
-// Only apply hover effects on devices that support hover (desktop)
+// Glass morphism hero section
+.glass-hero {
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Enhanced animations
+@keyframes animate-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes animate-float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes animate-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.8), 0 0 30px rgba(245, 158, 11, 0.4);
+    }
+}
+
+@keyframes animate-pulse-subtle {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes animate-bounce-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes animate-gradient-text {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes animate-spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Animation classes
+.animate-fade-in-up {
+    animation: animate-fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-float {
+    animation: animate-float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: animate-glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+    animation: animate-pulse-subtle 2s ease-in-out infinite;
+}
+
+.animate-bounce-in {
+    animation: animate-bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-gradient-text {
+    background-size: 200% 200%;
+    animation: animate-gradient-text 3s ease infinite;
+}
+
+.animate-spin-slow {
+    animation: animate-spin-slow 8s linear infinite;
+}
+
+// Only apply enhanced hover effects on devices that support hover (desktop)
 @media (hover: hover) and (pointer: fine) {
     .product-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        border-color: #e5e7eb;
+        transform: translateY(-8px) scale(1.02);
+        box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.15),
+            0 0 0 1px rgba(255, 255, 255, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        border-color: rgba(236, 72, 153, 0.2);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+
+    .product-card:hover .group-hover\\:scale-105 {
+        transform: scale(1.1) rotate(1deg);
     }
 }
 

@@ -328,6 +328,44 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.activeImageIndices[pid] = 0;
   }
 
+  onProductHover(productId: number) {
+    // Enhanced hover effects for desktop
+    if (!this.isMobileDevice()) {
+      // Could add sound effects, analytics tracking, etc.
+    }
+  }
+
+  onProductLeave(productId: number) {
+    // Reset any hover states
+    if (!this.isMobileDevice()) {
+      this.resetImageDesktop(productId);
+    }
+  }
+
+  toggleWishlist(productId: number) {
+    // Wishlist functionality placeholder
+    console.log('Toggle wishlist for product:', productId);
+    // TODO: Implement wishlist service integration
+  }
+
+  quickView(productId: number) {
+    // Quick view functionality placeholder
+    console.log('Quick view for product:', productId);
+    // TODO: Implement quick view modal
+  }
+
+  hasDiscount(product: Product): boolean {
+    // Placeholder for discount logic
+    // TODO: Add discount fields to Product model
+    return false;
+  }
+
+  getDiscountPercentage(product: Product): number {
+    // Placeholder for discount calculation
+    // TODO: Implement discount calculation
+    return 0;
+  }
+
   private setupProductListSEO(): void {
     const selectedCategoryName = this.selectedCategory !== 'all'
       ? this.categories.find(c => c.id === this.selectedCategory)?.name
