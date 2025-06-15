@@ -1,11 +1,8 @@
 {
     "version": 2,
     "framework": "angular",
-    "buildCommand": "npm run build:ssr",
+    "buildCommand": "npm run build",
     "outputDirectory": "dist/client/browser",
-    "serverFiles": [
-        "dist/client/server/**"
-    ],
     "routes": [
         {
             "handle": "filesystem"
@@ -19,11 +16,6 @@
             "dest": "/index.html"
         }
     ],
-    "functions": {
-        "dist/client/server/server.mjs": {
-            "runtime": "nodejs18.x"
-        }
-    },
     "headers": [
         {
             "source": "/(.*)",
@@ -39,19 +31,6 @@
                 {
                     "key": "X-XSS-Protection",
                     "value": "1; mode=block"
-                },
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=31536000, immutable"
-                }
-            ]
-        },
-        {
-            "source": "/index.html",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
                 }
             ]
         }
