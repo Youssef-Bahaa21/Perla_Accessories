@@ -312,7 +312,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return isMobileUserAgent || isMobileViewport;
   }
 
-
+  getRandomReviewCount(): number {
+    // Generate a random review count between 2 and 123 for demo purposes
+    return Math.floor(Math.random() * 122) + 2;
+  }
 
   showNextImageDesktop(pid: number, count: number) {
     if (!this.activeImageIndices[pid]) {
