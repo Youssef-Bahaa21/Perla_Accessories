@@ -34,7 +34,7 @@ Allow: /*.css
 Allow: /*.js
 
 # Sitemap location
-Sitemap: https://perla-accessories.onrender.com/sitemap.xml
+Sitemap: https://perla-accessories.vercel.app/sitemap.xml
 
 # Crawl-delay for bots (optional - be respectful)
 # Crawl-delay: 1

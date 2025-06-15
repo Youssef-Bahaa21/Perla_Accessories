@@ -4,7 +4,6 @@ import { routes } from './app.routes';
 
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -43,9 +42,6 @@ export const appConfig: ApplicationConfig = {
     ),
 
     provideRouter(routes),
-
-    // Enhanced hydration for better SSR and SEO
-    provideClientHydration(withEventReplay()),
 
     provideToastr({
       timeOut: 3000,

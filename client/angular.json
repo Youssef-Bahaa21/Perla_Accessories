@@ -21,10 +21,6 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
-            "prerender": false,
-            "ssr": {
-              "entry": "src/server.ts"
-            },
             "polyfills": [
               "zone.js"
             ],
@@ -118,23 +114,46 @@
             "scripts": []
           }
         },
-        "prerender": {
-          "builder": "@angular-devkit/build-angular:prerender",
+        "server": {
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "routes": [
-              "/",
-              "/about",
-              "/products",
-              "/privacy-policy",
-              "/contact"
-            ]
+            "outputPath": "dist/client",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/swiper/swiper-bundle.min.css",
+              "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css",
+              "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css",
+              "src/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "production": {
-              "browserTarget": "client:build:production"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
-              "browserTarget": "client:build:development"
+              "optimization": false,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
