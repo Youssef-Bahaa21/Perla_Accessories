@@ -9,6 +9,7 @@ import { CartService } from '../../../core/services/cart/cart.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { ConfirmationModalService } from '../../../core/services/confirmation-modal.service';
 import { ReviewFormComponent } from '../review-form/review-form/review-form.component';
+import { SeoService } from '../../../core/services/seo.service';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -131,6 +132,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private confirmationModal = inject(ConfirmationModalService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
+  private seoService = inject(SeoService);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -184,6 +186,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         };
 
         this.loading = false;
+        this.setupProductSEO();
 
         // Load category for additional data
         if (this.product.category_id) {
@@ -402,6 +405,58 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           : this.activeSlideIndex - 1;
       }
     }
+  }
+
+  private setupProductSEO() {
+    if (!this.product) return;
+
+    const productTitle = `${this.product.name} - Perla Accessories`;
+    const productDescription = this.product.description
+      ? `${this.product.description} - Premium jewelry from Perla Accessories. Only ${this.product.price} EGP. ${this.product.stock > 0 ? 'In Stock' : 'Out of Stock'}.`
+      : `${this.product.name} - Premium jewelry from Perla Accessories. Only ${this.product.price} EGP. ${this.product.stock > 0 ? 'In Stock' : 'Out of Stock'}.`;
+
+    const productImage = this.product.images?.[0]?.url || 'https://perla-accessories.vercel.app/logo.png';
+
+    // Update SEO meta tags
+    this.seoService.updateSEO({
+      title: productTitle,
+      description: productDescription,
+      keywords: `${this.product.name}, jewelry, accessories, perla, premium jewelry, ${this.category?.name || 'accessories'}, fashion accessories, Egyptian jewelry`,
+      type: 'product',
+      image: productImage,
+      price: this.product.price,
+      currency: 'EGP',
+      availability: this.product.stock > 0 ? 'in_stock' : 'out_of_stock',
+      brand: 'Perla',
+      category: this.category?.name || 'Accessories'
+    });
+
+    // Add product structured data
+    this.seoService.addProductSchema({
+      ...this.product,
+      averageRating: this.getAverageRating(),
+      reviewCount: this.reviews.length
+    });
+
+    // Add breadcrumb structured data
+    const breadcrumbs = [
+      { name: 'Home', url: 'https://perla-accessories.vercel.app' },
+      { name: 'Products', url: 'https://perla-accessories.vercel.app/products' },
+    ];
+
+    if (this.category) {
+      breadcrumbs.push({
+        name: this.category.name,
+        url: `https://perla-accessories.vercel.app/products?category=${this.category.id}`
+      });
+    }
+
+    breadcrumbs.push({
+      name: this.product.name,
+      url: `https://perla-accessories.vercel.app/products/${this.product.id}`
+    });
+
+    this.seoService.generateBreadcrumbs(breadcrumbs);
   }
 
   ngOnDestroy() {

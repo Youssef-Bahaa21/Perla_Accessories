@@ -7,6 +7,7 @@ import { Product, Category } from '../../core/models';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { ProductService } from '../../core/services/product.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { SeoService } from '../../core/services/seo.service';
 import AOS from 'aos';
 
 @Component({
@@ -70,11 +71,26 @@ export class LandingPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private api = inject(ApiService);
   private router = inject(Router);
   private notification = inject(NotificationService);
+  private seoService = inject(SeoService);
 
   ngOnInit(): void {
+    this.setupSEO();
     this.loadFeaturedProducts();
     this.loadCategories();
     this.calculateFoundingYear();
+  }
+
+  private setupSEO(): void {
+    this.seoService.updateSEO({
+      title: 'Perla Accessories - Premium Jewelry & Fashion Accessories',
+      description: 'Discover unique, limited-edition jewelry & accessories at Perla. Premium quality necklaces, earrings, rings & more. 3 years of exceptional craftsmanship in Egypt.',
+      keywords: 'jewelry, accessories, necklaces, earrings, rings, bracelets, fashion accessories, premium jewelry, limited edition, Egyptian jewelry, handmade jewelry, boutique accessories',
+      type: 'website',
+      image: 'https://perla-accessories.vercel.app/logo.png'
+    });
+
+    this.seoService.addOrganizationSchema();
+    this.seoService.addWebsiteSchema();
   }
 
   ngAfterViewInit(): void {

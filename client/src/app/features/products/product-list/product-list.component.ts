@@ -17,6 +17,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { SearchService } from '../../../core/services/search.service';
 import { Product, Category } from '../../../core/models';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-product-list',
@@ -61,12 +62,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private searchService = inject(SearchService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private seoService = inject(SeoService);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
   ngOnInit() {
+    this.setupProductListSEO();
     this.loadPage();
 
     this.api.categories.list().subscribe({
@@ -303,5 +306,49 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   resetImageDesktop(pid: number) {
     this.activeImageIndices[pid] = 0;
+  }
+
+  private setupProductListSEO(): void {
+    const selectedCategoryName = this.selectedCategory !== 'all'
+      ? this.categories.find(c => c.id === this.selectedCategory)?.name
+      : '';
+
+    let title = 'Premium Jewelry & Fashion Accessories - Perla Collection';
+    let description = 'Discover our complete collection of premium jewelry and fashion accessories. Unique, limited-edition pieces crafted with exceptional quality. Free shipping available.';
+    let keywords = 'jewelry collection, accessories, necklaces, earrings, rings, bracelets, fashion accessories, premium jewelry, Egyptian jewelry, perla accessories';
+
+    if (selectedCategoryName) {
+      title = `${selectedCategoryName} - Premium ${selectedCategoryName} Collection | Perla Accessories`;
+      description = `Explore our premium ${selectedCategoryName.toLowerCase()} collection. Unique, limited-edition ${selectedCategoryName.toLowerCase()} pieces from Perla Accessories. Quality craftsmanship guaranteed.`;
+      keywords = `${selectedCategoryName.toLowerCase()}, ${selectedCategoryName.toLowerCase()} collection, premium ${selectedCategoryName.toLowerCase()}, jewelry, accessories, perla`;
+    }
+
+    if (this.searchQuery) {
+      title = `Search Results for "${this.searchQuery}" - Perla Accessories`;
+      description = `Find premium jewelry and accessories matching "${this.searchQuery}". Browse our collection of unique, limited-edition pieces from Perla.`;
+      keywords = `${this.searchQuery}, search results, jewelry, accessories, perla`;
+    }
+
+    this.seoService.updateSEO({
+      title,
+      description,
+      keywords,
+      type: 'website'
+    });
+
+    // Add breadcrumb structured data
+    const breadcrumbs = [
+      { name: 'Home', url: 'https://perla-accessories.vercel.app' },
+      { name: 'Products', url: 'https://perla-accessories.vercel.app/products' }
+    ];
+
+    if (selectedCategoryName) {
+      breadcrumbs.push({
+        name: selectedCategoryName,
+        url: `https://perla-accessories.vercel.app/products?category=${this.selectedCategory}`
+      });
+    }
+
+    this.seoService.generateBreadcrumbs(breadcrumbs);
   }
 }

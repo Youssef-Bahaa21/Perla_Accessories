@@ -1,0 +1,55 @@
+User-agent: *
+Allow: /
+
+# Allow important pages
+Allow: /products
+Allow: /about
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /returns-policy
+Allow: /shipping-details
+
+# Block admin areas
+Disallow: /admin/
+Disallow: /admin
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /cart/
+
+# Block unnecessary files
+Disallow: /api/
+Disallow: /*.json
+Disallow: /*.xml$
+Disallow: /src/
+Disallow: /dist/
+Disallow: /node_modules/
+
+# Block duplicate content
+Disallow: /*?*utm_
+Disallow: /*?*session
+Disallow: /*?*tracking
+
+# Allow CSS and JS
+Allow: /*.css
+Allow: /*.js
+
+# Sitemap location
+Sitemap: https://perla-accessories.vercel.app/sitemap.xml
+
+# Crawl-delay for bots (optional - be respectful)
+# Crawl-delay: 1
+
+# Special instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: / 
