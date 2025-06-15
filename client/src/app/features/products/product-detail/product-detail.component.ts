@@ -143,6 +143,9 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       if (id) {
         this.productId = +id;
 
+        // Set basic SEO immediately for social media crawlers
+        this.setupBasicSEO(this.productId);
+
         // Clear previous product data
         this.product = undefined;
         this.category = undefined;
@@ -415,7 +418,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       ? `${this.product.description} - Premium jewelry from Perla Accessories. Only ${this.product.price} EGP. ${this.product.stock > 0 ? 'In Stock' : 'Out of Stock'}.`
       : `${this.product.name} - Premium jewelry from Perla Accessories. Only ${this.product.price} EGP. ${this.product.stock > 0 ? 'In Stock' : 'Out of Stock'}.`;
 
-    const productImage = this.product.images?.[0]?.url || 'https://perla-accessories.vercel.app/logo.png';
+    // Prioritize Cloudinary images for social media
+    const productImage = this.product.images?.[0]?.url || this.product.images?.[0]?.image || 'https://perla-accessories.vercel.app/logo.png';
 
     // Update SEO meta tags
     this.seoService.updateSEO({
@@ -457,6 +461,18 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     });
 
     this.seoService.generateBreadcrumbs(breadcrumbs);
+  }
+
+  private setupBasicSEO(productId: number): void {
+    // Set basic product SEO immediately for social media crawlers
+    this.seoService.updateSEO({
+      title: `Premium Jewelry Product - Perla Accessories`,
+      description: `Discover premium handcrafted jewelry at Perla Accessories. Unique, limited-edition pieces with exceptional quality and craftsmanship.`,
+      keywords: 'premium jewelry, handcrafted accessories, perla, egyptian jewelry, unique jewelry',
+      type: 'product',
+      image: 'https://perla-accessories.vercel.app/logo.png', // Fallback image
+      url: `https://perla-accessories.vercel.app/products/${productId}`
+    });
   }
 
   ngOnDestroy() {

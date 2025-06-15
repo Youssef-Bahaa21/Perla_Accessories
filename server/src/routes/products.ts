@@ -13,6 +13,9 @@ import {
 import { saveProductImages } from '../middlewares/upload.middleware';
 import { authenticate } from '../middlewares/auth.middleware';
 import { isAdmin } from '../middlewares/admin.middleware';
+// import { validate } from '../middlewares/validate';
+// import { body } from 'express-validator';
+import { ProductService } from '../services/product.service';
 
 const router = Router();
 
@@ -20,6 +23,8 @@ const router = Router();
 router.get('/', getProducts);
 router.get('/:id', getProduct);
 router.get('/:productId/images', getProductImages);
+
+// Social media meta tags route will be added later when backend issues are resolved
 
 /* ---------- Admin-Protected CRUD ---------- */
 router.post('/', authenticate, isAdmin, createProduct);

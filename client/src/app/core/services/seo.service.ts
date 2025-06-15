@@ -75,6 +75,9 @@ export class SeoService {
         this.meta.updateTag({ property: 'og:title', content: data.title! });
         this.meta.updateTag({ property: 'og:description', content: data.description! });
         this.meta.updateTag({ property: 'og:image', content: data.image || this.defaultSEO.image });
+        this.meta.updateTag({ property: 'og:image:width', content: '1200' });
+        this.meta.updateTag({ property: 'og:image:height', content: '630' });
+        this.meta.updateTag({ property: 'og:image:alt', content: data.title! });
         this.meta.updateTag({ property: 'og:url', content: data.url || this.defaultSEO.url });
         this.meta.updateTag({ property: 'og:site_name', content: 'Perla Accessories' });
         this.meta.updateTag({ property: 'og:locale', content: 'en_US' });
