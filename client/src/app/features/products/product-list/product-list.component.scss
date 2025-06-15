@@ -139,10 +139,15 @@
 
 // Enhanced Product card effects with glass morphism
 .product-card {
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(243, 244, 246, 0.5);
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+
+    @media (min-width: 640px) {
+        border-radius: 1.5rem;
+    }
 
     &::before {
         content: '';
@@ -155,15 +160,23 @@
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: -1;
-        border-radius: 1.5rem;
+        border-radius: inherit;
     }
 }
 
 // Glass morphism hero section
 .glass-hero {
-    backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    border-radius: 1rem;
+
+    @media (min-width: 640px) {
+        padding: 2rem;
+        border-radius: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        padding: 3rem;
+    }
 }
 
 // Enhanced animations
@@ -354,15 +367,13 @@
 .filter-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
-    margin: 0 -1rem;
     padding: 0 1rem;
+    margin: 0 -1rem;
 
     @media (min-width: 768px) {
         overflow-x: visible;
         margin: 0;
         padding: 0;
-        text-align: center;
     }
 }
 
@@ -374,8 +385,8 @@
     min-width: min-content;
 
     @media (min-width: 768px) {
-        justify-content: center;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 0.5rem;
     }
 }
@@ -502,44 +513,13 @@
 }
 
 .filter-option-btn {
-    padding: 0.875rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.75rem;
-    background: white;
-    color: #6b7280;
+    padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    text-align: center;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
+    border-radius: 0.75rem;
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #ec4899, #db2777);
-        transition: left 0.3s ease;
-        z-index: -1;
-    }
-
-    &:hover:not(.active) {
-        border-color: #ec4899;
-        color: #ec4899;
-        transform: translateY(-1px);
-    }
-
-    &.active {
-        border-color: #ec4899;
-        color: white;
-        font-weight: 600;
-
-        &::before {
-            left: 0;
-        }
+    @media (min-width: 640px) {
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
     }
 }
 
@@ -660,13 +640,14 @@
     }
 }
 
-// Enhanced mobile optimizations
+// Enhanced mobile responsiveness
 @media (max-width: 480px) {
     .mobile-filter-button {
         bottom: 1rem;
         right: 1rem;
         height: 3.5rem;
         width: 3.5rem;
+
     }
 
     .mobile-filter-content {
@@ -684,162 +665,18 @@
     .filter-grid.filter-grid-3 {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    // Optimize hero section for mobile
-    .hero-section {
-        padding: 1.5rem 0;
-
-        h1 {
-            font-size: 2.5rem;
-            line-height: 1.2;
-        }
-
-        p {
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-    }
-
-    // Optimize product cards for mobile
-    .product-card {
-        border-radius: 1rem;
-
-        .product-info {
-            padding: 1rem;
-        }
-    }
-
-    // Reduce animation complexity on mobile
-    .animate-fade-in-up {
-        animation-duration: 0.3s;
-    }
-
-    // Optimize glass morphism effects for mobile
-    .glass-hero {
-        backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.8);
-    }
 }
 
-// Optimize touch interactions
-@media (hover: none) and (pointer: coarse) {
-
-    // Disable hover animations
-    .hover-float:hover,
-    .hover-scale:hover,
-    .hover-glow:hover {
-        animation: none;
-        transform: none;
-        box-shadow: none;
-    }
-
-    // Optimize scrolling
-    .filter-container,
-    .mobile-filter-content {
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-    }
-
-    // Enhance tap targets
-    button,
-    a {
-        min-height: 44px;
-        min-width: 44px;
-    }
-
-    // Disable parallax effects
-    .parallax-bg {
-        transform: none !important;
-    }
-}
-
-// Optimize performance on low-end devices
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    ::before,
-    ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-// Enhanced mobile filter menu
-.mobile-filter-menu {
-    .filter-option-btn {
-        &.active {
-            background: linear-gradient(135deg, #ec4899, #db2777);
-            color: white;
-            border-color: transparent;
-
-            &::before {
-                display: none;
-            }
-        }
-
-        &:active {
-            transform: scale(0.98);
-        }
-    }
-
-    .filter-section {
-        &:last-child {
-            margin-bottom: 2rem;
-        }
-    }
-}
-
-// Optimize images for mobile
-.product-image {
-    background-color: #f9fafb;
-    transition: transform 0.3s ease;
-
-    img {
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-// Enhanced mobile grid layout
+// Responsive grid adjustments
 @media (max-width: 640px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-
-    .product-card {
-        min-height: 280px;
-    }
-
-    .product-info {
-        h3 {
-            font-size: 0.875rem;
-        }
-
-        .price {
-            font-size: 1rem;
-        }
-    }
-}
-
-// Tablet optimizations
-@media (min-width: 641px) and (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    .product-card {
-        min-height: 320px;
+    .product-grid-item {
+        min-height: 300px;
     }
 }
 
 // Responsive hero section
 .hero-section {
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 
     @media (min-width: 768px) {
         padding: 3rem 0;

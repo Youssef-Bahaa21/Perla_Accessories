@@ -23,7 +23,7 @@
       </div>
     
       <!-- Mobile-first Product Grid Skeleton -->
-      <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
         <div *ngFor="let i of [1,2,3,4,5,6]" class="group product-grid-item">
           <div class="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden border border-pink-100">
             <div class="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 animate-pulse"></div>
@@ -99,8 +99,8 @@
         </div>
       </div>
       
-      <!-- Desktop Filter Chips - Hidden on Mobile -->
-      <div class="hidden md:block mb-8 filter-container">
+      <!-- Mobile-first Filter Chips -->
+      <div class="mb-8 filter-container">
         <div class="filter-group md:flex md:flex-wrap md:justify-center">
           <button
             (click)="selectedCategory = 'all'; applyFilters()"
@@ -124,140 +124,65 @@
         </div>
       </div>
 
-      <!-- Mobile Filter Button -->
-      <button 
-        *ngIf="isMobileDevice()"
-        (click)="toggleMobileFilters()"
-        class="mobile-filter-button"
-        [class.active]="mobileFiltersActive"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-        </svg>
-        <div *ngIf="showMobileFilterBadge" class="mobile-filter-badge">
-          {{mobileFilterCount}}
-        </div>
-      </button>
-
-      <!-- Mobile Filter Menu -->
-      <div *ngIf="mobileFiltersActive" class="mobile-filter-backdrop" (click)="closeMobileFilters()"></div>
-      <div class="mobile-filter-menu" [class.active]="mobileFiltersActive">
-        <div class="mobile-filter-header">
-          <h3 class="text-lg font-semibold text-gray-900">Filters</h3>
-          <button class="mobile-filter-close-btn" (click)="closeMobileFilters()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+      <!-- Mobile-friendly Additional Filters -->
+      <div class="flex flex-wrap justify-center gap-3 mb-8 sm:mb-12 px-4 sm:px-0">
+        <select
+          [(ngModel)]="stockFilter"
+          (change)="applyFilters()"
+          class="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm border-2 border-gray-200 bg-white focus:border-pink-500 focus:outline-none mx-1"
+        >
+          <option value="all">All Stock</option>
+          <option value="in">In Stock</option>
+          <option value="out">Out of Stock</option>
+        </select>
+        
+        <select
+          [(ngModel)]="tagFilter"
+          (change)="applyFilters()"
+          class="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm border-2 border-gray-200 bg-white focus:border-pink-500 focus:outline-none mx-1"
+        >
+          <option value="all">All Types</option>
+          <option value="new">New Arrivals</option>
+          <option value="best">Best Sellers</option>
+        </select>
+        
+        <!-- Search indicator -->
+        <div *ngIf="searchQuery" class="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm bg-pink-100 text-pink-800 border-2 border-pink-200 flex items-center gap-1 mx-1">
+          <span>Search: "{{searchQuery}}"</span>
+          <button (click)="searchQuery = ''; applyFilters()" class="ml-1 text-pink-600 hover:text-pink-800">
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-
-        <div class="mobile-filter-content">
-          <!-- Categories -->
-          <div class="filter-section">
-            <label class="filter-section-label">Categories</label>
-            <div class="filter-grid filter-grid-2">
-              <button
-                (click)="selectedCategory = 'all'"
-                class="filter-option-btn"
-                [class.active]="selectedCategory === 'all'"
-              >
-                All Products
-              </button>
-              <button
-                *ngFor="let cat of categories"
-                (click)="selectedCategory = cat.id"
-                class="filter-option-btn"
-                [class.active]="selectedCategory === cat.id"
-              >
-                {{cat.name}}
-              </button>
-            </div>
-          </div>
-
-          <!-- Stock Status -->
-          <div class="filter-section">
-            <label class="filter-section-label">Stock Status</label>
-            <div class="filter-grid filter-grid-3">
-              <button
-                (click)="stockFilter = 'all'"
-                class="filter-option-btn"
-                [class.active]="stockFilter === 'all'"
-              >
-                All
-              </button>
-              <button
-                (click)="stockFilter = 'in'"
-                class="filter-option-btn"
-                [class.active]="stockFilter === 'in'"
-              >
-                In Stock
-              </button>
-              <button
-                (click)="stockFilter = 'out'"
-                class="filter-option-btn"
-                [class.active]="stockFilter === 'out'"
-              >
-                Out of Stock
-              </button>
-            </div>
-          </div>
-
-          <!-- Product Tags -->
-          <div class="filter-section">
-            <label class="filter-section-label">Product Tags</label>
-            <div class="filter-grid filter-grid-3">
-              <button
-                (click)="tagFilter = 'all'"
-                class="filter-option-btn"
-                [class.active]="tagFilter === 'all'"
-              >
-                All
-              </button>
-              <button
-                (click)="tagFilter = 'new'"
-                class="filter-option-btn"
-                [class.active]="tagFilter === 'new'"
-              >
-                New Arrivals
-              </button>
-              <button
-                (click)="tagFilter = 'best'"
-                class="filter-option-btn"
-                [class.active]="tagFilter === 'best'"
-              >
-                Best Sellers
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="mobile-filter-actions">
-          <button 
-            class="mobile-filter-clear-btn"
-            (click)="clearMobileFilters()"
-          >
-            Clear All
-          </button>
-          <button 
-            class="mobile-filter-apply-btn"
-            (click)="applyMobileFilters()"
-          >
-            Apply Filters
-          </button>
-        </div>
+        
+        <button 
+          *ngIf="hasActiveFilters()"
+          (click)="clearFilters()" 
+          class="px-3 sm:px-4 py-2 text-xs sm:text-sm text-pink-600 hover:text-pink-800 font-medium flex items-center gap-1 bg-pink-50 rounded-full hover:bg-pink-100 transition-all duration-300 mx-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Clear Filters
+        </button>
       </div>
 
       <!-- Enhanced Product Grid -->
-      <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+      <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
         <!-- Premium Product Card -->
         <div
           *ngFor="let p of filteredProducts; let i = index"
-          class="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100/50 product-card backdrop-blur-sm"
+          class="group relative bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100/50 product-card backdrop-blur-sm"
           [class.animate-fade-in-up]="true"
           [style.animation-delay]="i * 100 + 'ms'"
+          (mouseenter)="onProductHover(p.id)"
+          (mouseleave)="onProductLeave(p.id)"
         >
           <!-- Product Image Section -->
-          <div class="relative aspect-[3/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+          <div 
+            class="relative aspect-[4/5] sm:aspect-[3/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100"
+            (mouseenter)="startImageCycle(p.id, p.images?.length || 1)"
+            (mouseleave)="stopImageCycle(p.id)"
+          >
             <a [routerLink]="['/products', p.id]" (click)="navigateToProduct(p.id)" class="absolute inset-0 z-30 cursor-pointer"></a>
             
             <!-- Enhanced Product Badges -->
@@ -273,16 +198,47 @@
               </span>
             </div>
 
-            <!-- Mobile-optimized Product Images -->
+            <!-- Product Images with Enhanced Effects -->
             <ng-container *ngIf="p.images && p.images.length > 0; else noImage">
-              <div class="relative w-full h-full">
+              <!-- Mobile: Show only first image (static) -->
+              <div *ngIf="isMobileDevice()" class="relative w-full h-full">
                 <img
-                  [src]="getMobileImageUrl(p)"
+                  [src]="p.images[0].url"
                   [alt]="p.name"
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   (error)="onImageError($event)"
                   loading="lazy"
                 />
+              </div>
+              
+              <!-- Desktop: Interactive image gallery -->
+              <div *ngIf="!isMobileDevice()" class="relative w-full h-full">
+                <ng-container *ngFor="let img of p.images; let i = index">
+                  <img
+                    [src]="img.url"
+                    [alt]="p.name"
+                    class="absolute top-0 left-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                    [ngClass]="{
+                      'opacity-100 z-10': activeImageIndices[p.id] === i,
+                      'opacity-0 z-0': activeImageIndices[p.id] !== i
+                    }"
+                    (error)="onImageError($event)"
+                    loading="lazy"
+                  />
+                </ng-container>
+                
+                <!-- Image Navigation Dots -->
+                <div *ngIf="p.images.length > 1" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+                  <button
+                    *ngFor="let img of p.images; let i = index"
+                    (click)="setActiveImage(p.id, i); $event.stopPropagation(); $event.preventDefault();"
+                    class="w-2 h-2 rounded-full transition-all duration-300 shadow-sm"
+                    [ngClass]="{
+                      'bg-white w-6': activeImageIndices[p.id] === i,
+                      'bg-white/60 hover:bg-white/80': activeImageIndices[p.id] !== i
+                    }"
+                  ></button>
+                </div>
               </div>
             </ng-container>
             
@@ -297,8 +253,8 @@
               </div>
             </ng-template>
 
-            <!-- Enhanced Add to Cart Button - Always Visible on Mobile -->
-            <div class="absolute inset-x-4 bottom-4 z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0">
+            <!-- Enhanced Add to Cart Button -->
+            <div class="absolute inset-x-4 bottom-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <button
                 (click)="addToCart(p); $event.stopPropagation(); $event.preventDefault();"
                 [disabled]="p.stock === 0"
