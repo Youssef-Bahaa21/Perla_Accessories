@@ -5,6 +5,11 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ssr": "ng build --configuration=production",
+    "serve:ssr": "node dist/client/server/server.mjs",
+    "build:ssr:dev": "ng build --configuration=development",
+    "serve:ssr:dev": "node dist/client/server/server.mjs",
+    "prerender": "ng run client:prerender",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

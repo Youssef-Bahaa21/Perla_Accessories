@@ -1,7 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, Inject, Optional } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 
 export interface SEOData {
     title: string;
@@ -25,32 +25,70 @@ export class SeoService {
     private title = inject(Title);
     private router = inject(Router);
     private document = inject(DOCUMENT);
+    private isBrowser: boolean;
+    private isServer: boolean;
 
     private readonly defaultSEO = {
         title: 'Perla Accessories - Premium Jewelry & Fashion Accessories',
         description: 'Discover unique, limited-edition jewelry & accessories at Perla. Premium quality necklaces, earrings, rings & more. 3 years of exceptional craftsmanship.',
         keywords: 'jewelry, accessories, necklaces, earrings, rings, bracelets, fashion accessories, premium jewelry, limited edition, Egyptian jewelry',
-        image: 'https://perla-accessories.vercel.app/logo.png',
-        url: 'https://perla-accessories.vercel.app'
+        image: 'https://perla-accessories.onrender.com/logo.png',
+        url: 'https://perla-accessories.onrender.com'
     };
 
+    constructor(@Inject(PLATFORM_ID) private platformId: Object, @Optional() @Inject('REQUEST_CONTEXT') private requestContext: any) {
+        this.isBrowser = isPlatformBrowser(this.platformId);
+        this.isServer = isPlatformServer(this.platformId);
+    }
+
     updateSEO(data: Partial<SEOData>): void {
+        const currentUrl = this.isBrowser ? this.router.url : (this.requestContext?.url || '');
+        const baseUrl = this.requestContext?.isBot ? 'https://perla-accessories.onrender.com' : this.defaultSEO.url;
+
         const seoData: SEOData = {
             ...this.defaultSEO,
             ...data,
-            url: data.url || `${this.defaultSEO.url}${this.router.url}`,
+            url: data.url || `${baseUrl}${currentUrl}`,
             title: data.title || this.defaultSEO.title,
             description: data.description || this.defaultSEO.description
         };
 
-        // Update title
+        // Always update title - works on both server and client
         this.title.setTitle(seoData.title!);
 
-        // Update meta tags
+        // Update meta tags with enhanced SSR support
         this.updateMetaTags(seoData);
         this.updateOpenGraph(seoData);
         this.updateTwitterCard(seoData);
         this.updateCanonical(seoData.url!);
+
+        // For server-side rendering, ensure immediate meta tag application
+        if (this.isServer && this.requestContext?.isBot) {
+            this.forceMetaTagsForCrawlers(seoData);
+        }
+    }
+
+    private forceMetaTagsForCrawlers(data: SEOData): void {
+        // Enhanced meta tag updates for social media crawlers
+        // These are applied immediately during SSR
+
+        // Standard meta tags
+        this.meta.updateTag({ name: 'description', content: data.description! });
+        this.meta.updateTag({ name: 'keywords', content: data.keywords || this.defaultSEO.keywords });
+
+        // Open Graph tags
+        this.meta.updateTag({ property: 'og:title', content: data.title! });
+        this.meta.updateTag({ property: 'og:description', content: data.description! });
+        this.meta.updateTag({ property: 'og:image', content: data.image || this.defaultSEO.image });
+        this.meta.updateTag({ property: 'og:url', content: data.url! });
+        this.meta.updateTag({ property: 'og:type', content: data.type || 'website' });
+        this.meta.updateTag({ property: 'og:site_name', content: 'Perla Accessories' });
+
+        // Twitter Card tags
+        this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+        this.meta.updateTag({ name: 'twitter:title', content: data.title! });
+        this.meta.updateTag({ name: 'twitter:description', content: data.description! });
+        this.meta.updateTag({ name: 'twitter:image', content: data.image || this.defaultSEO.image });
     }
 
     private updateMetaTags(data: SEOData): void {
@@ -153,8 +191,8 @@ export class SeoService {
             "@type": "Organization",
             "name": "Perla Accessories",
             "description": "Premium jewelry and fashion accessories boutique specializing in unique, limited-edition pieces",
-            "url": "https://perla-accessories.vercel.app",
-            "logo": "https://perla-accessories.vercel.app/logo.png",
+            "url": "https://perla-accessories.onrender.com",
+            "logo": "https://perla-accessories.onrender.com/logo.png",
             "foundingDate": "2022",
             "sameAs": [
                 "https://www.instagram.com/perlaaccessoriesboutique",
@@ -212,10 +250,10 @@ export class SeoService {
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Perla Accessories",
-            "url": "https://perla-accessories.vercel.app",
+            "url": "https://perla-accessories.onrender.com",
             "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://perla-accessories.vercel.app/products?search={search_term_string}",
+                "target": "https://perla-accessories.onrender.com/products?search={search_term_string}",
                 "query-input": "required name=search_term_string"
             }
         };
