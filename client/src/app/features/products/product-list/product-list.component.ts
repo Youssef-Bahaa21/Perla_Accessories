@@ -38,6 +38,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
   activeImageIndices: { [pid: number]: number } = {};
   addedToCartMessage: { [pid: number]: string } = {};
+  imageCycleIntervals: { [pid: number]: any } = {};
   loading = true;
   error = '';
   fallbackImage = 'https://webhostingmedia.net/wp-content/uploads/2018/01/http-error-404-not-found.png';
@@ -111,6 +112,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Clear all image cycling intervals
+    Object.keys(this.imageCycleIntervals).forEach(productId => {
+      this.stopImageCycle(+productId);
+    });
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -342,29 +348,33 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleWishlist(productId: number) {
-    // Wishlist functionality placeholder
-    console.log('Toggle wishlist for product:', productId);
-    // TODO: Implement wishlist service integration
+  startImageCycle(productId: number, imageCount: number) {
+    // Only cycle images on desktop and if there are multiple images
+    if (!this.isMobileDevice() && imageCount > 1) {
+      // Clear any existing interval
+      this.stopImageCycle(productId);
+
+      // Start cycling through images every 800ms
+      this.imageCycleIntervals[productId] = setInterval(() => {
+        if (!this.activeImageIndices[productId]) {
+          this.activeImageIndices[productId] = 0;
+        }
+        this.activeImageIndices[productId] = (this.activeImageIndices[productId] + 1) % imageCount;
+      }, 800);
+    }
   }
 
-  quickView(productId: number) {
-    // Quick view functionality placeholder
-    console.log('Quick view for product:', productId);
-    // TODO: Implement quick view modal
+  stopImageCycle(productId: number) {
+    // Clear interval and reset to first image
+    if (this.imageCycleIntervals[productId]) {
+      clearInterval(this.imageCycleIntervals[productId]);
+      delete this.imageCycleIntervals[productId];
+    }
+    // Reset to first image
+    this.activeImageIndices[productId] = 0;
   }
 
-  hasDiscount(product: Product): boolean {
-    // Placeholder for discount logic
-    // TODO: Add discount fields to Product model
-    return false;
-  }
 
-  getDiscountPercentage(product: Product): number {
-    // Placeholder for discount calculation
-    // TODO: Implement discount calculation
-    return 0;
-  }
 
   private setupProductListSEO(): void {
     const selectedCategoryName = this.selectedCategory !== 'all'
