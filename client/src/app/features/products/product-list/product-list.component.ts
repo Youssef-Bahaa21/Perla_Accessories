@@ -354,13 +354,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
       // Clear any existing interval
       this.stopImageCycle(productId);
 
-      // Start cycling through images every 800ms
+      // Start cycling through images every 400ms 
       this.imageCycleIntervals[productId] = setInterval(() => {
         if (!this.activeImageIndices[productId]) {
           this.activeImageIndices[productId] = 0;
         }
         this.activeImageIndices[productId] = (this.activeImageIndices[productId] + 1) % imageCount;
-      }, 800);
+      }, 400);
     }
   }
 
