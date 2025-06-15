@@ -38,7 +38,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
   activeImageIndices: { [pid: number]: number } = {};
   addedToCartMessage: { [pid: number]: string } = {};
-  imageCycleIntervals: { [pid: number]: any } = {};
   loading = true;
   error = '';
   fallbackImage = 'https://webhostingmedia.net/wp-content/uploads/2018/01/http-error-404-not-found.png';
@@ -112,11 +111,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Clear all image cycling intervals
-    Object.keys(this.imageCycleIntervals).forEach(productId => {
-      this.stopImageCycle(+productId);
-    });
-
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -349,29 +343,26 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   startImageCycle(productId: number, imageCount: number) {
-    // Only cycle images on desktop and if there are multiple images
+    // Only show next image on desktop and if there are multiple images
     if (!this.isMobileDevice() && imageCount > 1) {
-      // Clear any existing interval
-      this.stopImageCycle(productId);
-
-      // Start cycling through images every 400ms 
-      this.imageCycleIntervals[productId] = setInterval(() => {
-        if (!this.activeImageIndices[productId]) {
-          this.activeImageIndices[productId] = 0;
-        }
-        this.activeImageIndices[productId] = (this.activeImageIndices[productId] + 1) % imageCount;
-      }, 400);
+      // Show next image (single step forward)
+      if (!this.activeImageIndices[productId]) {
+        this.activeImageIndices[productId] = 0;
+      }
+      this.activeImageIndices[productId] = (this.activeImageIndices[productId] + 1) % imageCount;
     }
   }
 
   stopImageCycle(productId: number) {
-    // Clear interval and reset to first image
-    if (this.imageCycleIntervals[productId]) {
-      clearInterval(this.imageCycleIntervals[productId]);
-      delete this.imageCycleIntervals[productId];
-    }
-    // Reset to first image
+    // Reset to first image when hover ends
     this.activeImageIndices[productId] = 0;
+  }
+
+  navigateToProduct(productId: number) {
+    // Scroll to top when navigating to product detail
+    if (this.isBrowser) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
 
