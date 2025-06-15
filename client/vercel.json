@@ -1,16 +1,14 @@
 {
     "version": 2,
-    "public": true,
-    "name": "perla-accessories",
-    "rewrites": [
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist/client/browser",
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "/api"
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
         }
-    ],
-    "functions": {
-        "api/index.js": {
-            "includeFiles": "dist/client/**"
-        }
-    }
+    ]
 }
