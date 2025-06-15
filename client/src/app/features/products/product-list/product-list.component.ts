@@ -53,6 +53,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   isBrowser: boolean;
   mobileFiltersActive = false;
+  mobileFilterCount = 0;
+  showMobileFilterBadge = false;
 
   private destroy$ = new Subject<void>();
 
@@ -91,10 +93,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Close mobile filters when window is resized to desktop
+    // Handle mobile filter state on resize
     if (this.isBrowser) {
       window.addEventListener('resize', () => {
-        if (this.getWindowWidth() >= 768 && this.mobileFiltersActive) {
+        if (window.innerWidth >= 768 && this.mobileFiltersActive) {
+          this.closeMobileFilters();
         }
       });
     }
@@ -108,9 +111,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
           this.searchService.resetClearFilters(); // Reset the trigger
         }
       });
+
+    // Initialize mobile filter count
+    this.updateMobileFilterCount();
   }
 
   ngOnDestroy(): void {
+    if (this.isBrowser) {
+      document.body.style.overflow = '';
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -161,7 +170,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
     if (this.isBrowser && !this.loading && !this.allProductsLoaded) {
-      const threshold = 300;
+      const threshold = this.isMobileDevice() ? 200 : 300; // Lower threshold for mobile
       const scrollPosition = window.pageYOffset + window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
 
@@ -213,7 +222,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Update URL parameters
+    this.updateMobileFilterCount();
     this.updateUrlParams();
   }
 
@@ -242,6 +251,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.tagFilter = 'all';
     this.searchQuery = '';
     this.applyFilters();
+    this.updateMobileFilterCount();
   }
 
   addToCart(p: Product) {
@@ -293,7 +303,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return this.isBrowser ? window.innerWidth : 1024;
   }
 
-  // Mobile-specific methods
   isMobileDevice(): boolean {
     if (!this.isBrowser) return false;
 
@@ -365,7 +374,48 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
   }
 
+  toggleMobileFilters() {
+    this.mobileFiltersActive = !this.mobileFiltersActive;
+    if (this.mobileFiltersActive) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 
+  closeMobileFilters() {
+    this.mobileFiltersActive = false;
+    document.body.style.overflow = '';
+  }
+
+  updateMobileFilterCount() {
+    let count = 0;
+    if (this.selectedCategory !== 'all') count++;
+    if (this.stockFilter !== 'all') count++;
+    if (this.tagFilter !== 'all') count++;
+    if (this.searchQuery) count++;
+    this.mobileFilterCount = count;
+    this.showMobileFilterBadge = count > 0;
+  }
+
+  applyMobileFilters() {
+    this.applyFilters();
+    this.updateMobileFilterCount();
+    this.closeMobileFilters();
+  }
+
+  clearMobileFilters() {
+    this.clearFilters();
+    this.updateMobileFilterCount();
+  }
+
+  getMobileImageUrl(product: Product): string {
+    if (!product.images || product.images.length === 0) {
+      return this.fallbackImage;
+    }
+    // On mobile, always return the first image
+    return product.images[0].url;
+  }
 
   private setupProductListSEO(): void {
     const selectedCategoryName = this.selectedCategory !== 'all'

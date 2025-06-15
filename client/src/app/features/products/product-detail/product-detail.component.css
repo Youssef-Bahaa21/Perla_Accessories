@@ -271,23 +271,11 @@
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.swiper-nav-btn:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 12px 30px rgba(236, 72, 153, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Pagination styling */
 .main-product-swiper .main-swiper-pagination {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.main-product-swiper:hover .main-swiper-pagination {
   opacity: 1;
 }
 
@@ -314,18 +302,12 @@
 .thumbs-swiper .swiper-slide {
   border-radius: 12px;
   overflow: hidden;
-  transition: all 0.2s ease;
   border: 2px solid transparent;
-}
-
-.thumbs-swiper .swiper-slide:hover {
-  transform: scale(1.02);
-  border-color: rgba(236, 72, 153, 0.3);
 }
 
 .thumbs-swiper .swiper-slide.swiper-slide-thumb-active {
   border-color: #ec4899;
-  box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);
 }
 
 /* Reduced button hover effects */
