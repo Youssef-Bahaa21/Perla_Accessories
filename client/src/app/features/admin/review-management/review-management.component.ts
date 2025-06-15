@@ -34,6 +34,7 @@ export class ReviewManagementComponent implements OnInit {
             const response = await this.api.reviews.list().toPromise();
             this.reviews = response || [];
         } catch (err) {
+            console.error('Failed to load reviews:', err);
             this.error = 'Failed to load reviews';
             this.notificationService.show('Failed to load reviews', 'error');
         } finally {
@@ -50,6 +51,7 @@ export class ReviewManagementComponent implements OnInit {
             this.notificationService.show('Review deleted successfully');
             await this.loadReviews();
         } catch (err) {
+            console.error('Failed to delete review:', err);
             this.notificationService.show('Failed to delete review', 'error');
         }
     }
