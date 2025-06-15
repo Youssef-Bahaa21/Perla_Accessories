@@ -137,15 +137,18 @@
     background: #db2777;
 }
 
-// Product card effects
+// Modern Product card effects
 .product-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f3f4f6;
 }
 
 // Only apply hover effects on devices that support hover (desktop)
 @media (hover: hover) and (pointer: fine) {
     .product-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: #e5e7eb;
     }
 }
 
