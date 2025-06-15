@@ -1,0 +1,56 @@
+<div class="review-management">
+  <h2>Review Management</h2>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading reviews...
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error">
+    <i class="fas fa-exclamation-circle"></i> {{ error }}
+  </div>
+
+  <!-- Reviews table -->
+  <div class="table-container" *ngIf="!loading && !error">
+    <table class="reviews-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product ID</th>
+          <th>User ID</th>
+          <th>Rating</th>
+          <th>Comment</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let review of reviews">
+          <td>{{ review.id }}</td>
+          <td>{{ review.product_id }}</td>
+          <td>{{ review.user_id }}</td>
+          <td>
+            <div class="rating">
+              <i *ngFor="let star of [1,2,3,4,5]" 
+                 [class]="'fas fa-star ' + (star <= review.rating ? 'filled' : '')">
+              </i>
+            </div>
+          </td>
+          <td>{{ review.comment || 'No comment' }}</td>
+          <td>{{ review.created_at | date:'short' }}</td>
+          <td class="actions">
+            <button class="btn-delete" (click)="deleteReview(review)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- No reviews message -->
+    <div *ngIf="reviews.length === 0" class="no-data">
+      No reviews found
+    </div>
+  </div>
+</div> 

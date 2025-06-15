@@ -1,0 +1,151 @@
+.user-management {
+    padding: 20px;
+
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .loading,
+    .error {
+        padding: 20px;
+        text-align: center;
+        border-radius: 4px;
+        margin: 20px 0;
+    }
+
+    .loading {
+        background-color: #f8f9fa;
+        color: #666;
+
+        i {
+            margin-right: 10px;
+        }
+    }
+
+    .error {
+        background-color: #fff3f3;
+        color: #dc3545;
+
+        i {
+            margin-right: 10px;
+        }
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+
+            &.badge-admin {
+                background-color: #4caf50;
+                color: white;
+            }
+
+            &.badge-customer {
+                background-color: #2196f3;
+                color: white;
+            }
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+
+            &:focus {
+                outline: none;
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+        }
+
+        .actions {
+            white-space: nowrap;
+
+            button {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 5px;
+                margin: 0 2px;
+                transition: color 0.2s;
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                &.btn-edit {
+                    color: #2196f3;
+
+                    &:hover {
+                        color: darken(#2196f3, 10%);
+                    }
+                }
+
+                &.btn-delete {
+                    color: #dc3545;
+
+                    &:hover {
+                        color: darken(#dc3545, 10%);
+                    }
+                }
+
+                &.btn-save {
+                    color: #4caf50;
+
+                    &:hover {
+                        color: darken(#4caf50, 10%);
+                    }
+                }
+
+                &.btn-cancel {
+                    color: #666;
+
+                    &:hover {
+                        color: darken(#666, 10%);
+                    }
+                }
+            }
+        }
+    }
+
+    .no-data {
+        padding: 20px;
+        text-align: center;
+        color: #666;
+        font-style: italic;
+    }
+}

@@ -192,6 +192,22 @@ export const routes: Route[] = [
                         './features/admin/order-list/order-list.component'
                     ).then(m => m.OrderListComponent),
             },
+            {
+                path: 'reviews',
+                title: 'Manage Reviews - Admin - Perla Accessories',
+                loadComponent: () =>
+                    import(
+                        './features/admin/review-management/review-management.component'
+                    ).then(m => m.ReviewManagementComponent),
+            },
+            {
+                path: 'users',
+                title: 'Manage Users - Admin - Perla Accessories',
+                loadComponent: () =>
+                    import(
+                        './features/admin/user-management/user-management.component'
+                    ).then(m => m.UserManagementComponent),
+            },
             { path: '', redirectTo: 'products', pathMatch: 'full' },
         ],
     },

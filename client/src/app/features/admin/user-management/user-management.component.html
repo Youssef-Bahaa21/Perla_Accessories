@@ -1,0 +1,79 @@
+<div class="user-management">
+  <h2>User Management</h2>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading users...
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error">
+    <i class="fas fa-exclamation-circle"></i> {{ error }}
+  </div>
+
+  <!-- Users table -->
+  <div class="table-container" *ngIf="!loading && !error">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>
+            <ng-container *ngIf="!isEditing(user)">
+              {{ user.email }}
+            </ng-container>
+            <input *ngIf="isEditing(user)" 
+                   type="email" 
+                   [(ngModel)]="editingUser!.email" 
+                   class="form-control">
+          </td>
+          <td>
+            <ng-container *ngIf="!isEditing(user)">
+              <span [class]="'badge ' + (user.role === 'admin' ? 'badge-admin' : 'badge-customer')">
+                {{ user.role }}
+              </span>
+            </ng-container>
+            <select *ngIf="isEditing(user)" 
+                    [(ngModel)]="editingUser!.role" 
+                    class="form-control">
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </td>
+          <td class="actions">
+            <ng-container *ngIf="!isEditing(user)">
+              <button class="btn-edit" (click)="startEditing(user)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-delete" 
+                      (click)="deleteUser(user)"
+                      [disabled]="user.role === 'admin'">
+                <i class="fas fa-trash"></i>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="isEditing(user)">
+              <button class="btn-save" (click)="updateUser(editingUser!)">
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="btn-cancel" (click)="cancelEditing()">
+                <i class="fas fa-times"></i>
+              </button>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- No users message -->
+    <div *ngIf="users.length === 0" class="no-data">
+      No users found
+    </div>
+  </div>
+</div> 
