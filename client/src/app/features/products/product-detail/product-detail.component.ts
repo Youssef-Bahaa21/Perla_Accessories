@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, Inject, PLATFORM_ID, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, Inject, PLATFORM_ID, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, NgZone, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -50,6 +50,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   activeSlideIndex = 0;
   category?: Category;
   productId: number = 0;
+  isBrowser: boolean = false;
 
   // Premium design enhancement properties
   isAnimating = false;
@@ -58,7 +59,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   private syncInterval?: any;
 
-  // Enhanced main swiper configuration with premium features
+  // Enhanced main swiper configuration with mobile-first features
   mainSwiperConfig = {
     slidesPerView: 1,
     spaceBetween: 0,
@@ -76,21 +77,30 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       onlyInViewport: true,
     },
     mousewheel: {
-      enabled: true,
+      enabled: false, // Disable mousewheel on mobile
       forceToAxis: true,
       sensitivity: 0.5,
     },
     grabCursor: true,
     loop: false,
     autoplay: false,
-    effect: 'slide',
-    speed: 600,
+    effect: 'fade',
+    speed: 400,
     allowTouchMove: true,
     watchSlidesProgress: true,
     lazy: {
       enabled: true,
       loadPrevNext: true,
-      loadPrevNextAmount: 2,
+      loadPrevNextAmount: 1,
+    },
+    breakpoints: {
+      640: {
+        effect: 'slide',
+        speed: 600,
+        mousewheel: {
+          enabled: true,
+        },
+      }
     },
     on: {
       slideChange: (swiper: any) => {
@@ -122,16 +132,20 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     }
   };
 
-  // Enhanced thumbnails swiper configuration
+  // Enhanced thumbnails swiper configuration with mobile breakpoints
   thumbsSwiperConfig = {
     slidesPerView: 4,
-    spaceBetween: 12,
+    spaceBetween: 8,
     freeMode: true,
     watchSlidesProgress: true,
     breakpoints: {
+      480: {
+        slidesPerView: 4,
+        spaceBetween: 10,
+      },
       640: {
         slidesPerView: 5,
-        spaceBetween: 16,
+        spaceBetween: 12,
       },
       768: {
         slidesPerView: 6,
@@ -325,10 +339,19 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   addToCart() {
-    if (this.product) {
+    if (this.product && this.product.stock > 0) {
       this.cart.add(this.product);
-      this.cartMessage = '✨ Added to cart successfully!';
-      setTimeout(() => (this.cartMessage = ''), 3000);
+      this.cartMessage = 'Added to cart!';
+
+      // Provide haptic feedback on mobile if available
+      if (this.isMobileDevice() && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+
+      setTimeout(() => {
+        this.cartMessage = '';
+        this.cdr.detectChanges();
+      }, 2000);
     }
   }
 
@@ -387,19 +410,22 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   onImageError(event: Event) {
-    const target = event.target as HTMLImageElement;
-    target.src = this.fallbackImage;
-
-    // Mark image as loaded (even if fallback)
-    const imageKey = target.alt;
-    if (imageKey) {
-      this.imageLoadingStates[imageKey] = true;
+    const img = event.target as HTMLImageElement;
+    if (!img.src.includes(this.fallbackImage)) {
+      img.src = this.fallbackImage;
+      if (this.isMobileDevice()) {
+        img.style.objectFit = 'contain';
+        img.style.padding = '1rem';
+      }
     }
   }
 
   onImageLoad(imageKey: string) {
     this.imageLoadingStates[imageKey] = true;
-    this.cdr.detectChanges();
+    if (!this.isMobileDevice()) {
+      // Only trigger detection on desktop to avoid unnecessary reflows
+      this.cdr.detectChanges();
+    }
   }
 
   getAverageRating(): number {
@@ -467,10 +493,10 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   // Premium design helper methods
   getImageTransitionClass(index: number): string {
-    if (this.isAnimating) {
-      return 'transition-all duration-600 ease-in-out';
+    if (this.isMobileDevice()) {
+      return this.isAnimating ? 'transition-opacity duration-400 ease-in-out' : 'transition-opacity duration-300 ease-out';
     }
-    return 'transition-all duration-300 ease-out';
+    return this.isAnimating ? 'transition-all duration-600 ease-in-out' : 'transition-all duration-300 ease-out';
   }
 
   getProductBadgeClasses(product: Product): string[] {
@@ -552,5 +578,73 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
     }
+  }
+
+  // Enhanced mobile detection
+  isMobileDevice(): boolean {
+    if (!this.isBrowser) return false;
+    return window.innerWidth <= 640;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    if (this.isBrowser) {
+      const isMobile = this.isMobileDevice();
+      if (isMobile) {
+        this.disableHoverEffects();
+        this.updateMobileSwiper();
+      } else {
+        this.enableHoverEffects();
+        this.updateDesktopSwiper();
+      }
+    }
+  }
+
+  private updateMobileSwiper() {
+    if (this.mainSwiper?.nativeElement) {
+      const swiperInstance = this.mainSwiper.nativeElement.swiper;
+      if (swiperInstance) {
+        swiperInstance.params.effect = 'fade';
+        swiperInstance.params.speed = 400;
+        swiperInstance.params.mousewheel.enabled = false;
+        swiperInstance.update();
+      }
+    }
+  }
+
+  private updateDesktopSwiper() {
+    if (this.mainSwiper?.nativeElement) {
+      const swiperInstance = this.mainSwiper.nativeElement.swiper;
+      if (swiperInstance) {
+        swiperInstance.params.effect = 'slide';
+        swiperInstance.params.speed = 600;
+        swiperInstance.params.mousewheel.enabled = true;
+        swiperInstance.update();
+      }
+    }
+  }
+
+  private disableHoverEffects() {
+    // Reset all hover states and animations
+    Object.keys(this.imageLoadingStates).forEach(key => {
+      this.imageLoadingStates[key] = false;
+    });
+    this.isAnimating = false;
+  }
+
+  private enableHoverEffects() {
+    // Re-enable hover animations if needed
+    this.cdr.detectChanges();
+  }
+
+  // Enhanced navigation for mobile
+  navigateToProduct(productId: number) {
+    if (this.isBrowser) {
+      window.scrollTo({
+        top: 0,
+        behavior: this.isMobileDevice() ? 'auto' : 'smooth'
+      });
+    }
+    this.router.navigate(['/products', productId]);
   }
 }
