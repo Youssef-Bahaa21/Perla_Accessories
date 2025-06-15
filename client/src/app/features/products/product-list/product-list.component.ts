@@ -132,6 +132,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
             images: images,
           };
         });
+
+        // Initialize activeImageIndices for new products
+        newItems.forEach(product => {
+          if (!this.activeImageIndices.hasOwnProperty(product.id)) {
+            this.activeImageIndices[product.id] = 0; // Show first image by default
+          }
+        });
+
         this.products.push(...newItems);
         this.filteredProducts = [...this.products];
 
@@ -197,6 +205,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
 
     this.filteredProducts = filtered;
+
+    // Initialize activeImageIndices for any products that don't have it set
+    this.filteredProducts.forEach(product => {
+      if (!this.activeImageIndices.hasOwnProperty(product.id)) {
+        this.activeImageIndices[product.id] = 0; // Show first image by default
+      }
+    });
 
     // Update URL parameters
     this.updateUrlParams();
