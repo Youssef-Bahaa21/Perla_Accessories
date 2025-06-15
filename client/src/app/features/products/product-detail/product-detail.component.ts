@@ -51,19 +51,25 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   category?: Category;
   productId: number = 0;
 
+  // Premium design enhancement properties
+  isAnimating = false;
+  imageLoadingStates: { [key: string]: boolean } = {};
+
   private routeSubscription?: Subscription;
   private syncInterval?: any;
 
-  // Main swiper configuration
+  // Enhanced main swiper configuration with premium features
   mainSwiperConfig = {
     slidesPerView: 1,
-    spaceBetween: 10,
+    spaceBetween: 0,
     navigation: false,
     pagination: {
       el: '.main-swiper-pagination',
       type: 'bullets',
       clickable: true,
       hideOnClick: false,
+      dynamicBullets: true,
+      dynamicMainBullets: 3,
     },
     keyboard: {
       enabled: true,
@@ -72,24 +78,38 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     mousewheel: {
       enabled: true,
       forceToAxis: true,
+      sensitivity: 0.5,
     },
     grabCursor: true,
     loop: false,
     autoplay: false,
     effect: 'slide',
-    speed: 300,
+    speed: 600,
     allowTouchMove: true,
     watchSlidesProgress: true,
+    lazy: {
+      enabled: true,
+      loadPrevNext: true,
+      loadPrevNextAmount: 2,
+    },
     on: {
       slideChange: (swiper: any) => {
         this.ngZone.run(() => {
           this.activeSlideIndex = swiper.activeIndex;
+          this.isAnimating = false;
+          this.cdr.detectChanges();
+        });
+      },
+      slideChangeTransitionStart: (swiper: any) => {
+        this.ngZone.run(() => {
+          this.isAnimating = true;
           this.cdr.detectChanges();
         });
       },
       slideChangeTransitionEnd: (swiper: any) => {
         this.ngZone.run(() => {
           this.activeSlideIndex = swiper.activeIndex;
+          this.isAnimating = false;
           this.cdr.detectChanges();
         });
       },
@@ -102,25 +122,29 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     }
   };
 
-  // Thumbnails swiper configuration
+  // Enhanced thumbnails swiper configuration
   thumbsSwiperConfig = {
     slidesPerView: 4,
-    spaceBetween: 10,
+    spaceBetween: 12,
     freeMode: true,
     watchSlidesProgress: true,
     breakpoints: {
       640: {
         slidesPerView: 5,
+        spaceBetween: 16,
       },
       768: {
         slidesPerView: 6,
+        spaceBetween: 16,
       },
       1024: {
         slidesPerView: 4,
+        spaceBetween: 12,
       },
     },
     direction: 'horizontal',
     grabCursor: true,
+    centerInsufficientSlides: true,
   };
 
   private api = inject(ApiService);
@@ -147,8 +171,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         this.setupBasicSEO(this.productId);
 
         // Clear previous product data
-        this.product = undefined;
-        this.category = undefined;
+        this.resetComponentState();
 
         // Load product details
         this.loadProduct(this.productId);
@@ -166,6 +189,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     this.reviews = [];
     this.relatedProducts = [];
     this.activeSlideIndex = 0;
+    this.isAnimating = false;
+    this.imageLoadingStates = {};
 
     // Clear any existing sync interval
     if (this.syncInterval) {
@@ -173,7 +198,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       this.syncInterval = undefined;
     }
 
-    // Scroll to top when loading new product
+    // Smooth scroll to top when loading new product
     this.scrollToTop();
   }
 
@@ -187,6 +212,11 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
             url: img.url,
           })),
         };
+
+        // Initialize image loading states
+        this.product.images?.forEach((img, index) => {
+          this.imageLoadingStates[`${this.product!.id}-${index}`] = false;
+        });
 
         this.loading = false;
         this.setupProductSEO();
@@ -209,7 +239,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           if (isPlatformBrowser(this.platformId)) {
             this.initializeSwiper();
           }
-        }, 100);
+        }, 150);
       },
       error: err => {
         this.error = 'Product not found.';
@@ -297,8 +327,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   addToCart() {
     if (this.product) {
       this.cart.add(this.product);
-      this.cartMessage = 'Added to cart!';
-      setTimeout(() => (this.cartMessage = ''), 2000);
+      this.cartMessage = '✨ Added to cart successfully!';
+      setTimeout(() => (this.cartMessage = ''), 3000);
     }
   }
 
@@ -359,6 +389,17 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   onImageError(event: Event) {
     const target = event.target as HTMLImageElement;
     target.src = this.fallbackImage;
+
+    // Mark image as loaded (even if fallback)
+    const imageKey = target.alt;
+    if (imageKey) {
+      this.imageLoadingStates[imageKey] = true;
+    }
+  }
+
+  onImageLoad(imageKey: string) {
+    this.imageLoadingStates[imageKey] = true;
+    this.cdr.detectChanges();
   }
 
   getAverageRating(): number {
@@ -368,25 +409,36 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   addRelatedProductToCart(product: Product) {
     this.cart.add(product);
-    // Brief feedback without message persistence
-    setTimeout(() => { }, 1000);
+    // Brief visual feedback
+    const originalText = `Added ${product.name} to cart!`;
+    setTimeout(() => {
+      // Visual feedback complete
+    }, 1500);
   }
 
   goToSlide(index: number) {
+    if (this.isAnimating) return; // Prevent multiple rapid clicks
+
     const mainSwiperEl = this.mainSwiper?.nativeElement;
     if (mainSwiperEl && mainSwiperEl.swiper) {
+      this.isAnimating = true;
       mainSwiperEl.swiper.slideTo(index);
     }
   }
 
   nextSlide() {
+    if (this.isAnimating) return;
+
     const mainSwiperEl = this.mainSwiper?.nativeElement;
     if (mainSwiperEl && mainSwiperEl.swiper) {
+      this.isAnimating = true;
       mainSwiperEl.swiper.slideNext();
     } else {
       // Fallback for manual control
@@ -397,8 +449,11 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   prevSlide() {
+    if (this.isAnimating) return;
+
     const mainSwiperEl = this.mainSwiper?.nativeElement;
     if (mainSwiperEl && mainSwiperEl.swiper) {
+      this.isAnimating = true;
       mainSwiperEl.swiper.slidePrev();
     } else {
       // Fallback for manual control
@@ -408,6 +463,21 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           : this.activeSlideIndex - 1;
       }
     }
+  }
+
+  // Premium design helper methods
+  getImageTransitionClass(index: number): string {
+    if (this.isAnimating) {
+      return 'transition-all duration-600 ease-in-out';
+    }
+    return 'transition-all duration-300 ease-out';
+  }
+
+  getProductBadgeClasses(product: Product): string[] {
+    const classes: string[] = [];
+    if (product.is_new === 1) classes.push('animate-pulse-subtle');
+    if (product.is_best_seller === 1) classes.push('animate-glow');
+    return classes;
   }
 
   private setupProductSEO() {
