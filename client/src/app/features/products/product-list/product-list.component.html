@@ -183,7 +183,7 @@
             (mouseenter)="startImageCycle(p.id, p.images?.length || 1)"
             (mouseleave)="stopImageCycle(p.id)"
           >
-            <a [routerLink]="['/products', p.id]" class="absolute inset-0 z-10"></a>
+            <a [routerLink]="['/products', p.id]" class="absolute inset-0 z-30 cursor-pointer"></a>
             
             <!-- Enhanced Product Badges -->
             <div class="absolute top-4 left-4 z-20 space-y-2">
