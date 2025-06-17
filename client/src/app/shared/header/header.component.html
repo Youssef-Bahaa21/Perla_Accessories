@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center h-16 sm:h-18">
 
       <!-- Mobile Menu Button (moved to left) with enhanced animation -->
-      <button (click)="toggleMobileMenu()" class="sm:hidden p-2 text-gray-600 hover:text-pink-600 focus:outline-none transition-transform duration-300 transform" [class.rotate-180]="isMobileMenuOpen">
+      <button (click)="toggleMobileMenu()" class="sm:hidden p-2 text-gray-600 hover:text-pink-600 focus:outline-none transition-transform duration-300 transform focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2 rounded-full" [class.rotate-180]="isMobileMenuOpen" aria-label="Toggle menu" [attr.aria-expanded]="isMobileMenuOpen">
         <svg *ngIf="!isMobileMenuOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
@@ -133,13 +133,14 @@
         placeholder="Search products..." 
         class="bg-gray-100 rounded-full py-3 px-4 pr-12 text-base w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-pink-200 border border-transparent focus:border-pink-200"
         autocomplete="off"
+        aria-label="Search products"
         #searchInput
         (click)="$event.stopPropagation()"
       />
-      <button *ngIf="searchQuery" (click)="clearSearch(); $event.stopPropagation()" class="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 p-1">
+      <button *ngIf="searchQuery" (click)="clearSearch(); $event.stopPropagation()" class="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 p-2" aria-label="Clear search">
         <i class="fa-solid fa-xmark text-sm"></i>
       </button>
-      <button (click)="$event.stopPropagation()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 p-1">
+      <button (click)="$event.stopPropagation()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 p-2" aria-label="Search">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
@@ -148,21 +149,21 @@
   </div>
 
   <!-- Enhanced Mobile Menu - Right aligned with better styling -->
-  <div *ngIf="isMobileMenuOpen" class="sm:hidden bg-white border-t border-gray-100" [ngClass]="{'mobile-menu-right': true}">
+  <div *ngIf="isMobileMenuOpen" class="sm:hidden bg-white border-t border-gray-100 mobile-menu-right" [ngClass]="{'active': isMobileMenuOpen}">
     <div class="py-4 space-y-0 divide-y divide-gray-100">
       <!-- Main navigation -->
       <div class="py-2 px-1">
         <a routerLink="/products" (click)="closeMobileMenu(); scrollToTop();" class="flex items-center px-4 py-3 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors">
-          <img src="/necklace.png" alt="Products" class="h-5 w-5 mr-3 object-contain" />
-          Products
+          <img src="/necklace.png" alt="" class="h-5 w-5 mr-3 object-contain" />
+          <span>Products</span>
         </a>
         <a routerLink="/about" (click)="closeMobileMenu(); scrollToTop();" class="flex items-center px-4 py-3 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors">
           <i class="fa-solid fa-circle-info mr-3 text-pink-400 w-5 text-center"></i>
-          About
+          <span>About</span>
         </a>
         <a routerLink="/cart" (click)="closeMobileMenu(); scrollToTop();" class="flex items-center px-4 py-3 text-base font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors">
           <i class="fa-solid fa-shopping-bag mr-3 text-pink-400 w-5 text-center"></i>
-          Cart 
+          <span>Cart</span>
           <span *ngIf="cartCount > 0" class="ml-2 bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full">{{ cartCount }}</span>
         </a>
       </div>
@@ -254,28 +255,21 @@
     100% { transform: scale(1); }
   }
   
-  .cart-badge {
+  /* Apply pulse animation to cart badge */
+  .mobile-menu-right .bg-pink-600 {
     animation: pulse 2s infinite;
   }
   
-  /* Mobile menu overlay */
-  .mobile-menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.3);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    z-index: 40;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+  /* Improve accessibility focus styles */
+  button:focus-visible, a:focus-visible {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
   }
   
-  .mobile-menu-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
+  /* Fix for iOS Safari's 100vh issue */
+  @supports (-webkit-touch-callout: none) {
+    .mobile-menu-overlay {
+      height: -webkit-fill-available;
+    }
   }
 </style>

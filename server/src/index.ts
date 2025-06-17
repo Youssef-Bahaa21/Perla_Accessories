@@ -65,7 +65,6 @@ app.get('/api/csrf-token', (req, res) => {
 });
 
 /* ---- CSRF Protection ---- */
-// Disable CSRF in production for now to fix authentication issues
 if (process.env.NODE_ENV !== 'production' && process.env.DISABLE_CSRF !== 'true') {
     app.use('/api', csrfMiddleware); // CSRF enabled only in development
     console.log('🔒 CSRF Protection: ENABLED (development)');

@@ -1,7 +1,9 @@
 // src/app/app.component.ts
-import { Component, OnInit, HostListener, PLATFORM_ID, inject, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser as commonIsPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { NgxSpinnerComponent } from 'ngx-spinner';
 import { NotificationService } from './core/services/notification.service';
@@ -13,7 +15,6 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { CartComponent } from './features/cart/cart.component';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -50,22 +51,36 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Initialize authentication and user state
-      this.authService.currentUser$.subscribe((user: any) => {
+      // Set the viewContainerRef for the modal service
+      this.confirmationModal.setViewContainerRef(this.viewContainerRef);
+
+      // Subscribe to user changes
+      this.authService.currentUser$.subscribe(user => {
         this.user = user;
       });
 
-      // Fetch CSRF token with debugging
+      // Fetch CSRF token
       this.http.get(`${environment.api}/api/csrf-token`, { withCredentials: true }).subscribe({
-        next: (response) => {
-          console.log('✅ CSRF token fetched successfully');
-        },
-        error: (error) => {
-          console.warn('⚠️ Could not fetch CSRF token, continuing without it:', error.message);
-        }
+        next: () => { },
+        error: () => { }
       });
 
-      this.confirmationModal.setViewContainerRef(this.viewContainerRef);
+      // Fix for iOS 100vh issue
+      this.setViewportHeight();
+
+      // Add resize listener for viewport height
+      window.addEventListener('resize', this.setViewportHeight);
+      window.addEventListener('orientationchange', this.setViewportHeight);
+    }
+  }
+
+  // Fix for iOS 100vh issue
+  private setViewportHeight = (): void => {
+    if (isPlatformBrowser(this.platformId)) {
+      // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
+      const vh = window.innerHeight * 0.01;
+      // Then we set the value in the --vh custom property to the root of the document
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
   }
 
@@ -82,8 +97,14 @@ export class AppComponent implements OnInit {
 
   toggleMobileMenu(): void {
     this.showMobileMenu = !this.showMobileMenu;
-    if (this.showMobileMenu) {
-      this.showDropdown = false;
+
+    // Add/remove body class to prevent scrolling when menu is open
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.showMobileMenu) {
+        document.body.classList.add('overflow-hidden');
+      } else {
+        document.body.classList.remove('overflow-hidden');
+      }
     }
   }
 
@@ -96,8 +117,8 @@ export class AppComponent implements OnInit {
   }
 
   isAdmin(): boolean {
-    const user = this.authService.currentUser$.value;
-    return !!user && user.role === 'admin';
+    if (!this.authService.currentUser$.value) return false;
+    return this.authService.currentUser$.value.role === 'admin';
   }
 
   cartItemCount(): number {
@@ -105,9 +126,12 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
+    this.confirmationModal.confirmLogout().then(confirmed => {
+      if (confirmed) {
+        this.authService.logout().subscribe(() => {
+          this.cartService.clear();
+          this.router.navigateByUrl('/');
+        });
       }
     });
   }

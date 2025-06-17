@@ -5,81 +5,110 @@
       
       <!-- Company info -->
       <div class="company-info">
-        <a routerLink="/" (click)="scrollToTop()" class="inline-flex items-center">
-          <img src="logo.png" alt="Perla Logo" class="h-8 w-auto" />
+        <a routerLink="/" (click)="scrollToTop()" class="inline-flex items-center" aria-label="Go to homepage">
+          <img src="logo.png" alt="" class="h-8 w-auto" />
           <span class="ml-2 text-base font-semibold text-pink-600">Perla</span>
         </a>
         <p class="mt-3 text-sm text-gray-600">
           Beautiful accessories for every occasion. High-quality handcrafted items to elevate your style.
         </p>
         
-        <!-- Social links -->
+        <!-- Social links with better accessibility -->
         <div class="social-links">
-          <a href="https://www.tiktok.com/@perlaaccesories0?_t=ZS-8vtSpUwLtoO&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
-            <i class="fa-brands fa-tiktok"></i>
+          <a href="https://www.tiktok.com/@perlaaccesories0?_t=ZS-8vtSpUwLtoO&_r=1" target="_blank" rel="noopener" aria-label="Follow us on TikTok">
+            <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
+            <span class="sr-only">TikTok</span>
           </a>
-          <a href="https://www.instagram.com/perlaaccessoriesboutique?igsh=MXBzYmU2YmRvZXc5cw==" target="_blank" rel="noopener" aria-label="Instagram">
-            <i class="fa-brands fa-instagram"></i>
+          <a href="https://www.instagram.com/perlaaccessoriesboutique?igsh=MXBzYmU2YmRvZXc5cw==" target="_blank" rel="noopener" aria-label="Follow us on Instagram">
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            <span class="sr-only">Instagram</span>
           </a>
         </div>
       </div>
       
-      <!-- Quick links -->
+      <!-- Quick links with improved touch targets -->
       <div class="footer-section">
         <h3 class="footer-title">Shop</h3>
         <ul class="footer-links">
           <li>
-            <a routerLink="/products" (click)="scrollToTop()" class="footer-link">Products</a>
+            <a routerLink="/products" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Products
+            </a>
           </li>
           <li>
-            <a routerLink="/cart" (click)="scrollToTop()" class="footer-link">Cart</a>
+            <a routerLink="/cart" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Cart
+            </a>
           </li>
         </ul>
       </div>
       
-      <!-- Account links -->
+      <!-- Account links with improved touch targets -->
       <div class="footer-section">
         <h3 class="footer-title">Account</h3>
         <ul class="footer-links">
           <li>
-            <a routerLink="/account/orders" (click)="scrollToTop()" class="footer-link">My Orders</a>
+            <a routerLink="/account/orders" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              My Orders
+            </a>
           </li>
           <li>
-            <a routerLink="/login" (click)="scrollToTop()" class="footer-link">Login</a>
+            <a routerLink="/login" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Login
+            </a>
           </li>
           <li>
-            <a routerLink="/register" (click)="scrollToTop()" class="footer-link">Register</a>
+            <a routerLink="/register" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Register
+            </a>
           </li>
         </ul>
       </div>
       
-      <!-- Policy links -->
+      <!-- Policy links with improved touch targets -->
       <div class="footer-section">
         <h3 class="footer-title">Info</h3>
         <ul class="footer-links">
           <li>
-            <a routerLink="/about" (click)="scrollToTop()" class="footer-link">About Us</a>
+            <a routerLink="/about" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              About Us
+            </a>
           </li>
           <li>
-            <a routerLink="/privacy-policy" (click)="scrollToTop()" class="footer-link">Privacy Policy</a>
+            <a routerLink="/privacy-policy" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Privacy Policy
+            </a>
           </li>
           <li>
-            <a routerLink="/terms" (click)="scrollToTop()" class="footer-link">Terms & Conditions</a>
+            <a routerLink="/terms" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Terms & Conditions
+            </a>
           </li>
           <li>
-            <a routerLink="/returns-policy" (click)="scrollToTop()" class="footer-link">Returns Policy</a>
+            <a routerLink="/returns-policy" (click)="scrollToTop()" class="footer-link">
+              <i class="fa-solid fa-angle-right text-xs mr-2 text-pink-400" aria-hidden="true"></i>
+              Returns Policy
+            </a>
           </li>
         </ul>
       </div>
     </div>
     
-    <!-- Newsletter section -->
+    <!-- Newsletter section with improved mobile styling -->
     <hr class="footer-divider" />
     <div class="max-w-md mx-auto">
       <h3 class="footer-title text-center mb-3">Subscribe to our newsletter</h3>
       <div class="newsletter-form">
-        <input type="email" placeholder="Your email address" class="newsletter-input" />
-        <button class="newsletter-button">
+        <input type="email" placeholder="Your email address" class="newsletter-input" aria-label="Email address" />
+        <button class="newsletter-button" aria-label="Subscribe to newsletter">
           Subscribe
         </button>
       </div>
@@ -93,7 +122,8 @@
       </p>
       <div class="footer-tagline">
         Handcrafted with 
-        <span class="heart">❤</span> 
+        <span class="heart" aria-hidden="true">❤</span> 
+        <span class="sr-only">love</span>
         for elegant accessories that make a statement.
       </div>
     </div>

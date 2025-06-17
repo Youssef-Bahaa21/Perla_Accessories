@@ -63,6 +63,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Check if mobile on init
     this.checkIfMobile();
 
+    // Fix for iOS 100vh issue
+    this.setViewportHeight();
+
     // Subscribe to router navigation start events
     this.router.events.pipe(
       filter(event => event instanceof NavigationStart),
@@ -111,10 +114,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onResize() {
     this.checkIfMobile();
+    this.setViewportHeight();
   }
 
   private checkIfMobile() {
-    this.isMobile = window.innerWidth < 640;
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobile = window.innerWidth < 640;
+    }
+  }
+
+  // Fix for iOS 100vh issue
+  private setViewportHeight() {
+    if (isPlatformBrowser(this.platformId)) {
+      // First we get the viewport height and we multiply it by 1% to get a value for a vh unit
+      const vh = window.innerHeight * 0.01;
+      // Then we set the value in the --vh custom property to the root of the document
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
   }
 
   get isLoggedIn(): boolean {
@@ -127,24 +143,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
-    const currentScroll = window.scrollY;
+    if (isPlatformBrowser(this.platformId)) {
+      const currentScroll = window.scrollY;
 
-    // Navbar shadow toggle (keep this)
-    this.isScrolled = currentScroll > 20;
+      // Navbar shadow toggle (keep this)
+      this.isScrolled = currentScroll > 20;
 
-    // Promo bar scroll direction detection
-    if (currentScroll > this.lastScrollY && currentScroll > 80) {
-      this.showPromoBar = false; // Scroll down
-    } else {
-      this.showPromoBar = true; // Scroll up
+      // Promo bar scroll direction detection
+      if (currentScroll > this.lastScrollY && currentScroll > 80) {
+        this.showPromoBar = false; // Scroll down
+      } else {
+        this.showPromoBar = true; // Scroll up
+      }
+
+      this.lastScrollY = currentScroll;
     }
-
-    this.lastScrollY = currentScroll;
   }
 
   // Scroll to top method for navigation links
   scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   navigateToCart(): void {
@@ -161,14 +181,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    // Close search bar when opening mobile menu
-    if (this.isMobileMenuOpen) {
-      this.isSearchBarOpen = false;
+
+    // Add/remove body class to prevent scrolling when menu is open
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.isMobileMenuOpen) {
+        document.body.classList.add('overflow-hidden');
+        // Close search bar when opening mobile menu
+        this.isSearchBarOpen = false;
+      } else {
+        document.body.classList.remove('overflow-hidden');
+      }
     }
   }
 
   closeMobileMenu(): void {
-    this.isMobileMenuOpen = false;
+    if (this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+
+      if (isPlatformBrowser(this.platformId)) {
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
   }
 
   navigateToAdmin(): void {
@@ -187,6 +220,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Close mobile menu when opening search
     if (this.isSearchBarOpen) {
       this.isMobileMenuOpen = false;
+
+      if (isPlatformBrowser(this.platformId)) {
+        document.body.classList.remove('overflow-hidden');
+      }
 
       // Reset navigation flag when manually opening search
       this.isNavigatingFromSearch = false;
@@ -250,64 +287,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Navigate to products page with search query
     this.router.navigate(['/products'], {
-      queryParams: { search: query.trim() }
+      queryParams: { search: query.trim() },
+      queryParamsHandling: wasOnProductsPage ? 'merge' : ''
     });
-
-    // If already on products page, no navigation event will fire
-    // so reset the flag immediately
-    if (wasOnProductsPage) {
-      setTimeout(() => {
-        this.isNavigatingFromSearch = false;
-      }, 100);
-    }
-
-    // Only scroll if needed
-    if (window.scrollY > 100) {
-      this.scrollToTop();
-    }
   }
 
-  // Legacy method for form submit (maintained for backward compatibility)
+  // Explicit search on enter key or button click
   searchProducts(event: Event): void {
     event.preventDefault();
-    if (this.searchQuery.trim()) {
-      // For explicit search button clicks, keep search bar open
-      this.router.navigate(['/products'], {
-        queryParams: { search: this.searchQuery.trim() }
-      });
 
-      // Only scroll if needed
-      if (window.scrollY > 100) {
-        this.scrollToTop();
-      }
+    if (this.searchQuery.trim()) {
+      this.performSearch(this.searchQuery);
     }
   }
 
-  // Close search bar when clicking outside
+  // Close search bar if clicked outside
   closeSearchIfNotFocused(): void {
-    // Only process if we're not actively typing
-    // This prevents search from closing when typing
-    const activeElement = document.activeElement;
-
-    // On mobile, we only want to close when explicitly clicking outside
-    if (this.isMobile && this.isSearchBarOpen) {
-      // For mobile search - make sure we're not clicking inside search components
-      const searchContainer = this.searchInput?.nativeElement.closest('.search-bar');
-      if (searchContainer && !searchContainer.contains(activeElement) &&
-        activeElement !== this.searchInput?.nativeElement) {
-        // Delay closing slightly to prevent immediate closing when interacting
-        setTimeout(() => {
-          this.isSearchBarOpen = false;
-        }, 150);
-      }
-    } else if (!this.isMobile) {
-      // For desktop search - just clear if clicked outside and not focused
-      if (this.searchInputDesktop &&
-        activeElement !== this.searchInputDesktop.nativeElement &&
-        this.searchQuery.trim() === '') {
-        // Only clear if empty; otherwise let user continue refining search
-        this.searchQuery = '';
-      }
+    if (this.isSearchBarOpen && !this.isNavigatingFromSearch) {
+      this.isSearchBarOpen = false;
     }
   }
 }
