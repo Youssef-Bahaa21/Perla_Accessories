@@ -8,48 +8,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles optimized for mobile-first approach */
+/* Global styles with mobile-first approach */
 html {
-    @apply text-base;
     scroll-behavior: smooth;
-    /* Enable smooth scrolling */
     -webkit-tap-highlight-color: transparent;
-    /* Remove tap highlight on iOS */
-    height: -webkit-fill-available;
-    /* Fix 100vh issues on iOS */
 }
 
 body {
-    @apply text-gray-800 bg-white antialiased;
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    /* Fix 100vh issues on iOS */
+    min-height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     overflow-x: hidden;
-    /* Prevent horizontal scroll */
-    text-rendering: optimizeSpeed;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fix for iOS Safari 100vh issue */
-:root {
-    --vh: 1vh;
-}
-
-/* App container */
+/* Fix iOS 100vh issue with dvh */
 app-root {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100);
+    min-height: 100dvh;
 }
 
 main {
     flex: 1;
 }
 
-/* Global focus styles for accessibility */
+/* Improved focus styles for accessibility */
+:focus {
+    outline: none;
+}
+
 :focus-visible {
-    outline: 2px solid theme('colors.pink.500');
+    outline: 2px solid rgba(236, 72, 153, 0.5);
     outline-offset: 2px;
 }
 
@@ -62,62 +53,37 @@ main {
     input[type="button"],
     input[type="submit"] {
         min-height: 44px;
-        /* Apple's recommended minimum */
         min-width: 44px;
-    }
-
-    /* Increase spacing for better touch targets */
-    .py-2 {
-        padding-top: 0.625rem;
-        padding-bottom: 0.625rem;
-    }
-
-    .px-4 {
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
+        padding: 0.5rem 1rem;
     }
 }
 
-/* Improved toast notifications */
+/* Improved Toast Notifications */
 #toast-container {
     top: 80px !important;
-    /* Below the navbar */
     right: 1rem !important;
-    /* Stick to the right side */
     left: auto !important;
-    /* Remove any left positioning */
     transform: none !important;
-    /* No centering */
     width: auto !important;
     max-width: 90% !important;
     z-index: 9999 !important;
     position: fixed !important;
-
-    /* Better mobile positioning */
-    @media (max-width: 640px) {
-        top: 70px !important;
-        right: 50% !important;
-        transform: translateX(50%) !important;
-        width: 90% !important;
-    }
 }
 
 // Style for the toast itself
 #toast-container>div {
     background: linear-gradient(to right, #ec4899, #f472b6);
-    /* Pink gradient */
     color: white;
     border-radius: 0.75rem;
     padding: 1rem 1.5rem;
     font-weight: 600;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 
-    /* Improved mobile styling */
+    // Better mobile styling
     @media (max-width: 640px) {
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1.25rem;
         border-radius: 0.5rem;
-        width: 100%;
-        max-width: 100%;
+        font-size: 0.875rem;
     }
 }
 
@@ -141,6 +107,7 @@ main {
 /* Toast progress bar pink */
 .toast-progress {
     background-color: #db2777 !important;
+    height: 4px !important;
 }
 
 /* Animation for sliding in from right */
@@ -174,6 +141,7 @@ main {
     animation: slideInRight 0.5s ease-out, slideOutRight 0.5s ease-in 2.5s;
 }
 
+/* Improved Carousel Styles */
 /* Arrows */
 .carousel-nav-btn {
     display: inline-flex;
@@ -190,7 +158,7 @@ main {
     transition: all 0.3s ease;
     cursor: pointer;
 
-    /* Smaller buttons on mobile */
+    // Smaller buttons on mobile
     @media (max-width: 640px) {
         width: 40px;
         height: 40px;
@@ -215,13 +183,16 @@ main {
     justify-content: space-between;
     padding: 0 8px;
     pointer-events: none;
-    /* Allow arrows to float over image */
     z-index: 20;
+
+    // Better spacing on mobile
+    @media (max-width: 640px) {
+        padding: 0 4px;
+    }
 }
 
 .owl-nav button {
     pointer-events: auto;
-    /* Enable clicking */
     background: none;
     border: none;
     outline: none;
@@ -229,12 +200,24 @@ main {
     margin: 0;
 }
 
-/* Swiper pagination customization */
+/* Swiper Customizations */
 swiper-container::part(pagination) {
     --swiper-theme-color: #ec4899;
-    /* Tailwind pink-500 */
 }
 
+swiper-container::part(bullet) {
+    width: 8px;
+    height: 8px;
+    margin: 0 6px;
+    opacity: 0.6;
+}
+
+swiper-container::part(bullet-active) {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Animation classes */
 :host {
     display: block;
     transition: opacity 0.4s ease, transform 0.4s ease;
@@ -278,71 +261,85 @@ swiper-container::part(pagination) {
     animation: slideOutToRight 0.3s ease-in forwards;
 }
 
-/* Utility classes for mobile optimization */
-.touch-action-none {
-    touch-action: none;
+/* Common animations */
+@keyframes pulse-subtle {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
 }
 
-.touch-action-manipulation {
-    touch-action: manipulation;
+.animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
 }
 
-/* Fix for iOS input zoom */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-float {
+    animation: float 5s ease-in-out infinite;
+}
+
+/* Utility classes */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(236, 72, 153, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 72, 153, 0.5);
+}
+
+/* Hide scrollbar for mobile */
 @media (max-width: 640px) {
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="search"],
-    input[type="tel"],
-    input[type="url"],
-    input[type="number"] {
-        font-size: 16px;
-        /* Prevent iOS zoom */
-    }
-}
-
-/* Fix for iOS momentum scrolling */
-.scrolling-touch {
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Utility class for preventing body scroll when modals are open */
-.overflow-hidden {
-    overflow: hidden !important;
-}
-
-/* Fix for sticky hover on mobile */
-@media (hover: hover) {
-    .hover\:bg-pink-100:hover {
-        background-color: theme('colors.pink.100');
-    }
-}
-
-@media (hover: none) {
-    .hover\:bg-pink-100:active {
-        background-color: theme('colors.pink.100');
-    }
-}
-
-/* Improved scrollbars for desktop */
-@media (min-width: 768px) {
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+    .hide-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    ::-webkit-scrollbar-track {
-        background: theme('colors.gray.100');
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: theme('colors.gray.300');
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: theme('colors.pink.300');
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
     }
 }

@@ -61,26 +61,16 @@
 }
 
 .footer-link {
-    display: flex;
-    align-items: center;
+    display: block;
     padding: 0.625rem 0;
     font-size: 0.875rem;
     color: #4a5568;
-    transition: color 0.15s ease, transform 0.2s ease;
-    position: relative;
+    transition: color 0.15s ease;
 
-    // Add touch target padding for mobile
-    @media (max-width: 640px) {
-        padding: 0.75rem 0;
-        margin-left: -0.5rem;
-        padding-left: 0.5rem;
-        width: calc(100% + 1rem);
-
-        &:active {
-            background-color: rgba(236, 72, 153, 0.05);
-            border-radius: 0.5rem;
-        }
-    }
+    // Improved touch target for mobile
+    min-height: 44px;
+    display: flex;
+    align-items: center;
 
     &:hover,
     &:focus {
@@ -91,26 +81,10 @@
         transform: translateY(1px);
     }
 
-    // Add subtle hover indicator
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0.5rem;
-        left: 0;
-        width: 0;
-        height: 1px;
-        background-color: #d53f8c;
-        transition: width 0.2s ease;
-    }
-
-    &:hover::after,
-    &:focus::after {
-        width: 1.5rem;
-    }
-
     @media (min-width: 640px) {
         padding: 0.375rem 0;
         font-size: 0.875rem;
+        min-height: auto;
     }
 }
 
@@ -131,13 +105,13 @@
         width: 100%;
         border: 1px solid #e2e8f0;
         font-size: 0.875rem;
-        -webkit-appearance: none; // Fix iOS styling
-        appearance: none;
+        height: 50px; // Increased height for better touch target
 
         @media (min-width: 480px) {
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
             margin-bottom: 0;
+            height: 44px;
         }
 
         &:focus {
@@ -153,11 +127,9 @@
         background-color: #d53f8c;
         color: white;
         font-weight: 500;
-        transition: background-color 0.15s ease, transform 0.15s ease;
+        transition: background-color 0.15s ease;
         font-size: 0.875rem;
-        -webkit-appearance: none; // Fix iOS styling
-        appearance: none;
-        min-height: 44px; // Minimum touch target size
+        height: 50px; // Increased height for better touch target
 
         &:hover,
         &:focus {
@@ -171,6 +143,7 @@
         @media (min-width: 480px) {
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+            height: 44px;
         }
     }
 }
@@ -191,14 +164,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 3rem; // Increased size for mobile
+        height: 3rem; // Increased size for mobile
         border-radius: 9999px;
         background-color: #f7fafc;
         color: #4a5568;
         transition: all 0.2s ease;
-        min-height: 44px; // Minimum touch target size
-        min-width: 44px; // Minimum touch target size
 
         &:hover,
         &:focus {
@@ -211,18 +182,22 @@
             transform: translateY(0);
         }
 
-        svg {
-            width: 1.25rem;
-            height: 1.25rem;
+        svg,
+        i {
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: 1.5rem;
         }
 
         @media (min-width: 640px) {
-            width: 2rem;
-            height: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
 
-            svg {
-                width: 1rem;
-                height: 1rem;
+            svg,
+            i {
+                width: 1.25rem;
+                height: 1.25rem;
+                font-size: 1.25rem;
             }
         }
     }
@@ -233,9 +208,11 @@
     font-size: 0.75rem;
     color: #718096;
     margin-top: 1.5rem;
+    padding: 0 1rem;
 
     @media (min-width: 640px) {
         font-size: 0.875rem;
+        padding: 0;
     }
 
     .heart {
@@ -289,19 +266,27 @@
     }
 }
 
-// Fix for iOS Safari bottom safe area
-@supports (-webkit-touch-callout: none) {
-    .footer-container {
-        padding-bottom: env(safe-area-inset-bottom, 0);
+// Improved spacing for mobile
+@media (max-width: 479px) {
+    .footer-section {
+        padding: 0 0.5rem;
+    }
+
+    .footer-title {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-links {
+        margin-left: 0.5rem;
     }
 }
 
-// Improve focus visibility for accessibility
-a:focus-visible,
-button:focus-visible,
-input:focus-visible {
-    outline: 2px solid #d53f8c;
-    outline-offset: 2px;
+// Focus styles for accessibility
+a:focus,
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(213, 63, 140, 0.2);
+    border-radius: 0.25rem;
 }
 
 // Ensure smooth scroll behavior

@@ -419,4 +419,27 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
     this.seoService.generateBreadcrumbs(breadcrumbs);
   }
+
+  // Method to get the active image for a product
+  getActiveImage(product: any): string {
+    if (!product.images || product.images.length === 0) {
+      return 'https://via.placeholder.com/300x300?text=No+Image';
+    }
+
+    const activeIndex = this.activeImageIndices[product.id] || 0;
+    return product.images[activeIndex]?.url || product.images[0]?.url;
+  }
+
+  // Track loaded images
+  private loadedImages: { [key: string]: boolean } = {};
+
+  // Check if an image is loaded
+  isImageLoaded(productId: number): boolean {
+    return !!this.loadedImages[productId];
+  }
+
+  // Handle image load event
+  onImageLoad(productId: number): void {
+    this.loadedImages[productId] = true;
+  }
 }
