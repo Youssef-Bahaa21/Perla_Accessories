@@ -8,62 +8,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global styles with mobile-first approach */
-html {
-    scroll-behavior: smooth;
-    -webkit-tap-highlight-color: transparent;
-}
 
+html,
 body {
-    min-height: 100%;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    overflow-x: hidden;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    height: 100%;
 }
 
-/* Fix iOS 100vh issue with dvh */
+
+
 app-root {
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+    min-height: 100vh;
 }
 
 main {
     flex: 1;
 }
 
-/* Improved focus styles for accessibility */
-:focus {
-    outline: none;
-}
 
-:focus-visible {
-    outline: 2px solid rgba(236, 72, 153, 0.5);
-    outline-offset: 2px;
-}
 
-/* Better touch targets for mobile */
-@media (max-width: 640px) {
 
-    button,
-    a,
-    [role="button"],
-    input[type="button"],
-    input[type="submit"] {
-        min-height: 44px;
-        min-width: 44px;
-        padding: 0.5rem 1rem;
-    }
-}
 
-/* Improved Toast Notifications */
+
+
 #toast-container {
     top: 80px !important;
+    /* ✅ below the navbar */
     right: 1rem !important;
+    /* ✅ stick to the right side */
     left: auto !important;
+    /* ✅ remove any left positioning */
     transform: none !important;
+    /* ✅ no centering */
     width: auto !important;
     max-width: 90% !important;
     z-index: 9999 !important;
@@ -73,19 +50,14 @@ main {
 // Style for the toast itself
 #toast-container>div {
     background: linear-gradient(to right, #ec4899, #f472b6);
+    /* ✅ pink gradient */
     color: white;
     border-radius: 0.75rem;
     padding: 1rem 1.5rem;
     font-weight: 600;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-
-    // Better mobile styling
-    @media (max-width: 640px) {
-        padding: 0.875rem 1.25rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-    }
 }
+
 
 /* Specific Toast types */
 .toast-success {
@@ -107,7 +79,6 @@ main {
 /* Toast progress bar pink */
 .toast-progress {
     background-color: #db2777 !important;
-    height: 4px !important;
 }
 
 /* Animation for sliding in from right */
@@ -141,7 +112,6 @@ main {
     animation: slideInRight 0.5s ease-out, slideOutRight 0.5s ease-in 2.5s;
 }
 
-/* Improved Carousel Styles */
 /* Arrows */
 .carousel-nav-btn {
     display: inline-flex;
@@ -157,13 +127,6 @@ main {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
-
-    // Smaller buttons on mobile
-    @media (max-width: 640px) {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-    }
 }
 
 .carousel-nav-btn:hover {
@@ -183,16 +146,13 @@ main {
     justify-content: space-between;
     padding: 0 8px;
     pointer-events: none;
+    /* allow arrows to float over image */
     z-index: 20;
-
-    // Better spacing on mobile
-    @media (max-width: 640px) {
-        padding: 0 4px;
-    }
 }
 
 .owl-nav button {
     pointer-events: auto;
+    /* enable clicking */
     background: none;
     border: none;
     outline: none;
@@ -200,24 +160,11 @@ main {
     margin: 0;
 }
 
-/* Swiper Customizations */
 swiper-container::part(pagination) {
     --swiper-theme-color: #ec4899;
+    /* Tailwind pink-500 */
 }
 
-swiper-container::part(bullet) {
-    width: 8px;
-    height: 8px;
-    margin: 0 6px;
-    opacity: 0.6;
-}
-
-swiper-container::part(bullet-active) {
-    opacity: 1;
-    transform: scale(1.2);
-}
-
-/* Animation classes */
 :host {
     display: block;
     transition: opacity 0.4s ease, transform 0.4s ease;
@@ -228,7 +175,7 @@ swiper-container::part(bullet-active) {
     transform: translateY(-10px);
 }
 
-/* Cart Modal Animations */
+/* ✅ Cart Modal Animations */
 @keyframes slideInFromRight {
     from {
         transform: translateX(100%);
@@ -259,87 +206,4 @@ swiper-container::part(bullet-active) {
 
 .animate-slideOutToRight {
     animation: slideOutToRight 0.3s ease-in forwards;
-}
-
-/* Common animations */
-@keyframes pulse-subtle {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-}
-
-.animate-pulse-subtle {
-    animation: pulse-subtle 2s ease-in-out infinite;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-.animate-float {
-    animation: float 5s ease-in-out infinite;
-}
-
-/* Utility classes */
-.glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(236, 72, 153, 0.3);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(236, 72, 153, 0.5);
-}
-
-/* Hide scrollbar for mobile */
-@media (max-width: 640px) {
-    .hide-scrollbar {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
 }

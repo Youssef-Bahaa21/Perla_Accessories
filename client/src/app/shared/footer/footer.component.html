@@ -5,7 +5,7 @@
       
       <!-- Company info -->
       <div class="company-info">
-        <a routerLink="/" (click)="scrollToTop()" class="inline-flex items-center" aria-label="Go to homepage">
+        <a routerLink="/" (click)="scrollToTop()" class="inline-flex items-center">
           <img src="logo.png" alt="Perla Logo" class="h-8 w-auto" />
           <span class="ml-2 text-base font-semibold text-pink-600">Perla</span>
         </a>
@@ -15,10 +15,10 @@
         
         <!-- Social links -->
         <div class="social-links">
-          <a href="https://www.tiktok.com/@perlaaccesories0?_t=ZS-8vtSpUwLtoO&_r=1" target="_blank" rel="noopener" aria-label="Follow us on TikTok">
+          <a href="https://www.tiktok.com/@perlaaccesories0?_t=ZS-8vtSpUwLtoO&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
             <i class="fa-brands fa-tiktok"></i>
           </a>
-          <a href="https://www.instagram.com/perlaaccessoriesboutique?igsh=MXBzYmU2YmRvZXc5cw==" target="_blank" rel="noopener" aria-label="Follow us on Instagram">
+          <a href="https://www.instagram.com/perlaaccessoriesboutique?igsh=MXBzYmU2YmRvZXc5cw==" target="_blank" rel="noopener" aria-label="Instagram">
             <i class="fa-brands fa-instagram"></i>
           </a>
         </div>
@@ -77,12 +77,12 @@
     <hr class="footer-divider" />
     <div class="max-w-md mx-auto">
       <h3 class="footer-title text-center mb-3">Subscribe to our newsletter</h3>
-      <form class="newsletter-form" aria-label="Newsletter subscription">
-        <input type="email" placeholder="Your email address" class="newsletter-input" aria-label="Email address" />
-        <button type="submit" class="newsletter-button" aria-label="Subscribe to newsletter">
+      <div class="newsletter-form">
+        <input type="email" placeholder="Your email address" class="newsletter-input" />
+        <button class="newsletter-button">
           Subscribe
         </button>
-      </form>
+      </div>
     </div>
     
     <!-- Copyright -->
@@ -93,8 +93,7 @@
       </p>
       <div class="footer-tagline">
         Handcrafted with 
-        <span class="heart" aria-hidden="true">❤</span> 
-        <span class="sr-only">love</span>
+        <span class="heart">❤</span> 
         for elegant accessories that make a statement.
       </div>
     </div>

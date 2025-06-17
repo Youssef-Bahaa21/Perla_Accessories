@@ -31,27 +31,6 @@ nav {
         background-color: rgba(236, 72, 153, 0.2);
         border-radius: 10px;
     }
-
-    // Improved animation
-    &.active {
-        transform: translateX(0);
-    }
-
-    // Better touch targets for mobile
-    a,
-    button {
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        padding: 12px 16px;
-        margin: 4px 0;
-        border-radius: 12px;
-
-        &:active {
-            background-color: rgba(236, 72, 153, 0.1);
-            transform: scale(0.98);
-        }
-    }
 }
 
 // When menu is open - refined animation
@@ -85,23 +64,11 @@ nav {
         // Ensure input is tappable on iOS
         -webkit-appearance: none;
         appearance: none;
-        font-size: 16px; // Prevent iOS zoom
-        height: 48px; // Larger touch target
-        padding: 0 40px 0 16px; // More comfortable padding
     }
 
     // Fix iOS focus issues
     input:focus {
         font-size: 16px; // Prevent iOS zoom on focus
-    }
-
-    // Improve search button touch target
-    button {
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 }
 
@@ -166,7 +133,6 @@ button {
     transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: transform, opacity;
 }
 
 // Ensure search input is visible and works in mobile
@@ -177,13 +143,6 @@ button {
 
         &.active {
             overflow: visible;
-        }
-
-        // Improved input for mobile
-        input {
-            width: 100%;
-            border-radius: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
     }
 
@@ -285,28 +244,5 @@ button {
     &.active {
         opacity: 1;
         pointer-events: auto;
-    }
-}
-
-// Improved mobile navigation accessibility
-@media (max-width: 639px) {
-    .mobile-menu-right {
-
-        a,
-        button {
-            border-radius: 12px;
-            margin: 2px 8px;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-    }
-
-    // Better touch feedback
-    .filter-scrollbar {
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
     }
 }

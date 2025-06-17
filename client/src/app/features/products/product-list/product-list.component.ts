@@ -326,6 +326,37 @@ export class ProductListComponent implements OnInit, OnDestroy {
     // Re-enable hover animations if needed
   }
 
+  startImageCycle(productId: number, imageCount: number) {
+    // Only cycle images on desktop
+    if (!this.isMobileDevice() && imageCount > 1) {
+      if (!this.activeImageIndices[productId]) {
+        this.activeImageIndices[productId] = 0;
+      }
+      this.activeImageIndices[productId] = (this.activeImageIndices[productId] + 1) % imageCount;
+    }
+  }
+
+  stopImageCycle(productId: number) {
+    // Reset image only on desktop
+    if (!this.isMobileDevice()) {
+      this.activeImageIndices[productId] = 0;
+    }
+  }
+
+  onProductHover(productId: number) {
+    // Only apply hover effects on desktop
+    if (!this.isMobileDevice()) {
+      // Desktop hover effects
+    }
+  }
+
+  onProductLeave(productId: number) {
+    // Only reset hover states on desktop
+    if (!this.isMobileDevice()) {
+      this.resetImageDesktop(productId);
+    }
+  }
+
   navigateToProduct(productId: number) {
     // Smooth scroll behavior for both mobile and desktop
     if (this.isBrowser) {
@@ -334,6 +365,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
         behavior: this.isMobileDevice() ? 'auto' : 'smooth'
       });
     }
+  }
+
+  resetImageDesktop(pid: number) {
+    this.activeImageIndices[pid] = 0;
   }
 
   getRandomReviewCount(): number {
