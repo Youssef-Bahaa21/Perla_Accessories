@@ -181,7 +181,19 @@ export class RegisterComponent implements OnInit {
       },
       error: (err: any) => {
         this.isSubmitting = false;
-        this.error = err?.error?.message || 'Registration failed';
+
+        // Handle rate limit errors (429)
+        if (err?.status === 429) {
+          const errorData = err?.error;
+          if (errorData?.error && errorData?.retryAfter) {
+            this.error = `${errorData.error} Try again in ${errorData.retryAfter}.`;
+          } else {
+            this.error = 'Too many account creation attempts. Please try again later.';
+          }
+        } else {
+          this.error = err?.error?.message || 'Registration failed';
+        }
+
         this.triggerShakeAnimation();
       },
     });
