@@ -48,6 +48,7 @@ export class RegisterComponent implements OnInit {
   shakeState = 'idle';
   formTouched = false;
   success = '';
+  passwordFeedback: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -96,8 +97,9 @@ export class RegisterComponent implements OnInit {
       const hasUpperCase = /[A-Z]+/.test(value);
       const hasLowerCase = /[a-z]+/.test(value);
       const hasNumeric = /[0-9]+/.test(value);
+      const hasSpecialChar = /[^a-zA-Z0-9]+/.test(value);
 
-      const passwordValid = hasUpperCase && hasLowerCase && hasNumeric;
+      const passwordValid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar;
 
       return !passwordValid ? { passwordStrength: true } : null;
     };
@@ -131,7 +133,7 @@ export class RegisterComponent implements OnInit {
       return 'Password must be at least 8 characters long';
     }
     if (passwordControl?.hasError('passwordStrength')) {
-      return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+      return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
     }
     return '';
   }
@@ -169,6 +171,7 @@ export class RegisterComponent implements OnInit {
 
     this.isSubmitting = true;
     this.error = '';
+    this.passwordFeedback = [];
     const { email, password } = this.form.value;
 
     this.auth.register(email, password).subscribe({
@@ -193,7 +196,14 @@ export class RegisterComponent implements OnInit {
         }
         // Handle validation errors (400)
         else if (err?.status === 400) {
-          if (err?.error?.message === 'Validation failed') {
+          if (err?.error?.error === 'Password does not meet security requirements') {
+            this.error = 'Password does not meet security requirements';
+            if (err?.error?.feedback && Array.isArray(err.error.feedback)) {
+              this.passwordFeedback = err.error.feedback;
+            }
+            this.form.get('password')?.setErrors({ serverError: true });
+          }
+          else if (err?.error?.message === 'Validation failed') {
             this.error = 'Your registration details could not be validated. Please check your email format and password requirements.';
 
             // Check for specific validation errors
