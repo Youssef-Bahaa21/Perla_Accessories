@@ -190,6 +190,27 @@ export class RegisterComponent implements OnInit {
           } else {
             this.error = 'Too many account creation attempts. Please try again later.';
           }
+        }
+        // Handle validation errors (400)
+        else if (err?.status === 400) {
+          if (err?.error?.message === 'Validation failed') {
+            this.error = 'Your registration details could not be validated. Please check your email format and password requirements.';
+
+            // Check for specific validation errors
+            if (err?.error?.errors) {
+              const errors = err.error.errors;
+              if (errors.email) {
+                this.form.get('email')?.setErrors({ serverError: true });
+                this.error = `Email validation failed: ${errors.email}`;
+              }
+              if (errors.password) {
+                this.form.get('password')?.setErrors({ serverError: true });
+                this.error = `Password validation failed: ${errors.password}`;
+              }
+            }
+          } else {
+            this.error = err?.error?.message || 'Registration validation failed';
+          }
         } else {
           this.error = err?.error?.message || 'Registration failed';
         }
