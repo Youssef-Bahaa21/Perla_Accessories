@@ -1,15 +1,18 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "routes": [
-    { 
-      "src": "/(.*)", 
-      "dest": "/index.js" 
+    "version": 2,
+    "builds": [
+      { 
+        "src": "dist/server/index.js", 
+        "use": "@vercel/node" 
+      }
+    ],
+    "routes": [
+      { 
+        "src": "/(.*)", 
+        "dest": "/dist/index.js" 
+      }
+    ],
+    "env": {
+      "NODE_ENV": "production"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "FRONTEND_ORIGIN": "https://perla-accessories.vercel.app"
   }
-}

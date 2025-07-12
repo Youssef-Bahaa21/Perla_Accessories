@@ -10,8 +10,5 @@
             "src": "/(.*)",
             "dest": "/index.html"
         }
-    ],
-    "env": {
-        "API_URL": "https://perla-accessories-backend.vercel.app"
-    }
+    ]
 }
