@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    api: 'https://web-production-cab5a.up.railway.app',
+    api: 'https://perla-accessories-backend.vercel.app',
     withCreds: true,
 }; 
