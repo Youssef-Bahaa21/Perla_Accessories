@@ -10,35 +10,29 @@ import cors from 'cors';
 const allowed = (process.env.FRONTEND_ORIGIN ||
     'http://localhost:4200,https://perla-accessories.vercel.app').split(',');
 
-// Add common Vercel patterns and your specific domain
-const defaultOrigins = [
+// Add specific Vercel domains - we can't use regex patterns with credentials mode
+const specificOrigins = [
     'http://localhost:4200',
     'https://perla-accessories.vercel.app',
-    'https://perla-accessories-*.vercel.app', // Vercel preview URLs
-    /\.vercel\.app$/ // Any vercel app domain
+    'https://perla-accessories-git-master-youssefbahaa21.vercel.app',
+    'https://perla-accessories.vercel.app'
 ];
 
-// Combine environment origins with defaults
-const allOrigins = [...new Set([...allowed, ...defaultOrigins])];
+// Combine environment origins with defaults (deduplicated)
+const allOrigins = [...new Set([...allowed, ...specificOrigins])];
 
 export default cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (mobile apps, postman, etc.)
         if (!origin) return callback(null, true);
-
-        // Check if origin is in allowed list
-        const isAllowed = allOrigins.some(allowedOrigin => {
-            if (allowedOrigin instanceof RegExp) {
-                return allowedOrigin.test(origin);
-            }
-            return allowedOrigin === origin;
-        });
-
-        if (isAllowed) {
-            callback(null, true);
+        
+        // When using withCreds (credentials: true), origin can't be wildcard
+        // or regex - it must be the specific origin
+        if (allOrigins.includes(origin)) {
+            callback(null, true);  // true, not the origin
         } else {
             console.log('CORS blocked origin:', origin);
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error(`Not allowed by CORS: ${origin}`));
         }
     },
     credentials: true,      // <‑‑ send & receive cookies

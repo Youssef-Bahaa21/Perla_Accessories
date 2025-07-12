@@ -9,6 +9,7 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "FRONTEND_ORIGIN": "https://perla-accessories.vercel.app"
   }
 }
