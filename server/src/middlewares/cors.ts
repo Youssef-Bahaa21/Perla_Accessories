@@ -43,6 +43,6 @@ export default cors({
     },
     credentials: true,      // <‑‑ send & receive cookies
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-XSRF-TOKEN'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-XSRF-Token'],
     exposedHeaders: ['Set-Cookie']
 });
